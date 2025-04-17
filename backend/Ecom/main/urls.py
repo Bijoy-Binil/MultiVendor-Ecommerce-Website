@@ -15,10 +15,8 @@ urlpatterns = [
 
 # ==============================OrderUrls==========================================
     path('orders/',views.OrderList.as_view()),
-    path('order/<int:pk>/',views.OrderDetailList.as_view()),
+    path('order/<int:pk>/',views.OrderDetail.as_view()),
 
 # ==============================OrderItemsUrls==========================================
-    path('orderItems/',views.OrderItemsList.as_view()),
-    path('orderItem/<int:pk>/',views.OrderItemsDetailList.as_view()),
 
 ]

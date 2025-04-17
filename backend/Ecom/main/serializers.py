@@ -74,8 +74,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Order
-        fields = ['id', 'customer', 'order_time']
+        model = OrderItems
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(OrderDetailSerializer,self).__init__(*args, **kwargs)
@@ -83,20 +83,3 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
 
   # =========================OrderItemSerializer===============================================
-class OrderItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItems
-        fields = ['id', 'order', 'product']
-
-    def __init__(self, *args, **kwargs):
-        super(OrderItemSerializer,self).__init__(*args, **kwargs)
-        self.Meta.depth =1 
-
-class OrderItemDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItems
-        fields = ['id', 'order', 'product']
-
-    def __init__(self, *args, **kwargs):
-        super(OrderItemDetailSerializer,self).__init__(*args, **kwargs)
-        self.Meta.depth =1
