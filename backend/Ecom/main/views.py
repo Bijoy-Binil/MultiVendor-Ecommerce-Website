@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse
-from rest_framework import generics,permissions,pagination
+from rest_framework import generics,permissions,pagination,viewsets
 from django.shortcuts import get_object_or_404
 from .import serializers
 from .import models
@@ -53,4 +53,17 @@ class OrderDetail(generics.ListAPIView):
         return models.OrderItems.objects.filter(order=order)
     
  
-# ==============================OrderItemsView==========================================
+# ==============================CustomerAddressViewSet==========================================
+
+class CustomerAddressViewset(viewsets.ModelViewSet):
+    serializer_class=serializers.CustomerAddressSerializer
+    queryset=models.CustomerAddress.objects.all()
+    
+    
+# ==============================ProductRatingAddressViewSet==========================================
+
+class ProductRatingViewset(viewsets.ModelViewSet):
+    serializer_class=serializers.ProductRatingSerializer
+    queryset=models.ProductRating.objects.all()
+    
+    

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, Order, OrderItems, Vendor,Product,ProductCategory  # make sure Vendor model is imported
+from .models import Customer, CustomerAddress, Order, OrderItems, ProductRating, Vendor,Product,ProductCategory  # make sure Vendor model is imported
 from django.contrib.auth.models import User  # or your custom User model
 # ==============================VendorSerializer==========================================
 class VendorSerializer(serializers.ModelSerializer):
@@ -24,18 +24,20 @@ class VendorDetailSerializer(serializers.ModelSerializer):
 # ==============================ProductSerializer==========================================
 
 class ProductListSerializer(serializers.ModelSerializer):
+    product_ratings = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'category', 'vendor','title','detail','price']
+        fields = ['id', 'category', 'vendor','title','detail','price','product_ratings']
 
     def __init__(self, *args, **kwargs):
         super(ProductListSerializer,self).__init__(*args, **kwargs)
         # self.Meta.depth =1
 
 class ProductDetailSerializer(serializers.ModelSerializer):
+    product_ratings = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'category', 'vendor','title','detail','price']
+        fields = ['id', 'category', 'vendor','title','detail','price','product_ratings']
 
     def __init__(self, *args, **kwargs):
         super(ProductDetailSerializer,self).__init__(*args, **kwargs)
@@ -82,4 +84,27 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         self.Meta.depth =1
 
 
-  # =========================OrderItemSerializer===============================================
+  # =========================CustomerAddressSerializer===============================================
+class CustomerAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerAddress
+        fields = ['id', 'customer', 'address','default_address']
+
+    def __init__(self, *args, **kwargs):
+        super(CustomerAddressSerializer,self).__init__(*args, **kwargs)
+        self.Meta.depth =1 
+
+
+
+  # =========================ProductRatingSerializer===============================================
+class ProductRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductRating
+        fields = ['id', 'customer', 'product','reviews','rating','add_time']
+
+    def __init__(self, *args, **kwargs):
+        super(ProductRatingSerializer,self).__init__(*args, **kwargs)
+        self.Meta.depth =1
+
+
+
