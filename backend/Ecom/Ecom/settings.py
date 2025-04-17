@@ -31,14 +31,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'main',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-     'rest_framework',
-     'main',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -85,8 +85,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ecommerce',
-        'USER': 'ecommerceuser',
-        'PASSWORD': 'root',
+        'USER': 'postgres',
+        'PASSWORD': '8520',
         'HOST': 'localhost',
         'PORT': '5432',  # Default PostgreSQL port
     }
