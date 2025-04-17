@@ -1,11 +1,12 @@
 from django.shortcuts import render,HttpResponse
-from rest_framework import generics,permissions
+from rest_framework import generics,permissions,pagination
+from django.shortcuts import get_object_or_404
 from .import serializers
 from .import models
 # Create your views here.
 
 # ==============================VendorView==========================================
-class VendorList(generics.ListAPIView):
+class VendorList(generics.ListCreateAPIView):
     queryset=models.Vendor.objects.all()
     serializer_class=serializers.VendorSerializer
     # permission_classes=[permissions.IsAuthenticated]
@@ -19,6 +20,8 @@ class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
 class ProductList(generics.ListCreateAPIView):
     queryset=models.Product.objects.all()
     serializer_class=serializers.ProductListSerializer
+    pagination_class=pagination.PageNumberPagination
+    
     
 class ProductDetailList(generics.RetrieveUpdateDestroyAPIView):
     queryset=models.Product.objects.all()
@@ -37,7 +40,7 @@ class CustomerDetailList(generics.RetrieveUpdateDestroyAPIView):
 
 # ==============================OrderView==========================================
 
-class OrderList(generics.ListCreateAPIView):
+class OrderList(generics.ListAPIView):
     queryset=models.Order.objects.all()
     serializer_class=serializers.OrderSerializer
     
@@ -46,10 +49,8 @@ class OrderDetail(generics.ListAPIView):
     serializer_class=serializers.OrderDetailSerializer
 
     def get_queryset(self):
-        order_id=self.kwargs['pk']
-        order=models.Order.objects.get(id=order_id)
-        order_items=models.OrderItems.objects.filter(order=order)
-        return order_items
-
+        order = get_object_or_404(models.Order, id=self.kwargs['pk'])
+        return models.OrderItems.objects.filter(order=order)
+    
  
 # ==============================OrderItemsView==========================================
