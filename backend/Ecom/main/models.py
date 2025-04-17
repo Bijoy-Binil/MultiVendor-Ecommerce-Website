@@ -20,7 +20,7 @@ class ProductCategory(models.Model):
     
 #Products
 class Product(models.Model):
-    category=models.ForeignKey(ProductCategory,on_delete=models.SET_NULL,null=True)
+    category=models.ForeignKey(ProductCategory,on_delete=models.SET_NULL,null=True,related_name='category_products')
     vendor=models.ForeignKey(Vendor,on_delete=models.SET_NULL,null=True)
     title=models.CharField(max_length=200)
     detail=models.TextField(null=True)
@@ -28,3 +28,28 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+    
+# ==============================================================
+#Customer Model 
+class Customer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    mobile_number = models.PositiveBigIntegerField()
+
+    def __str__(self):
+        return self.user.username
+
+#Order Model  
+class Order(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)
+    order_time = models.TimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order by {self.customer.user.username}"
+
+#Order Items Model 
+class OrderItems(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,related_name='order_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)  # Corrected here
+
+    def __str__(self):
+        return f"{self.product.title} in Order #{self.order.id}"
