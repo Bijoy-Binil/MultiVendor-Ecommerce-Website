@@ -65,5 +65,15 @@ class CustomerAddressViewset(viewsets.ModelViewSet):
 class ProductRatingViewset(viewsets.ModelViewSet):
     serializer_class=serializers.ProductRatingSerializer
     queryset=models.ProductRating.objects.all()
-    
-    
+
+
+# ==============================CategoryView==========================================
+# ==============================VendorView==========================================
+class CategoryList(generics.ListCreateAPIView):
+    queryset=models.ProductCategory.objects.all()
+    serializer_class=serializers.CategorySerializer
+    # permission_classes=[permissions.IsAuthenticated]
+
+class CategoryDetailList(generics.RetrieveUpdateDestroyAPIView):
+    queryset=models.ProductCategory.objects.all()
+    serializer_class=serializers.CategoryDetailSerializer

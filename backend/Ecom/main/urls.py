@@ -16,6 +16,10 @@ urlpatterns = [
     path('products/',views.ProductList.as_view()),
     path('products/<int:pk>/',views.ProductDetailList.as_view()),
 
+ # ==============================ProductCategoriesUrls==========================================
+    path('categories/',views.CategoryList.as_view()),
+    path('category/<int:pk>/',views.CategoryDetailList.as_view()),
+
 # ==============================CustomerUrls==========================================
     path('customers/',views.CustomerList.as_view()),
     path('customer/<int:pk>/',views.CustomerDetailList.as_view()),
