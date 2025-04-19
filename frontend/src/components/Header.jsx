@@ -1,16 +1,17 @@
-import React from 'react'
-import  { useState } from "react";
+import React from "react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 const Header = () => {
-      // State to handle mobile menu toggle
-      const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    
-      const toggleMobileMenu = () => {
-        setIsMobileMenuOpen(!isMobileMenuOpen);
-      };
-    
+  // State to handle mobile menu toggle
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <div>
-              <nav className="bg-gray-800 shadow-md">
+      <nav className="bg-gray-800 shadow-md">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="relative flex items-center justify-between h-16">
             {/* Mobile Menu Button */}
@@ -46,19 +47,19 @@ const Header = () => {
               {/* Links on larger screens */}
               <div className="hidden sm:block sm:ml-6">
                 <div className="flex  mx-280 space-x-4">
-                  <a
-                    href="#"
+                  <Link
+                    to="/"
                     className="text-white  hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Home
-                  </a>
+                  </Link>
 
-                  <a
-                    href="#"
+                  <Link
+                    to="/categories"
                     className="text-white  hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Categories
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -85,7 +86,7 @@ const Header = () => {
         </div>
       </nav>
     </div>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
