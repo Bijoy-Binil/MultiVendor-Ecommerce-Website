@@ -41,7 +41,7 @@ const Header = () => {
             {/* Logo and Links for larger screens */}
             <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
               <div className="text-white text-2xl font-bold">
-                <span className="text-blue-500">Multi</span>Vendor
+               <Link to="/"><span className="text-blue-500">Multi</span>Vendor</Link> 
               </div>
 
               {/* Links on larger screens */}
