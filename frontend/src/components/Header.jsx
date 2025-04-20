@@ -46,10 +46,10 @@ const Header = () => {
 
               {/* Links on larger screens */}
               <div className="hidden sm:block sm:ml-6">
-                <div className="flex  mx-280 space-x-4">
+                <div className="flex  mx-250 space-x-4">
                   <Link
                     to="/"
-                    className="text-white  hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-white   hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Home
                   </Link>
@@ -59,6 +59,13 @@ const Header = () => {
                     className="text-white  hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Categories
+                  </Link>
+
+                  <Link
+                    to="/checkout"
+                    className="text-white w-21 flex justify-center  hover:bg-gray-700 hover:text-white  py-2 rounded-md text-sm font-medium"
+                  >
+                   My Cart (4)
                   </Link>
                 </div>
               </div>
