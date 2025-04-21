@@ -7,9 +7,10 @@ const Orders = () => {
     <>
       {/* Sidebar */}
       <Sidebar />
-
+      <div className="max-w-7xl mx-auto mb-[60px] md:mb-[90px] md:mr-5 px-4">
+      <div className="flex flex-col md:flex-row gap-6">
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4  sm:px-6 lg:px-8 py-6">
+      <div className="w-full md:w-3/4 mx-auto md:mx-25 -mt-[20px] md:-mt-[360px]">
         <h1 className="text-2xl font-semibold mb-6 text-center sm:text-left">
           Your Orders
         </h1>
@@ -21,6 +22,8 @@ const Orders = () => {
                 <th className="py-3 px-4 border-b">#</th>
                 <th className="py-3 px-4 border-b">Product</th>
                 <th className="py-3 px-4 border-b">Price</th>
+                <th className="py-3 px-4 border-b">Action</th>
+                <th className="py-3 px-4 border-b">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -43,6 +46,8 @@ const Orders = () => {
                     <Link to="#"><span>{product.name}</span></Link>
                   </td>
                   <td className="py-3 px-4 border-b">Rs 500</td>
+                  <td className="py-3 px-4 border-b"><button className='text-white text-sm cursor-pointer bg-blue-500 px-2 py-1 rounded-xl'>Download</button></td>
+                  <td className="py-3 px-4 border-b"><button className='text-green-700  font-semibold text-sm cursor-pointer  px-2 py-1 rounded-xl'><i className='fa fa-check-circle mx-1'></i>Completed</button></td>
                 </tr>
               ))}
             </tbody>
@@ -72,6 +77,8 @@ const Orders = () => {
             </tfoot>
           </table>
         </div>
+      </div>
+      </div>
       </div>
     </>
   );
