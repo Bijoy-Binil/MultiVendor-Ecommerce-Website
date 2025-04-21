@@ -17,6 +17,8 @@ import Login from "./components/Customer/Login";
 import Register from "./components/Customer/Register";
 import Dashboard from "./components/Customer/Dashboard";
 import Orders from "./components/Customer/Orders";
+import OrderSuccess from "./components/OrderSuccess";
+import OrderFailure from "./components/Customer/OrderFailure";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/customer/dashboard" element={<Dashboard />} />
         <Route path="/customer/orders" element={<Orders />} />
+        <Route path="/ordersuccess" element={<OrderSuccess />} />
+        <Route path="/orderfailed" element={<OrderFailure />} />
         
       </Routes>
 
