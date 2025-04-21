@@ -13,7 +13,7 @@ const Home = () => {
       label: "First Slide Label",
       text: "Nulla vitae elit libero, a pharetra augue mollis interdum.",
       quote: "A well-known quote, contained in a blockquote element.",
-      rating: <i class="fa-solid fa-star text-yellow-400"></i>,
+      rating: [1],
       sourceTitle: "Customer Name1",
     },
     {
@@ -21,8 +21,7 @@ const Home = () => {
       label: "Second Slide Label",
       text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
       quote: "Another famous quote, in a blockquote.",
-      rating: <i class="fa-solid fa-star text-yellow-400"></i>,
-      rating: <i class="fa-solid fa-star text-yellow-400"></i>,
+      rating: [1, 1],
       sourceTitle: "Customer Name2",
     },
     {
@@ -30,12 +29,11 @@ const Home = () => {
       label: "Third Slide Label",
       text: "Praesent commodo cursus magna, vel scelerisque nisl consectetur.",
       quote: "Here is a third famous quote.",
-      rating: <i class="fa-solid fa-star text-yellow-400"></i>,
-      rating: <i class="fa-solid fa-star text-yellow-400"></i>,
-      rating: <i class="fa-solid fa-star text-yellow-400"></i>,
+      rating: [1, 1, 1],
       sourceTitle: "Customer Name3",
     },
   ];
+  
 
   // Automatically switch slides every 5 seconds
   useEffect(() => {
@@ -53,7 +51,7 @@ const Home = () => {
   };
 
   return (
-    <main>
+    <main className="overflow-x-hidden">
          {/* ===========================================Latest Products================================================================== */}
     <div className="container mt-5 mx-auto">
       <div className="flex items-center justify-between mb-8">
@@ -377,12 +375,15 @@ const Home = () => {
                 >
                   <p>{slide.quote}</p>
                 </blockquote>
-                <figcaption className="mt-4 text-sm text-white">
-                  {slide.rating} in{" "}
-                  <cite className="font-semibold" title={slide.sourceTitle}>
-                    {slide.sourceTitle}
-                  </cite>
-                </figcaption>
+                <figcaption className="mt-4 text-sm text-white flex items-center gap-1">
+  {slide.rating.map((_, i) => (
+    <i key={i} className="fa-solid fa-star text-yellow-400"></i>
+  ))}
+  <span className="ml-2">
+    in <cite className="font-semibold">{slide.sourceTitle}</cite>
+  </span>
+</figcaption>
+
               </figure>
             </div>
           ))}

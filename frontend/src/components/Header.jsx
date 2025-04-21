@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+
 const Header = () => {
   // State to handle mobile menu toggle
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -8,7 +9,7 @@ const Header = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
-
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <div>
       <nav className="bg-gray-800 shadow-md">
@@ -67,6 +68,46 @@ const Header = () => {
                   >
                    My Cart (4)
                   </Link>
+                  <div className="relative inline-block text-left">
+      {/* Toggle Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+      >
+        Menu
+      </button>
+
+      {/* Dropdown Items */}
+      {isOpen && (
+      <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
+          <Link
+            to="/login"
+            className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+          >
+            Register
+          </Link>
+          <Link
+            to="/dashboard"
+            className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+          >
+            Dashboard
+          </Link>
+       
+          <Link
+            to="#"
+            className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+          >
+            Logout
+          </Link>
+        </div>
+      )}
+    </div>
                 </div>
               </div>
             </div>
@@ -76,19 +117,31 @@ const Header = () => {
         {/* Mobile Menu */}
         <div className={`sm:hidden ${isMobileMenuOpen ? "block" : "hidden"}`}>
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <a
-              href="#"
+            <Link
+              to="/login"
               className="text-white block px-3 py-2 rounded-md text-base font-medium"
             >
-              Home
-            </a>
+              Login
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              to="/register"
               className="text-white block px-3 py-2 rounded-md text-base font-medium"
             >
-              Categories
-            </a>
+              Register
+            </Link>
+            <Link
+              to="/customer/dashboard"
+              className="text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/login"
+              className="text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+              Logout
+            </Link>
           </div>
         </div>
       </nav>
