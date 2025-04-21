@@ -42,13 +42,11 @@ const Footer = () => {
             </ul>
           </div>
           <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-          <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
-            © 2025{" "}
-            <a href="https://flowbite.com/" class="hover:underline">
-              MultiVendor™
-            </a>
-            . All Rights Reserved.
-          </span>
+                  {/* Footer */}
+        <footer className="mt-10 text-center text-gray-500 text-sm">
+          &copy; {new Date().getFullYear()} Your Company. All rights reserved.
+        </footer>
+
         </div>
       </footer>
   )

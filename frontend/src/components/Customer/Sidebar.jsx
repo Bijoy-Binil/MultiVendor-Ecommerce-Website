@@ -28,7 +28,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="#"
+              to="/customer/wishlist"
               className="block px-4 py-2 rounded hover:text-green-400 transition"
             >
               Wishlist
@@ -36,10 +36,16 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="#"
+            to="/customer/profile"
               className="block px-4 py-2 rounded hover:text-green-400 transition"
             >
               Profiles
+            </Link>
+            <Link
+             to="/customer/changepassword"
+              className="block px-4 py-2 rounded hover:text-green-400 transition"
+            >
+              Change Password
             </Link>
           </li>
           <li>
