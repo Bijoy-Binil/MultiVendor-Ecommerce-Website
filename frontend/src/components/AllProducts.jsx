@@ -27,7 +27,7 @@ const AllProducts = () => {
           })}
         </div>
       </div>
-      {/*===================================================Pagiantion======================================================= */}
+      {/*===================================================Pagination======================================================= */}
       <nav aria-label="Page navigation example ">
         <ul class="flex justify-center items-center mt-25 -space-x-px text-base h-10">
           <li>
