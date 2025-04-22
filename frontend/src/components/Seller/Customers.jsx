@@ -89,9 +89,12 @@ const Customers = () => {
                            {product.phone}
                         </button>
                       </td>
-                      <td className="py-3 px-4 border border-gray-200">
-                      <button className="text-white  font-semibold  sm:text-sm px-3 py-1 rounded bg-red-500 flex items-center gap-1">
-                          Remove From List
+                      <td className="py-3 px-4 border flex  border-gray-200">
+                      <button className="text-white mr-2 font-semibold  sm:text-sm px-3 py-1 rounded bg-blue-500 flex items-center gap-1">
+                          Orders
+                        </button>
+                      <button className="text-white mr-2 font-semibold  sm:text-sm px-3 py-1 rounded bg-red-500 flex items-center gap-1">
+                          Remove 
                         </button>
                       </td>
                     
