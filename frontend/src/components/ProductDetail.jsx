@@ -9,7 +9,7 @@ const ProductDetail = () => {
   return (
     <div className="p-4">
       {/* Product Section */}
-      <section className="max-w-6xl mb-20 mx-auto mt-5">
+      <section className="max-w-5xl mb-20 mx-auto mt-5">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Image Slider */}
           <div className="w-full md:w-1/2">
@@ -18,11 +18,11 @@ const ProductDetail = () => {
               slidesPerView={1}
               className="rounded-2xl overflow-hidden"
             >
-              {[...Array(3)].map((_, i) => (
+              {[...Array(8)].map((__, i) => (
                 <SwiperSlide key={i}>
                   <img
-                    className="w-full h-64 object-cover"
-                    src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop"
+                    className="w-full h-64 object-cover rounded-2xl"
+                    src="https://images.unsplash.com/photo-1745177717290-9ce463cdc5e1?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt="Product"
                   />
                 </SwiperSlide>
