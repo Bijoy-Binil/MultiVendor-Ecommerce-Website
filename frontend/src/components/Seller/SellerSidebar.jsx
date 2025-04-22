@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Sidebar = () => {
+const SellerSidebar = () => {
   return (
     <>
      <div className="max-w-7xl mx-auto mt-6 px-4">
@@ -12,7 +12,7 @@ const Sidebar = () => {
         <ul className="space-y-2">
           <li>
             <Link
-              to="/customer/dashboard"
+              to="/seller/dashboard"
               className="block px-4 font-semibold py-2 rounded text-white bg-sky-700 hover:text-white transition"
             >
               Dashboard
@@ -20,46 +20,41 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-               to="/customer/orders"
-              className="block px-4 py-2 rounded hover:text-green-400 transition"
+               to="/seller/orders"
+              className="block px-4 font-semibold  py-2 rounded hover:text-green-400 transition"
+            >
+              Products
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/seller/wishlist"
+              className="block px-4 font-semibold  py-2 rounded hover:text-green-400 transition"
             >
               Orders
             </Link>
           </li>
           <li>
             <Link
-              to="/customer/wishlist"
-              className="block px-4 py-2 rounded hover:text-green-400 transition"
+            to="/seller/profile"
+              className="block px-4 font-semibold  py-2 rounded hover:text-green-400 transition"
             >
-              Wishlist
+              Customers
+            </Link>
+            <Link
+             to="/seller/changepassword"
+              className="block px-4 font-semibold  py-2 rounded hover:text-green-400 transition"
+            >
+              Reports
             </Link>
           </li>
           <li>
-            <Link
-            to="/customer/profile"
-              className="block px-4 py-2 rounded hover:text-green-400 transition"
-            >
-              Profiles
-            </Link>
-            <Link
-             to="/customer/changepassword"
-              className="block px-4 py-2 rounded hover:text-green-400 transition"
-            >
-              Change Password
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/customer/addresses"
-              className="block px-4 py-2 rounded hover:text-green-400 transition"
-            >
-              Address
-            </Link>
+    
           </li>
           <li>
             <Link
               to="#"
-              className="block px-4 py-2 font-semibold text-red-500 rounded transition"
+              className="block px-4 font-semibold  py-2 font-semibold text-red-500 rounded transition"
             >
               Logout
             </Link>
@@ -73,4 +68,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SellerSidebar;

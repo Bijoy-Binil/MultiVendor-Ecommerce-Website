@@ -1,133 +1,98 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import SingleProduct from './SingleProduct'
-import 'swiper/css';
+import { Swiper, SwiperSlide } from "swiper/react";
+import SingleProduct from "./SingleProduct";
+import "swiper/css";
+import "swiper/css/pagination";
 
 const ProductDetail = () => {
   return (
     <div className="p-4">
-        
-    <section className="max-w-6xl mb-20 mx-auto mt-5">
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Image section */}
-        <div className="w-full  md:w-1/3 ">
-        <Swiper
-      spaceBetween={30}
-      slidesPerView={1}
-      onSlideChange={() => console.log('slide change')}
-      onSwiper={(swiper) => console.log(swiper)}
-    >
-      <SwiperSlide>
-           <img
-              className="w-full h-64 object-cover rounded-2xl"
-              src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Title:" 
-            />
-          </SwiperSlide>
-      <SwiperSlide>
-           <img
-              className="w-full h-64 object-cover rounded-2xl"
-              src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Title:" 
-            />
-          </SwiperSlide>
-      <SwiperSlide>
-           <img
-              className="w-full h-64 object-cover rounded-2xl"
-              src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Title:" 
-            />
-          </SwiperSlide>
-    
-      
+      {/* Product Section */}
+      <section className="max-w-6xl mb-20 mx-auto mt-5">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Image Slider */}
+          <div className="w-full md:w-1/2">
+            <Swiper
+              spaceBetween={20}
+              slidesPerView={1}
+              className="rounded-2xl overflow-hidden"
+            >
+              {[...Array(3)].map((_, i) => (
+                <SwiperSlide key={i}>
+                  <img
+                    className="w-full h-64 object-cover"
+                    src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop"
+                    alt="Product"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
 
-    </Swiper>
-        </div>
+          {/* Product Info */}
+          <div className="w-full md:w-1/2 flex flex-col justify-center">
+            <h3 className="text-2xl font-semibold mb-2">Product Title</h3>
+            <p className="text-gray-700 text-lg mt-1">
+              Product Description goes here. Describe features, specs, etc.
+            </p>
+            <h5 className="text-xl mt-3 font-medium text-gray-500">Price: Rs 500</h5>
 
-        {/* Text content */}
-        <div className="w-full md:w-2/3 flex flex-col justify-center">
-          <h3 className="text-2xl font-semibold mb-2">Product Title</h3>
-          <p className="text-gray-700 text-xl mt-1 font-semibold">Product Description goes here. You can describe features, specifications, or any other relevant information.</p>
-          <h5 className="text-xl  mt-1 font-medium  text-gray-500">Price: Rs 500</h5>
-          <p className="mt-5 pb-3.5 ">
-          <button className="px-4 text-sm ml-5 py-2   bg-black text-white rounded-md hover:bg-red-600 transition duration-200 ease-in-out focus:outline-none">
-              <i className="fa-solid fa-cart-plus mr-2 "></i>Demo
+            {/* Buttons */}
+            <div className="flex flex-wrap gap-3 mt-5">
+              <button className="px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-red-600 transition">
+                <i className="fa-solid fa-cart-plus mr-2"></i>Demo
               </button>
-          <button className="px-4 text-sm ml-5 py-2  bg-indigo-500 text-white rounded-md hover:bg-red-600 transition duration-200 ease-in-out focus:outline-none">
-              <i className="fa-solid fa-cart-plus mr-2"></i>Add to Cart
+              <button className="px-4 py-2 text-sm bg-indigo-500 text-white rounded-md hover:bg-red-600 transition">
+                <i className="fa-solid fa-cart-plus mr-2"></i>Add to Cart
               </button>
-          <button className="mx-5  px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 ease-in-out focus:outline-none">
-          <i class="fa-solid fa-bag-shopping"></i> <span className="ml-1">Buy Now</span>
+              <button className="px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+                <i className="fa-solid fa-bag-shopping mr-2"></i>Buy Now
               </button>
-              <button className="px-4 text-sm py-2  bg-red-500 text-white rounded-md hover:bg-indigo-500 transition duration-200 ease-in-out focus:outline-none">
-                <i className="fa-solid fa-heart mr-2"></i>Add to Wishlist
+              <button className="px-4 py-2 text-sm bg-red-500 text-white rounded-md hover:bg-indigo-500 transition">
+                <i className="fa-solid fa-heart mr-2"></i>Wishlist
               </button>
-              
-          </p>
-          <div className="productstags">
-         <h5 className="text-xl font-medium">Tags</h5>
-          <p className="mt-2  ">
-            <Link className="ml-2 font  text-sm bg-gray-400 rounded-xl p-1.5 pt-1 pb-1 underline"  to="#">Python</Link>,
-            <Link className="ml-2 font  text-sm bg-gray-400 rounded-xl p-1.5 pt-1 pb-1 underline"  to="#">Django</Link>,
-            <Link className="ml-2 font  text-sm bg-gray-400 rounded-xl p-1.5 pt-1 pb-1 underline"  to="#">Web Scripts</Link>
-            <Link className="ml-2 font  text-sm bg-gray-400 rounded-xl p-1.5 pt-1 pb-1 underline"  to="#">Python</Link>,
-            <Link className="ml-2 font  text-sm bg-gray-400 rounded-xl p-1.5 pt-1 pb-1 underline"  to="#">Django</Link>,
-            <Link className="ml-2 font  text-sm bg-gray-400 rounded-xl p-1.5 pt-1 pb-1 underline"  to="#">Web Scripts</Link>
-          </p>
+            </div>
+
+            {/* Tags */}
+            <div className="mt-6">
+              <h5 className="text-lg font-medium mb-2">Tags</h5>
+              <div className="flex flex-wrap gap-2">
+                {["Python", "Django", "Web Scripts", "Flask", "Tailwind"].map((tag, i) => (
+                  <Link
+                    key={i}
+                    to="#"
+                    className="text-sm bg-gray-400 text-white rounded-xl px-3 py-1 underline"
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-     
-    
-    
+      </section>
+
+      {/* Related Products Section */}
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-6">Related Products</h2>
+        <Swiper
+          spaceBetween={20}
+          breakpoints={{
+            320: { slidesPerView: 1 },
+            640: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 4 },
+          }}
+        >
+          {[...Array(8)].map((_, i) => (
+            <SwiperSlide key={i}>
+              <SingleProduct title={`Django ${i + 1}`} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
     </div>
-    </section>
-     {/*==============Related Products=============================*/}
-
-
-     
-     <div className="container  mt-10 mx-auto">
-      <h1 className="text-3xl mb-5 font-semibold">Related Products</h1>
-     <Swiper
-      spaceBetween={30}
-      slidesPerView={4}
-      onSlideChange={() => console.log('slide change')}
-      onSwiper={(swiper) => console.log(swiper)}
-    >
-      <SwiperSlide>
-           <SingleProduct title="Django"/>
-          </SwiperSlide>
-      <SwiperSlide>
-           <SingleProduct title="Django"/>
-          </SwiperSlide>
-      <SwiperSlide>
-           <SingleProduct title="Django"/>
-          </SwiperSlide>
-      <SwiperSlide>
-           <SingleProduct title="Django"/>
-          </SwiperSlide>
-      <SwiperSlide>
-           <SingleProduct title="Django"/>
-          </SwiperSlide>
-      <SwiperSlide>
-           <SingleProduct title="Django"/>
-          </SwiperSlide>
-      <SwiperSlide>
-           <SingleProduct title="Django"/>
-          </SwiperSlide>
-      <SwiperSlide>
-           <SingleProduct title="Django"/>
-          </SwiperSlide>
-      
-
-    </Swiper>
-    </div>
-
-
-     {/*=============End Related Products==========================*/}
-    
-  </div>
-  
   );
 };
 
