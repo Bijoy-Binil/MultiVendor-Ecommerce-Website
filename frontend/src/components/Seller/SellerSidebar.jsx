@@ -20,10 +20,18 @@ const SellerSidebar = () => {
           </li>
           <li>
             <Link
-               to="/seller/orders"
+               to="/seller/products"
               className="block px-4 font-semibold  py-2 rounded hover:text-green-400 transition"
             >
               Products
+            </Link>
+          </li>
+          <li>
+            <Link
+               to="/seller/add-product"
+              className="block px-4 font-semibold  py-2 rounded hover:text-green-400 transition"
+            >
+              Add Products
             </Link>
           </li>
           <li>
@@ -54,7 +62,7 @@ const SellerSidebar = () => {
           <li>
             <Link
               to="#"
-              className="block px-4 font-semibold  py-2 font-semibold text-red-500 rounded transition"
+              className="block px-4 font-semibold  py-2  text-red-500 rounded transition"
             >
               Logout
             </Link>

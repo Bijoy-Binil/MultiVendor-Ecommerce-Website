@@ -5,82 +5,86 @@ import { Link } from 'react-router-dom'
 const Wishlist = () => {
   return (
     <>
-    {/* Sidebar */}
-    <Sidebar />
-    <div className="max-w-7xl mx-auto mb-[60px] md:mb-[90px] md:mr-5 px-4">
-    <div className="flex flex-col md:flex-row gap-6">
-    {/* Main Content */}
-    <div className="w-full md:w-3/4 mx-auto md:mx-25 -mt-[20px] md:-mt-[360px]">
-      <h1 className="text-2xl font-semibold mb-6 text-center sm:text-left">
-        Your Orders
-      </h1>
+      {/* Sidebar */}
+      <Sidebar />
+      <div className="max-w-7xl mx-auto mb-[60px] md:mb-[90px] md:mr-5 px-4">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Main Content */}
+          <div className="w-full md:w-3/4 mx-auto md:mx-25 -mt-[20px] md:-mt-[360px]">
+            <h1 className="text-2xl font-semibold mb-6 text-center sm:text-left">
+              Your Wishlist
+            </h1>
 
-      <div className="w-full overflow-x-auto">
-        <table className="min-w-[600px] w-full bg-white border border-gray-200 text-sm sm:text-base">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="py-3 px-4 border-b">#</th>
-              <th className="py-3 px-4 border-b">Product</th>
-              <th className="py-3 px-4 border-b">Price</th>
-              <th className="py-3 px-4 border-b">Action</th>
-       
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              { id: 1, name: 'Django' },
-              { id: 2, name: 'Drf' },
-              { id: 3, name: 'Python' },
-              { id: 4, name: 'Flask' },
-            ].map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
-                <td className="py-3 px-4 border-b">{product.id}</td>
-                <td className="py-3 px-4 border-b flex items-center gap-3 sm:gap-4">
-                  <Link to="#">
-                    <img
-                      className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
-                      src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop"
-                      alt={product.name}
-                    />
-                  </Link>
-                  <Link to="#"><span>{product.name}</span></Link>
-                </td>
-                <td className="py-3 px-4 border-b">Rs 500</td>
-                <td className="py-3 px-4 border-b"><button className='text-white text-sm cursor-pointer bg-red-500 px-2 py-1 rounded-xl'>Remove</button></td>
-          
-              </tr>
-            ))}
-          </tbody>
+            <div className="w-full overflow-x-auto">
+              <table className="min-w-[600px] w-full bg-white text-sm sm:text-base border-separate border-spacing-y-2">
+                <thead>
+                  <tr className="bg-gray-100 text-gray-700 uppercase tracking-wide">
+                    <th className="py-3 px-4 border border-gray-200 rounded-l-lg">#</th>
+                    <th className="py-3 px-4 border border-gray-200">Product</th>
+                    <th className="py-3 px-4 border border-gray-200">Price</th>
+                    <th className="py-3 px-4 border border-gray-200 rounded-r-lg">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { id: 1, name: 'Django' },
+                    { id: 2, name: 'Drf' },
+                    { id: 3, name: 'Python' },
+                    { id: 4, name: 'Flask' },
+                  ].map((product) => (
+                    <tr key={product.id} className="bg-white shadow-sm rounded hover:bg-gray-50 transition">
+                      <td className="py-3 px-4 border border-gray-200">{product.id}</td>
+                      <td className="py-3 px-4 border border-gray-200 flex items-center gap-4">
+                        <Link to="#">
+                          <img
+                            className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
+                            src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop"
+                            alt={product.name}
+                          />
+                        </Link>
+                        <Link to="#" className="text-blue-600 hover:underline">
+                          <span>{product.name}</span>
+                        </Link>
+                      </td>
+                      <td className="py-3 px-4 border border-gray-200">Rs 500</td>
+                      <td className="py-3 px-4 border border-gray-200">
+                        <button className="bg-red-500 hover:bg-red-600 flex justify-self-center text-white text-xs sm:text-sm px-3 py-1 rounded-full transition">
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
 
-          <tfoot>
-            <tr className="bg-gray-100 font-semibold">
-              <td className="py-3 px-4 border-t"></td>
-              <td className="py-3 px-4 border-t text-right">Total</td>
-              <td className="py-3 px-4 border-t">Rs 2000</td>
-            </tr>
-            <tr>
-              <td colSpan="3" className="py-5 px-4">
-                <div className="flex flex-col sm:flex-row sm:justify-end gap-3">
-                  <Link to="/categories">
-                    <button className="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                      Continue Shopping
-                    </button>
-                  </Link>
-                  <Link to="/payment">
-                    <button className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                      Proceed to Payment
-                    </button>
-                  </Link>
-                </div>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+                <tfoot>
+                  <tr className="bg-gray-100 font-semibold">
+                    <td className="py-3 px-4 border-t"></td>
+                    <td className="py-3 px-4 border-t text-right">Total</td>
+                    <td className="py-3 px-4 border-t">Rs 2000</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="3" className="py-5 px-4">
+                      <div className="flex flex-col sm:flex-row sm:justify-end gap-3">
+                        <Link to="/categories">
+                          <button className="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                            Continue Shopping
+                          </button>
+                        </Link>
+                        <Link to="/payment">
+                          <button className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                            Proceed to Payment
+                          </button>
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    </div>
-    </div>
-  </>
+    </>
   )
 }
 
