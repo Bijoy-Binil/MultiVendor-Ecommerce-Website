@@ -29,6 +29,7 @@ import SellerLogin from "./components/Seller/SellerLogin";
 import SellerRegister from "./components/Seller/SellerRegister";
 import SellerDashboard from "./components/Seller/SellerDashboard";
 import SellerProducts from "./components/Seller/SellerProducts";
+import AddProducts from "./components/Seller/AddProducts";
 
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
         <Route path="/seller/register" element={<SellerRegister />} />
         <Route path="/seller/dashboard" element={<SellerDashboard />} />
         <Route path="/seller/products" element={<SellerProducts />} />
+        <Route path="/seller/add-product" element={<AddProducts />} />
       </Routes>
 
       <Footer />
