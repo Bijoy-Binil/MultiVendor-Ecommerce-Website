@@ -67,29 +67,7 @@ const SellerProducts = () => {
                     ))}
                   </tbody>
 
-                  <tfoot>
-                    <tr className="bg-gray-100 font-semibold">
-                      <td className="py-3 px-4 border-t"></td>
-                      <td className="py-3 px-4 border-t text-right">Total</td>
-                      <td className="py-3 px-4 border-t">Rs 2000</td>
-                    </tr>
-                    <tr>
-                      <td colSpan="3" className="py-5 px-4">
-                        <div className="flex flex-col sm:flex-row sm:justify-end gap-3">
-                          <Link to="/categories">
-                            <button className="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                              Continue Shopping
-                            </button>
-                          </Link>
-                          <Link to="/payment">
-                            <button className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                              Proceed to Payment
-                            </button>
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  </tfoot>
+ 
                 </table>
               </div>
             </div>

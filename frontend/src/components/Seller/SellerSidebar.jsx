@@ -36,7 +36,7 @@ const SellerSidebar = () => {
           </li>
           <li>
             <Link
-              to="/seller/wishlist"
+              to="/seller/orders"
               className="block px-4 font-semibold  py-2 rounded hover:text-green-400 transition"
             >
               Orders
@@ -44,7 +44,7 @@ const SellerSidebar = () => {
           </li>
           <li>
             <Link
-            to="/seller/profile"
+            to="/seller/customers"
               className="block px-4 font-semibold  py-2 rounded hover:text-green-400 transition"
             >
               Customers

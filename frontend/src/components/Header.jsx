@@ -39,7 +39,7 @@ const Header = () => {
                 onClick={() => setIsOpenSeller(!isOpenSeller)}
                 className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
               >
-                Seller Panel
+               Vendor Panel
               </button>
               {isOpenSeller && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
