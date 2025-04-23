@@ -8,7 +8,7 @@ const SingleProduct = ({ product }) => {
       <Link to={`/productDetail/${product.slug || "placeholder"}/${product.id || 123}`}>
         <img
           className="w-full h-64 object-cover rounded-2xl"
-          src={product.image || "https://via.placeholder.com/300"}
+          src={product.image}
           alt={`Title: ${product.title}`}
         />
       </Link>

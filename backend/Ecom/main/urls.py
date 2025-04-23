@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.urls import path
 from . import views
+from django.conf.urls.static import static
 from rest_framework import routers
 
 router=routers.DefaultRouter()
@@ -14,7 +16,7 @@ urlpatterns = [
 
  # ==============================ProductUrls==========================================
     path('products/',views.ProductList.as_view()),
-    path('products/<int:pk>/',views.ProductDetailList.as_view()),
+    path('product/<int:pk>/',views.ProductDetailList.as_view()),
 
  # ==============================ProductCategoriesUrls==========================================
     path('categories/',views.CategoryList.as_view()),
@@ -30,5 +32,7 @@ urlpatterns = [
 
 # ==============================CustomerAddressUrls==========================================
 
-]
+]+static (settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 urlpatterns +=router.urls

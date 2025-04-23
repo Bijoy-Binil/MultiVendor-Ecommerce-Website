@@ -23,8 +23,10 @@ class Product(models.Model):
     category=models.ForeignKey(ProductCategory,on_delete=models.SET_NULL,null=True,related_name='category_products')
     vendor=models.ForeignKey(Vendor,on_delete=models.SET_NULL,null=True)
     title=models.CharField(max_length=200)
+    slug = models.SlugField(blank=True, null=True)
     detail=models.TextField(null=True)
     price=models.FloatField()
+    
 
     def __str__(self):
         return self.title
@@ -74,3 +76,13 @@ class ProductRating(models.Model):
 
     def __str__(self):
         return f"Rating: {self.rating} - Review: {self.reviews}"
+    
+
+    #Products Images Model
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='product_images')
+    image=models.ImageField(upload_to="product_images/",null=True)
+    
+
+    def __str__(self):
+        return self.image.url

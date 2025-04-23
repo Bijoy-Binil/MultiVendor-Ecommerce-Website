@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, CustomerAddress, Order, OrderItems, ProductRating, Vendor,Product,ProductCategory  # make sure Vendor model is imported
+from .models import Customer, CustomerAddress, Order, OrderItems, ProductRating, Vendor,Product,ProductCategory,ProductImage  # make sure Vendor model is imported
 from django.contrib.auth.models import User  # or your custom User model
 # ==============================VendorSerializer==========================================
 class VendorSerializer(serializers.ModelSerializer):
@@ -21,6 +21,12 @@ class VendorDetailSerializer(serializers.ModelSerializer):
         # self.Meta.depth =1
 
 
+# ==============================ProductImageSerializer==========================================
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ["id",'image',"product"]
+
 # ==============================ProductSerializer==========================================
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -35,9 +41,12 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     product_ratings = serializers.StringRelatedField(many=True, read_only=True)
+    product_images = ProductImageSerializer(many=True, read_only=True)  # 💡 use nested serializer
+
     class Meta:
+        many=True
         model = Product
-        fields = ['id', 'category', 'vendor','title','detail','price','product_ratings']
+        fields = ['id', 'category', 'vendor','title','detail','price','product_ratings','product_images']
 
     def __init__(self, *args, **kwargs):
         super(ProductDetailSerializer,self).__init__(*args, **kwargs)

@@ -1,11 +1,29 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SingleProduct from "./SingleProduct";
 import "swiper/css";
 import "swiper/css/pagination";
 
 const ProductDetail = () => {
+  const baseUrl = "http://127.0.0.1:8000/api";
+  const [productDatas, SetProductData] = useState([]);
+  const [productImage, SetProductImage] = useState([]);
+  let { product_slug, product_id } = useParams();
+
+  useEffect(() => {
+    FetchData(baseUrl + "/product/" + product_id);
+  }, []);
+
+  const FetchData = (baseUrl) => {
+    fetch(baseUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        SetProductData(data);
+        SetProductImage(data.product_images);
+      });
+  };
+  console.log(productImage);
   return (
     <div className="p-4">
       {/* Product Section */}
@@ -18,12 +36,12 @@ const ProductDetail = () => {
               slidesPerView={1}
               className="rounded-2xl overflow-hidden"
             >
-              {[...Array(8)].map((__, i) => (
-                <SwiperSlide key={i}>
+              {productImage.map((img, index) => (
+                <SwiperSlide >
                   <img
-                    className="w-full h-64 object-cover rounded-2xl"
-                    src="https://images.unsplash.com/photo-1745177717290-9ce463cdc5e1?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt="Product"
+                    className="object-cover rounded-2xl"
+                    src={img.image}
+          
                   />
                 </SwiperSlide>
               ))}
@@ -32,11 +50,13 @@ const ProductDetail = () => {
 
           {/* Product Info */}
           <div className="w-full md:w-1/2 flex flex-col justify-center">
-            <h3 className="text-2xl font-semibold mb-2">Product Title</h3>
-            <p className="text-gray-700 text-lg mt-1">
-              Product Description goes here. Describe features, specs, etc.
-            </p>
-            <h5 className="text-xl mt-3 font-medium text-gray-500">Price: Rs 500</h5>
+            <h3 className="text-2xl font-semibold mb-2">
+              {productDatas.title}
+            </h3>
+            <p className="text-gray-700 text-lg mt-1">{productDatas.detail}</p>
+            <h5 className="text-xl mt-3 font-medium text-gray-500">
+              Price: {productDatas.price}
+            </h5>
 
             {/* Buttons */}
             <div className="flex flex-wrap gap-3 mt-5">
@@ -58,15 +78,17 @@ const ProductDetail = () => {
             <div className="mt-6">
               <h5 className="text-lg font-medium mb-2">Tags</h5>
               <div className="flex flex-wrap gap-2">
-                {["Python", "Django", "Web Scripts", "Flask", "Tailwind"].map((tag, i) => (
-                  <Link
-                    key={i}
-                    to="#"
-                    className="text-sm bg-gray-400 text-white rounded-xl px-3 py-1 underline"
-                  >
-                    {tag}
-                  </Link>
-                ))}
+                {["Python", "Django", "Web Scripts", "Flask", "Tailwind"].map(
+                  (tag, i) => (
+                    <Link
+                      key={i}
+                      to="#"
+                      className="text-sm bg-gray-400 text-white rounded-xl px-3 py-1 underline"
+                    >
+                      {tag}
+                    </Link>
+                  )
+                )}
               </div>
             </div>
           </div>
