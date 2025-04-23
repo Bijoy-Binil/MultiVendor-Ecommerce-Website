@@ -2,6 +2,7 @@ import React from 'react'
 import SingleProduct from './SingleProduct'
 
 const Categoryproducts = () => {
+
   return (
     <div>         {/* ===========================================Latest Products================================================================== */}
     <div className="container mt-5 mx-auto">

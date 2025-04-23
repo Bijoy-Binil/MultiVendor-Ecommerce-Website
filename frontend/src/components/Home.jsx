@@ -5,7 +5,7 @@ import SingleProduct from "./SingleProduct";
 const Home = () => {
       // State to track the active slide
   const [activeSlide, setActiveSlide] = useState(0);
-
+ 
   // Array of slides
   const slides = [
     {
@@ -67,14 +67,7 @@ const Home = () => {
       </div>
 
       <div className="flex flex-wrap gap-8 justify-center">
-      <SingleProduct title="Django Project 1"/>
-      <SingleProduct title="Django Project 1"/>
-      <SingleProduct title="Django Project 1"/>
-      <SingleProduct title="Django Project 1"/>
-      <SingleProduct title="Django Project 1"/>
-      <SingleProduct title="Django Project 1"/>
-      <SingleProduct title="Django Project 1"/>
-      <SingleProduct title="Django Project 1"/>
+      <SingleProduct />
 
       </div>
     </div>
@@ -85,12 +78,12 @@ const Home = () => {
         <h1 className="text-2xl mx-22 font-semibold text-gray-900">
           Popular Categories{" "}
         </h1>
-        <h1 className="text-md mx-22  bg-black rounded-md p-2 br font-semibold text-white">
+        <Link to="/categories" className="text-md mx-22 cursor-pointer   bg-black rounded-md p-2 br font-semibold text-white">
           View All Categories{" "}
           <span className="ml-2 ">
             <i className="fa-solid  fa-arrow-right-long"></i>
           </span>
-        </h1>
+        </Link >
       </div>
 
       <div className="flex flex-wrap gap-6 justify-center">

@@ -1,15 +1,40 @@
 import React, { useEffect, useState } from "react";
 import SingleProduct from "./SingleProduct";
 import axios from "axios";
+import { Link } from "react-router-dom";
 const AllProducts = () => {
+  const baseUrl = "http://127.0.0.1:8000/api";
   const [products, SetProducts] = useState([]);
+  const [totalResults, SetTotalResults] = useState(0);
   useEffect(() => {
-    // Making a GET request with axios
-    fetch("http://127.0.0.1:8000/api/products/")
-      .then((response) => response.json()) // Convert the response to JSON
-      .then((data) => SetProducts(data.results || []));
-  }, []); // Empty dependency array means this effect runs once after the initial render
-
+    FetchData(baseUrl + '/products/');
+  }, []);
+  const FetchData = (baseUrl) => {
+    fetch(baseUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        SetProducts(data.results);
+        SetTotalResults(data.count);
+      })
+  };
+ function ChangeUrl(Url){
+FetchData(Url)
+  }
+  var links = [];
+  var limit = 1;
+  var totalLinks=totalResults/limit
+  for (let i = 1; i <= totalLinks; i++) {
+    links.push(
+      <li>
+        <Link to={`/products/?page=${i}`}
+          onClick={()=>ChangeUrl(baseUrl+`/products/?page=${i}`)}
+          class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+        >
+          {i}
+        </Link>
+      </li>
+    );
+  }
   return (
     <div>
       {" "}
@@ -23,7 +48,7 @@ const AllProducts = () => {
 
         <div className="flex flex-wrap gap-8 justify-center">
           {products.map((product, index) => {
-            return <SingleProduct product={product} />;
+            return <SingleProduct key={index} product={product} />;
           })}
         </div>
       </div>
@@ -38,47 +63,8 @@ const AllProducts = () => {
               Previous
             </a>
           </li>
-          <li>
-            <a
-              href="#"
-              class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              1
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              2
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              aria-current="page"
-              class="flex items-center justify-center px-4 h-10 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-            >
-              3
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              4
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
-              5
-            </a>
-          </li>
+          {links}
+
           <li>
             <a
               href="#"
