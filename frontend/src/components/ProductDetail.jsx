@@ -9,6 +9,7 @@ const ProductDetail = () => {
   const baseUrl = "http://127.0.0.1:8000/api";
   const [productDatas, SetProductData] = useState([]);
   const [productImage, SetProductImage] = useState([]);
+  const [productTags, SetProductTags] = useState([]);
   let { product_slug, product_id } = useParams();
 
   useEffect(() => {
@@ -21,9 +22,12 @@ const ProductDetail = () => {
       .then((data) => {
         SetProductData(data);
         SetProductImage(data.product_images);
+        SetProductTags(data.tag_list)
       });
   };
-  console.log(productImage);
+
+  console.log(productTags);
+
   return (
     <div className="p-4">
       {/* Product Section */}
@@ -37,25 +41,21 @@ const ProductDetail = () => {
               className="rounded-2xl overflow-hidden"
             >
               {productImage.map((img, index) => (
-                <SwiperSlide >
-                  <img
-                    className="object-cover rounded-2xl"
-                    src={img.image}
-          
-                  />
+                <SwiperSlide>
+                  <img className="object-cover rounded-2xl" src={img.image} />
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
 
           {/* Product Info */}
-          <div className="w-full md:w-1/2 flex flex-col justify-center">
-            <h3 className="text-2xl font-semibold mb-2">
-              {productDatas.title}
-            </h3>
-            <p className="text-gray-700 text-lg mt-1">{productDatas.detail}</p>
-            <h5 className="text-xl mt-3 font-medium text-gray-500">
-              Price: {productDatas.price}
+          <div className="w-full gap-2 md:w-1/2 flex flex-col justify-center">
+            <h3 className="text-2xl font-bold mb-2">{productDatas.title}</h3>
+            <p className="text-gray-700   font-semibold text-lg ">
+              {productDatas.detail}
+            </p>
+            <h5 className="text-xl font-medium  text-gray-500">
+              <span className="text-[23px]">Price</span>: ₹ {productDatas.price}
             </h5>
 
             {/* Buttons */}
@@ -78,17 +78,15 @@ const ProductDetail = () => {
             <div className="mt-6">
               <h5 className="text-lg font-medium mb-2">Tags</h5>
               <div className="flex flex-wrap gap-2">
-                {["Python", "Django", "Web Scripts", "Flask", "Tailwind"].map(
-                  (tag, i) => (
-                    <Link
-                      key={i}
-                      to="#"
-                      className="text-sm bg-gray-400 text-white rounded-xl px-3 py-1 underline"
-                    >
-                      {tag}
-                    </Link>
-                  )
-                )}
+                {productTags.map((tag, i) => (
+                  <Link
+                    key={i}
+                    to={`/products/${tag}/`}
+                    className="text-sm bg-gray-400 text-white rounded-xl px-3 py-1 underline"
+                  >
+                    {tag}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

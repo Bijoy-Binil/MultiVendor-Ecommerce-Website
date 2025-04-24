@@ -35,6 +35,7 @@ import Customers from "./components/Seller/Customers";
 import Reports from "./components/Seller/reports";
 import SellerProfile from "./components/Seller/SellerProfile";
 import SellerChangePassword from "./components/Seller/SellerChangePassword";
+import TagProducts from "./components/TagProducts";
 
 
 
@@ -48,6 +49,7 @@ function App() {
         <Route path="/products/" element={<AllProducts/>} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/category/:category_slug/:category_id" element={<Categoryproducts />} />
+        <Route path="/products/:tag/" element={<TagProducts />} />
         <Route path="/productDetail/:category_slug/:product_id" element={<ProductDetail />} />
         <Route path="/checkout" element={<Checkout />} />
         {/*Customer Routes*/}      

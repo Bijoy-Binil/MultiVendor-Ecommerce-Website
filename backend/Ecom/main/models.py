@@ -26,10 +26,18 @@ class Product(models.Model):
     slug = models.SlugField(blank=True, null=True)
     detail=models.TextField(null=True)
     price=models.FloatField()
+    tags=models.TextField(null=True)
+    image=models.ImageField(upload_to="product_images/",null=True)
     
 
     def __str__(self):
         return self.title
+    
+    def tag_list(self):
+        if self.tags:
+            return self.tags.split(',')
+        return []
+
     
 # ==============================================================
 #Customer Model 
