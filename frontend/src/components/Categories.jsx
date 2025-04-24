@@ -22,6 +22,7 @@ const Categories = () => {
   function ChangeUrl(Url) {
     FetchData(Url);
   }
+console.log(categories);
 
   var links = [];
   var limit = 1;

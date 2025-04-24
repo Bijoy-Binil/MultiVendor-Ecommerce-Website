@@ -10,10 +10,12 @@ const ProductDetail = () => {
   const [productDatas, SetProductData] = useState([]);
   const [productImage, SetProductImage] = useState([]);
   const [productTags, SetProductTags] = useState([]);
+  const [relatedProduct, SetRelatedProduct] = useState([]);
   let { product_slug, product_id } = useParams();
 
   useEffect(() => {
     FetchData(baseUrl + "/product/" + product_id);
+    FetchRelatedData(baseUrl + "/related-product/" + product_id);
   }, []);
 
   const FetchData = (baseUrl) => {
@@ -22,11 +24,19 @@ const ProductDetail = () => {
       .then((data) => {
         SetProductData(data);
         SetProductImage(data.product_images);
-        SetProductTags(data.tag_list)
+        SetProductTags(data.tag_list);
       });
   };
 
-  console.log(productTags);
+  const FetchRelatedData = (baseUrl) => {
+    fetch(baseUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        SetRelatedProduct(data.results);
+      });
+  };
+
+  console.log(relatedProduct);
 
   return (
     <div className="p-4">
@@ -97,17 +107,50 @@ const ProductDetail = () => {
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-semibold mb-6">Related Products</h2>
         <Swiper
-          spaceBetween={20}
+          spaceBetween={50}
           breakpoints={{
-            320: { slidesPerView: 1 },
-            640: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
+            
             1024: { slidesPerView: 4 },
           }}
         >
-          {[...Array(8)].map((_, i) => (
+          {relatedProduct.map((product, i) => (
             <SwiperSlide key={i}>
-              <SingleProduct title={`Django ${i + 1}`} />
+              <div className="rounded-2xl shadow-md overflow-hidden bg-white">
+                <Link to={`/productDetail/${product.slug}/${product.id}`}>
+                  <img
+                    className="w-full h-64 object-cover"
+                    src={
+                      product.product_images?.[0]?.image || "/placeholder.jpg"
+                    }
+                    alt={product.title}
+                  />
+                </Link>
+
+                <div className="p-4">
+                  <Link to={`/productDetail/${product.slug}/${product.id}`}>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                      {product.title}
+                    </h2>
+                  </Link>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Price: ${product.price}
+                  </p>
+                  <div className="flex justify-between">
+                    <button
+                      aria-label="Add to Cart"
+                      className="px-4 py-2 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                    >
+                      <i className="fa-solid fa-cart-plus mr-2"></i>Add to Cart
+                    </button>
+                    <button
+                      aria-label="Add to Wishlist"
+                      className="px-4 py-2 text-xs bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+                    >
+                      <i className="fa-solid fa-heart mr-2"></i>Wishlist
+                    </button>
+                  </div>
+                </div>
+              </div>
             </SwiperSlide>
           ))}
         </Swiper>

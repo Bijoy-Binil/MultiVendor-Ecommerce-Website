@@ -9,7 +9,7 @@ const AllProducts = () => {
   const [totalResults, SetTotalResults] = useState(0);
 
   useEffect(() => {
-    FetchData(baseUrl + '/products/');
+    FetchData(baseUrl + "/products/");
   }, []);
 
   const FetchData = (baseUrl) => {
@@ -24,9 +24,10 @@ const AllProducts = () => {
   function ChangeUrl(Url) {
     FetchData(Url);
   }
+  console.log(products);
 
   var links = [];
-  var limit = 1;
+  var limit = 3;
   var totalLinks = totalResults / limit;
 
   for (let i = 1; i <= totalLinks; i++) {
@@ -37,7 +38,8 @@ const AllProducts = () => {
           onClick={() => ChangeUrl(baseUrl + `/products/?page=${i}`)}
           className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
         >
-          {i}{console.log(i)}
+          {i}
+          {console.log(i)}
         </Link>
       </li>
     );
@@ -54,9 +56,11 @@ const AllProducts = () => {
         </div>
 
         <div className="flex flex-wrap gap-8 justify-center">
-          {products.map((product, index) => {
-            return <SingleProduct key={index} product={product} />;
-          })}
+          {products.map((product, index) => (
+            <div key={index} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/5">
+              <SingleProduct product={product} />
+            </div>
+          ))}
         </div>
       </div>
 

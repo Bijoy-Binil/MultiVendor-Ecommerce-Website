@@ -27,7 +27,7 @@ class Product(models.Model):
     detail=models.TextField(null=True)
     price=models.FloatField()
     tags=models.TextField(null=True)
-    image=models.ImageField(upload_to="product_images/",null=True)
+    image=models.ImageField(upload_to="product_images/",null=True,blank=True)
     
 
     def __str__(self):
