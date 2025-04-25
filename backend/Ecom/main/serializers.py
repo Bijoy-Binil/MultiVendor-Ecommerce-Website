@@ -47,7 +47,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         many=True
         model = Product
-        fields = ['id', 'category', 'vendor','title','image','slug','tag_list','detail','price','product_ratings','product_images']
+        fields = ['id', 'category', 'vendor','title','image','demo_url','slug','tag_list','detail','price','product_ratings','product_images']
 
     def __init__(self, *args, **kwargs):
         super(ProductDetailSerializer,self).__init__(*args, **kwargs)
@@ -123,7 +123,7 @@ class ProductRatingSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCategory
-        fields = ['id', 'title', 'detail']
+        fields = ['id', 'title', 'detail',"image"]
 
     def __init__(self, *args, **kwargs):
         super(CategorySerializer,self).__init__(*args, **kwargs)

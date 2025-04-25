@@ -25,7 +25,7 @@ const Categories = () => {
 console.log(categories);
 
   var links = [];
-  var limit = 1;
+  var limit = 3;
   var totalLinks = totalResults / limit;
 
   for (let i = 1; i <= totalLinks; i++) {
@@ -57,11 +57,14 @@ console.log(categories);
                   key={index}
                   className="max-w-xs rounded-lg overflow-hidden shadow-lg bg-white w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
                 >
+                  <Link to={`/category/${category.title}/${category.id}`}>
                   <img
                     className="w-full h-64 object-cover rounded-2xl"
-                    src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src={category.image}
                     alt="Title:"
                   />
+                      </Link>
+                  
                   <div className="p-6">
                     <h2 className="text-2xl font-semibold text-gray-800">
                       <Link to={`/category/${category.title}/${category.id}`}>

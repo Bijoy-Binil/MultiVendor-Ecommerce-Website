@@ -68,18 +68,19 @@ const Home = () => {
     <main className="overflow-x-hidden">
       {/* ===========================================Latest Products================================================================== */}
       <div className="container mt-5 mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Latest Products
+      <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl mx-22 font-semibold text-gray-900">
+            Latest Products{" "}
           </h1>
-          <h1 className="text-md bg-black rounded-md p-2 font-semibold text-white">
-            <Link to="/products">
-              View All Products
-              <span className="ml-2">
-                <i className="fa-solid fa-arrow-right-long"></i>
-              </span>
-            </Link>
-          </h1>
+          <Link
+            to="/products"
+            className="text-md mx-22 cursor-pointer   bg-black rounded-md p-2 br font-semibold text-white"
+          >
+            View All Products{" "}
+            <span className="ml-2 ">
+              <i className="fa-solid  fa-arrow-right-long"></i>
+            </span>
+          </Link>
         </div>
 
         <div className="flex flex-wrap gap-8 justify-center">
