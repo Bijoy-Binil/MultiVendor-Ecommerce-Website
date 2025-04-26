@@ -1,8 +1,12 @@
+import json
+from django.http import JsonResponse
 from django.shortcuts import render,HttpResponse
 from rest_framework import generics,permissions,pagination,viewsets
 from django.shortcuts import get_object_or_404
 from .import serializers
 from .import models
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
 # Create your views here.
 
 # ==============================VendorView==========================================
@@ -75,8 +79,23 @@ class CustomerList(generics.ListCreateAPIView):
 class CustomerDetailList(generics.RetrieveUpdateDestroyAPIView):
     queryset=models.Customer.objects.all()
     serializer_class=serializers.CustomerDetailSerializer
-    
 
+@csrf_exempt
+def CustomerLogin(request):
+    if request.method != "POST":
+        return JsonResponse({'bool': False, 'msg': 'Only POST method allowed'})
+
+    data = json.loads(request.body)
+    username = data.get("username", "")
+    password = data.get("password", "")
+    
+    user = authenticate(username=username, password=password)
+
+    if user:
+        return JsonResponse({'bool': True, 'user': user.username, 'msg': 'Login Successful!'})
+    else:
+        return JsonResponse({'bool': False, 'msg': 'Invalid Username/Password!'})
+        
 # ==============================OrderView==========================================
 
 class OrderList(generics.ListAPIView):
