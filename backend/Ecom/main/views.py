@@ -7,6 +7,7 @@ from .import serializers
 from .import models
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 # Create your views here.
 
 # ==============================VendorView==========================================
@@ -80,6 +81,7 @@ class CustomerDetailList(generics.RetrieveUpdateDestroyAPIView):
     queryset=models.Customer.objects.all()
     serializer_class=serializers.CustomerDetailSerializer
 
+    
 @csrf_exempt
 def CustomerLogin(request):
     if request.method != "POST":
@@ -96,6 +98,42 @@ def CustomerLogin(request):
     else:
         return JsonResponse({'bool': False, 'msg': 'Invalid Username/Password!'})
         
+@csrf_exempt
+def CustomerRegister(request):
+    if request.method != "POST":
+        return JsonResponse({'bool': False, 'msg': 'Only POST method allowed'})
+
+    data = json.loads(request.body)
+    first_name = data.get("firstName", "")
+    last_name = data.get("lastName", "")
+    username = data.get("userName", "")  # <-- careful here too
+    email = data.get("email", "")
+    mobile_number = data.get("mobileNumber", "")
+    password = data.get("password", "")
+
+    if User.objects.filter(username=username).exists():
+        return JsonResponse({'bool': False, 'msg': 'Username already exists'})
+    if User.objects.filter(email=email).exists():
+        return JsonResponse({'bool': False, 'msg': 'Email already exists'})
+
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        password=password
+    )
+
+    if user:
+        customer = models.Customer.objects.create(
+            user=user,
+            mobile_number=mobile_number   # <-- corrected here
+        )
+        return JsonResponse({'bool': True, 'user': user.id, 'customer': customer.id, 'msg': 'Register Successful!'})
+    else:
+        return JsonResponse({'bool': False, 'msg': 'Error Occurred!'})
+
+
 # ==============================OrderView==========================================
 
 class OrderList(generics.ListAPIView):

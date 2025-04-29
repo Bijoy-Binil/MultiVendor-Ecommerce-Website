@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 
 const Dashboard = () => {
+  const baseUrl = "http://127.0.0.1:8000/api";
+  
   return (
     <>
       {/* Sidebar */}
@@ -11,6 +13,7 @@ const Dashboard = () => {
         <div className="flex flex-col md:flex-row gap-6">
 
           {/* Main Content */}
+      
           <div className="w-full md:w-3/4 mx-auto md:mx-10 -mt-[20px] md:-mt-[360px]">
             <div className="bg-white rounded shadow p-6">
               <h2 className="text-xl font-bold mb-4">Welcome, John Doe 👋</h2>

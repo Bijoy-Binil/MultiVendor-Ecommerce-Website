@@ -28,6 +28,7 @@ urlpatterns = [
     path('customers/',views.CustomerList.as_view()),
     path('customer/<int:pk>/',views.CustomerDetailList.as_view()),
     path('customer/login/',views.CustomerLogin,name="customer_login"),
+    path('customer/register/',views.CustomerRegister,name="customer_register"),
 
 # ==============================OrderUrls==========================================
     path('orders/',views.OrderList.as_view()),

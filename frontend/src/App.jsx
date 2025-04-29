@@ -14,6 +14,7 @@ import Checkout from "./components/Checkout";
 
 {/*Customers panel*/}
 import Login from "./components/Customer/Login";
+import CustomerLogout from "./components/Customer/CustomerLogout";
 import Register from "./components/Customer/Register";
 import Dashboard from "./components/Customer/Dashboard";
 import Orders from "./components/Customer/Orders";
@@ -54,6 +55,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         {/*Customer Routes*/}      
         <Route path="/customer/login" element={<Login />} />
+        <Route path="/customer/logout" element={<CustomerLogout />} />
         <Route path="/customer/register" element={<Register />} />
         <Route path="/customer/dashboard" element={<Dashboard />} />
         <Route path="/customer/orders" element={<Orders />} />
