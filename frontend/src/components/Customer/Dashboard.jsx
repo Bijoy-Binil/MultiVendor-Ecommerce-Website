@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
-
+import { UserContext } from '../../Context' 
 const Dashboard = () => {
+  
   const baseUrl = "http://127.0.0.1:8000/api";
+   const userContext=useContext(UserContext)
+    console.log(userContext);
+  
+    useEffect(() => {
+      userContext
+    });
+  
   
   return (
     <>

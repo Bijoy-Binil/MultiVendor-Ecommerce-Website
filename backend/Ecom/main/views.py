@@ -8,6 +8,7 @@ from .import models
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 # Create your views here.
 
 # ==============================VendorView==========================================
@@ -112,10 +113,12 @@ def CustomerRegister(request):
     password = data.get("password", "")
 
     if User.objects.filter(username=username).exists():
-        return JsonResponse({'bool': False, 'msg': 'Username already exists'})
+        return JsonResponse({'bool': False, 'msg': 'Username already exists!'})
+    if models.Customer.objects.filter(mobile_number=mobile_number).exists():
+        return JsonResponse({'bool': False, 'msg': 'Mobile already exists!'})
     if User.objects.filter(email=email).exists():
-        return JsonResponse({'bool': False, 'msg': 'Email already exists'})
-
+        return JsonResponse({'bool': False, 'msg': 'Email already exists!'})
+    
     user = User.objects.create_user(
         username=username,
         email=email,

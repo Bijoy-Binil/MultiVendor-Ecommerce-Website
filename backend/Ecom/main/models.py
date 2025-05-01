@@ -44,7 +44,7 @@ class Product(models.Model):
 #Customer Model 
 class Customer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    mobile_number = models.PositiveBigIntegerField()
+    mobile_number = models.PositiveBigIntegerField(unique=True)
 
     def __str__(self):
         return self.user.username

@@ -4,7 +4,12 @@ from .models import Vendor,Product,ProductCategory,Customer,Order,OrderItems,Cus
 
 admin.site.register(Vendor)
 admin.site.register(ProductCategory)
-admin.site.register(Customer)
+
+class CustomerAdmin(admin.ModelAdmin):
+    list_display=['get_username','mobile_number']
+    def get_username(self,obj):
+        return obj.user.username
+admin.site.register(Customer,CustomerAdmin)
 admin.site.register(Order)
 admin.site.register(OrderItems)
 admin.site.register(CustomerAddress)
