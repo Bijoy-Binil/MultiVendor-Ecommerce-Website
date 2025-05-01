@@ -10,7 +10,9 @@ const Header = () => {
   const { cartData, setCartData } = useContext(CartContext) || {}; // null-safe
   const userContext = useContext(UserContext) || {}; // null-safe
 
+  const checkCustomer = localStorage.getItem("customer_login") === "true"; // Compare to string "true"
 
+  console.log(checkCustomer);
 
   return (
     <nav className="bg-gray-800 shadow-md">
@@ -86,7 +88,7 @@ const Header = () => {
               </button>
               {isOpenAccount && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
-                  {!userContext.login == 'true' && (
+                  {!checkCustomer  && (
                     <>
                       <Link
                         to="/customer/login"
@@ -102,22 +104,25 @@ const Header = () => {
                       </Link>
                     </>
                   )}
-                  {userContext.login == 'true' && (
-                    <>
-                      <Link
-                        to="/customer/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        to="/customer/logout"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Logout
-                      </Link>
-                    </>
-                  )}
+
+                  {
+                    (checkCustomer == true && (
+                      <>
+                        <Link
+                          to="/customer/dashboard"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
+                          to="/customer/logout"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Logout
+                        </Link>
+                      </>
+                    ))
+                  }
                 </div>
               )}
             </div>

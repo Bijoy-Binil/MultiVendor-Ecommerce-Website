@@ -6,6 +6,7 @@ import {BrowserRouter} from 'react-router-dom'
 import { UserContext } from './Context.jsx' 
 
 const checkCustomer = localStorage.getItem("customer_login");
+
    
 
 createRoot(document.getElementById('root')).render(
