@@ -34,8 +34,8 @@ const Login = () => {
     localStorage.setItem("customer_login", "true");
     localStorage.setItem("customer_username", username);
     navigate("/customer/dashboard");
+    console.log('username',username);
   };
-
   // Submit handler
   const submitHandler = (event) => {
     event.preventDefault();

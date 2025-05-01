@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 
-// Context
-import { CartContext, UserContext } from "./Context";
-
 // Main Site Components
 import Header from "./components/Header";
 import Home from "./components/Home";
@@ -16,6 +13,7 @@ import ProductDetail from "./components/ProductDetail";
 import Checkout from "./components/Checkout";
 import TagProducts from "./components/TagProducts";
 import OrderSuccess from "./components/OrderSuccess";
+import ConfirmOrder from "./components/ConfirmOrder";
 
 // Customer Panel
 import Login from "./components/Customer/Login";
@@ -43,26 +41,10 @@ import SellerProfile from "./components/Seller/SellerProfile";
 import SellerChangePassword from "./components/Seller/SellerChangePassword";
 
 function App() {
-  // Safe cart initialization
-  const [cartData, setCartData] = useState(() => {
-    try {
-      const saved = localStorage.getItem("cartData");
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error("Invalid cart data:", error);
-      return [];
-    }
-  });
-
-  // Basic user context (expand as needed)
-  const [userContext, setUserContext] = useState({
-    login: false,
-    // Add more user data if needed
-  });
-
+ 
   return (
-    <UserContext.Provider value={userContext}>
-      <CartContext.Provider value={{ cartData, setCartData }}>
+<>
+    
         <Header />
 
         <Routes>
@@ -73,6 +55,7 @@ function App() {
           <Route path="/products/:tag/" element={<TagProducts />} />
           <Route path="/productDetail/:category_slug/:product_id" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/confirm-order" element={<ConfirmOrder />} />
 
           {/* Customer Routes */}
           <Route path="/customer/login" element={<Login />} />
@@ -102,8 +85,7 @@ function App() {
         </Routes>
 
         <Footer />
-      </CartContext.Provider>
-    </UserContext.Provider>
+        </>
   );
 }
 
