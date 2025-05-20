@@ -7,9 +7,10 @@ const Header = () => {
   const [isOpenSeller, setIsOpenSeller] = useState(false);
   const [isOpenAccount, setIsOpenAccount] = useState(false);
 
-  const { cartData, setCartData } = useContext(CartContext) || {}; // null-safe
-  const userContext = useContext(UserContext) || {}; // null-safe
-  console.log(userContext);
+  const { cartData = [] } = useContext(CartContext) || {};
+  const userContext = useContext(UserContext) || {};
+  const isLoggedIn = userContext.login;
+  let user=localStorage.getItem("customer_username")
 
   return (
     <nav className="bg-gray-800 shadow-md">
@@ -24,115 +25,44 @@ const Header = () => {
 
           {/* Desktop Menu */}
           <div className="hidden sm:flex items-center space-x-6">
-            <Link
-              to="/"
-              className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Home
-            </Link>
-            <Link
-              to="/categories"
-              className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Categories
-            </Link>
+            <NavLink to="/" label="Home" />
+            <NavLink to="/categories" label="Categories" />
 
             {/* Vendor Panel Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsOpenSeller(!isOpenSeller)}
-                className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Vendor Panel
-              </button>
-              {isOpenSeller && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
-                  <Link
-                    to="/seller/login"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/seller/register"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Register
-                  </Link>
-                  <Link
-                    to="/seller/dashboard"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Logout
-                  </Link>
-                </div>
-              )}
-            </div>
+            <Dropdown
+              label="Vendor Panel"
+              isOpen={isOpenSeller}
+              toggle={() => setIsOpenSeller(!isOpenSeller)}
+              links={[
+                { to: "/seller/login", label: "Login" },
+                { to: "/seller/register", label: "Register" },
+                { to: "/seller/dashboard", label: "Dashboard" },
+                { to: "#", label: "Logout" },
+              ]}
+            />
 
             {/* My Account Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsOpenAccount(!isOpenAccount)}
-                className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                My Account
-              </button>
-              {isOpenAccount && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
-                  {userContext.login ? (
-                    <>
-                      <Link
-                        to="/customer/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        to="/customer/logout"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Logout
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        to="/customer/login"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Login
-                      </Link>
-                      <Link
-                        to="/customer/register"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Register
-                      </Link>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+            <Dropdown
+              label="My Account"
+              isOpen={isOpenAccount}
+              toggle={() => setIsOpenAccount(!isOpenAccount)}
+              links={
+                isLoggedIn
+                  ? [
+                      { to: "/customer/dashboard", label: "Dashboard" },
+                      { to: "/customer/logout", label: "Logout" },
+                    ]
+                  : [
+                      { to: "/customer/login", label: "Login" },
+                      { to: "/customer/register", label: "Register" },
+                    ]
+              }
+            />
 
-            <Link
-              to="/checkout"
-              className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-            >
-              My Cart ({Array.isArray(cartData) ? cartData.length : 0})
-            </Link>
+         <NavLink to="/checkout" label={`My Cart (${cartData ? cartData.length : 0})`} />
 
-            <Link
-              to="/checkout"
-              className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-            >
-              New Orders (5)
-            </Link>
+            <NavLink to="/checkout" label="New Orders (5)" />
+            <p className="text-white font-semibold">{user}</p>
           </div>
 
           {/* Mobile Menu Button */}
@@ -162,39 +92,63 @@ const Header = () => {
       {/* Mobile Dropdown */}
       {isMobileMenuOpen && (
         <div className="sm:hidden px-4 pt-2 pb-4 space-y-2">
-          <Link to="/" className="block text-white py-2">
-            Home
-          </Link>
-          <Link to="/categories" className="block text-white py-2">
-            Categories
-          </Link>
-          {!isLoggedIn && (
+          <MobileLink to="/" label="Home" />
+          <MobileLink to="/categories" label="Categories" />
+          {isLoggedIn ? (
             <>
-              <Link to="/customer/login" className="block text-white py-2">
-                Login
-              </Link>
-              <Link to="/customer/register" className="block text-white py-2">
-                Register
-              </Link>
+              <MobileLink to="/customer/dashboard" label="Dashboard" />
+              <MobileLink to="/customer/logout" label="Logout" />
+            </>
+          ) : (
+            <>
+              <MobileLink to="/customer/login" label="Login" />
+              <MobileLink to="/customer/register" label="Register" />
             </>
           )}
-          {isLoggedIn && (
-            <>
-              <Link to="/customer/dashboard" className="block text-white py-2">
-                Dashboard
-              </Link>
-              <Link to="/customer/logout" className="block text-white py-2">
-                Logout
-              </Link>
-            </>
-          )}
-          <Link to="/checkout" className="block text-white py-2">
-            My Cart ({cartData.length})
-          </Link>
+          <MobileLink to="/checkout" label={`My Cart (${cartData.length})`} />
         </div>
       )}
     </nav>
   );
 };
+
+const NavLink = ({ to, label }) => (
+  <Link
+    to={to}
+    className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+  >
+    {label}
+  </Link>
+);
+
+const Dropdown = ({ label, isOpen, toggle, links }) => (
+  <div className="relative">
+    <button
+      onClick={toggle}
+      className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+    >
+      {label}
+    </button>
+    {isOpen && (
+      <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
+        {links.map((link, idx) => (
+          <Link
+            key={idx}
+            to={link.to}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+const MobileLink = ({ to, label }) => (
+  <Link to={to} className="block text-white py-2">
+    {label}
+  </Link>
+);
 
 export default Header;

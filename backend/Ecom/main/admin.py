@@ -10,7 +10,11 @@ class CustomerAdmin(admin.ModelAdmin):
     def get_username(self,obj):
         return obj.user.username
 admin.site.register(Customer,CustomerAdmin)
-admin.site.register(Order)
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['customer', 'order_time'] 
+    
 admin.site.register(OrderItems)
 admin.site.register(CustomerAddress)
 admin.site.register(ProductRating)

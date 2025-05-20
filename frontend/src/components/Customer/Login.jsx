@@ -27,14 +27,16 @@ const Login = () => {
     if (isLoggedIn === "true") {
       navigate("/customer/dashboard");
     }
-  }, [navigate]);
 
+  }, [navigate]);
   // Save login info & redirect
-  const handleLoginSuccess = (username) => {
+  const handleLoginSuccess = (username,id) => {
     localStorage.setItem("customer_login", "true");
+    localStorage.setItem("customer_id", id);
     localStorage.setItem("customer_username", username);
     navigate("/customer/dashboard");
-    console.log('username',username);
+    console.log('username ==',username);
+    console.log('Customer Id ==',id);
   };
   // Submit handler
   const submitHandler = (event) => {
@@ -44,30 +46,33 @@ const Login = () => {
       password: loginFormData.password,
     };
 
-    axios
-      .post(`${baseUrl}/customer/login/`, formData)
-      .then((response) => {
-        if (response.data.bool === false) {
-          setFormError(true);
-          setMsg(response.data.msg);
-        } else {
-          setFormError(false);
-          setMsg(response.data.msg);
-          handleLoginSuccess(response.data.user); // set login info and redirect
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setFormError(true);
-        setMsg("Something went wrong.");
-      });
+  axios
+  .post(`${baseUrl}/customer/login/`, formData)
+  .then((response) => {
+    const { bool, msg, user, id } = response.data;
+
+    if (!bool) {
+      setFormError(true);
+      setMsg(msg);
+    } else {
+      setFormError(false);
+      setMsg(msg);
+      // Assuming user is username string or user.username if it's an object
+      const username = typeof user === 'string' ? user : user.username;
+      
+      handleLoginSuccess(username, id);
+    }
+  })
+  .catch((error) => {
+    console.error(error);
+    setFormError(true);
+    setMsg("Something went wrong.");
+  });
+
   };
 
-  // Enable button only if both fields filled
-  const buttonEnable =
-    loginFormData.username.trim() !== "" &&
-    loginFormData.password.trim() !== "";
-
+ const buttonEnable = !!(loginFormData.username && loginFormData.password);
+ 
   return (
     <div>
       <section className="bg-gray-50 dark:bg-gray-900">

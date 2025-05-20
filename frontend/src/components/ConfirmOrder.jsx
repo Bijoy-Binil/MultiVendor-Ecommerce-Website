@@ -1,20 +1,36 @@
-import React, { useContext, useEffect } from "react";
-import { UserContext } from "../../src/Context";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ConfirmOrder = () => {
-  const userContext = useContext(UserContext) || {};
+  const baseUrl = "http://127.0.0.1:8000/api";
   const navigate = useNavigate();
+  const customerId = localStorage.getItem("customer_id");
 
   useEffect(() => {
-    if (!userContext.login) {
+    if (!customerId) {
       navigate("/customer/login");
+    } else {
+      createOrder();
     }
-  }, [userContext, navigate]);
+  }, [customerId]);
+
+  const createOrder = async () => {
+    console.log("📦 Customer ID:", customerId);
+    const formData = new FormData();
+    formData.append("customer", customerId);
+
+    try {
+      const response = await axios.post(`${baseUrl}/orders/`, formData);
+      console.log("✅ Order Response:", response.data);
+    } catch (error) {
+      console.error("❌ Error creating order:", error.response?.data || error);
+    }
+  };
 
   return (
-    <div>
-      <p className="flex justify-center text-3xl text-green-500 font-bold">
+    <div className="flex justify-center items-center h-screen">
+      <p className="text-3xl text-green-500 font-bold">
         Your Order is Confirmed
       </p>
     </div>

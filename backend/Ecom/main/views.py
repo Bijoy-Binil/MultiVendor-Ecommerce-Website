@@ -9,6 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from django.db import transaction
+from django.contrib.auth import login
 # Create your views here.
 
 # ==============================VendorView==========================================
@@ -82,7 +88,6 @@ class CustomerDetailList(generics.RetrieveUpdateDestroyAPIView):
     queryset=models.Customer.objects.all()
     serializer_class=serializers.CustomerDetailSerializer
 
-    
 @csrf_exempt
 def CustomerLogin(request):
     if request.method != "POST":
@@ -95,9 +100,12 @@ def CustomerLogin(request):
     user = authenticate(username=username, password=password)
 
     if user:
-        return JsonResponse({'bool': True, 'user': user.username, 'msg': 'Login Successful!'})
+        customer=models.Customer.objects.get(user=user)
+        login(request, user)  # This creates session for user
+        return JsonResponse({'bool': True, 'user': user.username, 'id': customer.id, 'msg': 'Login Successful!'})
     else:
         return JsonResponse({'bool': False, 'msg': 'Invalid Username/Password!'})
+
         
 @csrf_exempt
 def CustomerRegister(request):
@@ -139,10 +147,15 @@ def CustomerRegister(request):
 
 # ==============================OrderView==========================================
 
-class OrderList(generics.ListAPIView):
-    queryset=models.Order.objects.all()
-    serializer_class=serializers.OrderSerializer
+class OrderList(generics.ListCreateAPIView):
+    queryset = models.Order.objects.all()
+    serializer_class = serializers.OrderSerializer
     
+
+    def post(self,request,*args,**kwargs):
+        print(request.POST)
+        return super().post(request,*args,**kwargs)
+
 class OrderDetail(generics.ListAPIView):
     # queryset=models.OrderItems.objects.all()
     serializer_class=serializers.OrderDetailSerializer
