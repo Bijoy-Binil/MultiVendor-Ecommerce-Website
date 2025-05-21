@@ -23,10 +23,37 @@ const ConfirmOrder = () => {
     orderCreated.current = true;
     
     try {
-      // With JWT authentication, no need to explicitly send customer ID
-      // as it's determined from the authenticated user in the backend
-      const response = await api.post(`/orders/`, {});
-      console.log("✅ Order Response:", response.data);
+      // Get cart items from localStorage
+      const cartItems = JSON.parse(localStorage.getItem("cartData") || "[]");
+      
+      if (cartItems.length === 0) {
+        setOrderStatus({ 
+          success: false, 
+          message: "Your cart is empty. Please add items to your cart before placing an order."
+        });
+        return;
+      }
+      
+      // Create the order first
+      const orderResponse = await api.post("/orders/", {});
+      console.log("✅ Order created:", orderResponse.data);
+      
+      // Get the order ID
+      const orderId = orderResponse.data.id;
+      
+      // Create order items for each product in the cart
+      await Promise.all(cartItems.map(async (item) => {
+        const orderItemData = {
+          order: orderId,
+          product: item.product.id,
+          qty: item.qty || 1,
+          price: item.product.price
+        };
+        
+        const orderItemResponse = await api.post("/order-items/", orderItemData);
+        console.log(`✅ Order item added for ${item.product.title}:`, orderItemResponse.data);
+      }));
+      
       setOrderStatus({ success: true, message: "Order created successfully!" });
       
       // Clear cart data after successful order

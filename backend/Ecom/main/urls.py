@@ -33,6 +33,7 @@ urlpatterns = [
 # ==============================OrderUrls==========================================
     path('orders/',views.OrderList.as_view()),
     path('order/<int:pk>/',views.OrderDetail.as_view()),
+    path('order-items/',views.OrderItemView.as_view()),
 
 # ==============================CustomerAddressUrls==========================================
 

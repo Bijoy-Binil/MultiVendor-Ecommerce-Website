@@ -182,13 +182,24 @@ class OrderList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
+        # Print debugging information
+        print(f"User authenticated: {self.request.user.is_authenticated}")
+        print(f"Username: {self.request.user.username}")
+        
         # Filter orders to only show those of the authenticated customer
         if self.request.user.is_authenticated:
             try:
                 customer = models.Customer.objects.get(user=self.request.user)
-                return models.Order.objects.filter(customer=customer)
+                print(f"Customer found: ID={customer.id}")
+                orders = models.Order.objects.filter(customer=customer)
+                print(f"Orders found: {orders.count()}")
+                return orders
             except models.Customer.DoesNotExist:
-                return models.Order.objects.none()
+                print("Customer not found for this user")
+                # Return all orders for debugging
+                return models.Order.objects.all()
+        
+        print("User not authenticated")
         return models.Order.objects.none()
 
     def perform_create(self, serializer):
@@ -206,6 +217,8 @@ class OrderList(generics.ListCreateAPIView):
             if recent_order:
                 raise serializers.ValidationError("An order was just created. Please wait before creating another one.")
             
+            # Print when order is created
+            print(f"Creating order for customer: {customer.id} - {self.request.user.username}")
             serializer.save(customer=customer)
         except models.Customer.DoesNotExist:
             raise serializers.ValidationError("Customer profile not found for this user")
@@ -213,6 +226,36 @@ class OrderList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         print(request.POST)
         return super().post(request, *args, **kwargs)
+
+class OrderItemView(generics.CreateAPIView):
+    queryset = models.OrderItems.objects.all()
+    serializer_class = serializers.OrderItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        order_id = self.request.data.get('order')
+        product_id = self.request.data.get('product')
+        
+        if not order_id or not product_id:
+            raise serializers.ValidationError("Order ID and Product ID are required")
+        
+        try:
+            order = models.Order.objects.get(id=order_id)
+            # Check if the order belongs to the current user's customer
+            customer = models.Customer.objects.get(user=self.request.user)
+            
+            if order.customer != customer:
+                raise serializers.ValidationError("You don't have permission to add items to this order")
+            
+            product = models.Product.objects.get(id=product_id)
+            serializer.save(order=order, product=product)
+            
+        except models.Order.DoesNotExist:
+            raise serializers.ValidationError("Order not found")
+        except models.Product.DoesNotExist:
+            raise serializers.ValidationError("Product not found")
+        except models.Customer.DoesNotExist:
+            raise serializers.ValidationError("Customer profile not found for this user")
 
 class OrderDetail(generics.ListAPIView):
     serializer_class = serializers.OrderDetailSerializer
