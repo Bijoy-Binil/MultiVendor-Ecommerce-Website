@@ -30,10 +30,15 @@ const Login = () => {
 
   }, [navigate]);
   // Save login info & redirect
-  const handleLoginSuccess = (username,id) => {
+  const handleLoginSuccess = (username, id, tokens) => {
     localStorage.setItem("customer_login", "true");
     localStorage.setItem("customer_id", id);
     localStorage.setItem("customer_username", username);
+    
+    // Store tokens in localStorage
+    localStorage.setItem("access_token", tokens.access);
+    localStorage.setItem("refresh_token", tokens.refresh);
+    
     navigate("/customer/dashboard");
     console.log('username ==',username);
     console.log('Customer Id ==',id);
@@ -49,7 +54,7 @@ const Login = () => {
   axios
   .post(`${baseUrl}/customer/login/`, formData)
   .then((response) => {
-    const { bool, msg, user, id } = response.data;
+    const { bool, msg, user, id, tokens } = response.data;
 
     if (!bool) {
       setFormError(true);
@@ -60,7 +65,7 @@ const Login = () => {
       // Assuming user is username string or user.username if it's an object
       const username = typeof user === 'string' ? user : user.username;
       
-      handleLoginSuccess(username, id);
+      handleLoginSuccess(username, id, tokens);
     }
   })
   .catch((error) => {
@@ -159,7 +164,7 @@ const Login = () => {
                   {msg}
                 </p>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Don’t have an account yet?{" "}
+                  Don't have an account yet?{" "}
                   <a
                     href="#"
                     className="font-medium text-primary-600 hover:underline dark:text-primary-500"

@@ -15,6 +15,10 @@ from rest_framework import status
 from rest_framework.views import APIView
 from django.db import transaction
 from django.contrib.auth import login
+from rest_framework_simplejwt.tokens import RefreshToken
+import time
+from django.utils import timezone
+from datetime import timedelta
 # Create your views here.
 
 # ==============================VendorView==========================================
@@ -101,8 +105,20 @@ def CustomerLogin(request):
 
     if user:
         customer=models.Customer.objects.get(user=user)
-        login(request, user)  # This creates session for user
-        return JsonResponse({'bool': True, 'user': user.username, 'id': customer.id, 'msg': 'Login Successful!'})
+        
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+        
+        return JsonResponse({
+            'bool': True, 
+            'user': user.username, 
+            'id': customer.id, 
+            'msg': 'Login Successful!',
+            'tokens': {
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
+            }
+        })
     else:
         return JsonResponse({'bool': False, 'msg': 'Invalid Username/Password!'})
 
@@ -140,7 +156,20 @@ def CustomerRegister(request):
             user=user,
             mobile_number=mobile_number   # <-- corrected here
         )
-        return JsonResponse({'bool': True, 'user': user.id, 'customer': customer.id, 'msg': 'Register Successful!'})
+        
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+        
+        return JsonResponse({
+            'bool': True, 
+            'user': user.id, 
+            'customer': customer.id, 
+            'msg': 'Register Successful!',
+            'tokens': {
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
+            }
+        })
     else:
         return JsonResponse({'bool': False, 'msg': 'Error Occurred!'})
 
@@ -150,34 +179,101 @@ def CustomerRegister(request):
 class OrderList(generics.ListCreateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
+    def get_queryset(self):
+        # Filter orders to only show those of the authenticated customer
+        if self.request.user.is_authenticated:
+            try:
+                customer = models.Customer.objects.get(user=self.request.user)
+                return models.Order.objects.filter(customer=customer)
+            except models.Customer.DoesNotExist:
+                return models.Order.objects.none()
+        return models.Order.objects.none()
 
-    def post(self,request,*args,**kwargs):
+    def perform_create(self, serializer):
+        # Set the customer from the authenticated user
+        try:
+            customer = models.Customer.objects.get(user=self.request.user)
+            
+            # Check for recent orders to prevent duplicates (within last 5 seconds)
+            five_seconds_ago = timezone.now() - timedelta(seconds=5)
+            recent_order = models.Order.objects.filter(
+                customer=customer,
+                created_at__gte=five_seconds_ago
+            ).exists()
+            
+            if recent_order:
+                raise serializers.ValidationError("An order was just created. Please wait before creating another one.")
+            
+            serializer.save(customer=customer)
+        except models.Customer.DoesNotExist:
+            raise serializers.ValidationError("Customer profile not found for this user")
+
+    def post(self, request, *args, **kwargs):
         print(request.POST)
-        return super().post(request,*args,**kwargs)
+        return super().post(request, *args, **kwargs)
 
 class OrderDetail(generics.ListAPIView):
-    # queryset=models.OrderItems.objects.all()
-    serializer_class=serializers.OrderDetailSerializer
+    serializer_class = serializers.OrderDetailSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        order = get_object_or_404(models.Order, id=self.kwargs['pk'])
-        return models.OrderItems.objects.filter(order=order)
+        order_id = self.kwargs['pk']
+        order = get_object_or_404(models.Order, id=order_id)
+        
+        # Check if the authenticated user is the customer of this order
+        if self.request.user.is_authenticated:
+            try:
+                customer = models.Customer.objects.get(user=self.request.user)
+                if order.customer == customer:
+                    return models.OrderItems.objects.filter(order=order)
+            except models.Customer.DoesNotExist:
+                return models.OrderItems.objects.none()
+                
+        return models.OrderItems.objects.none()
     
  
 # ==============================CustomerAddressViewSet==========================================
 
 class CustomerAddressViewset(viewsets.ModelViewSet):
-    serializer_class=serializers.CustomerAddressSerializer
-    queryset=models.CustomerAddress.objects.all()
+    serializer_class = serializers.CustomerAddressSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
+    def get_queryset(self):
+        # Only return addresses for the authenticated customer
+        if self.request.user.is_authenticated:
+            try:
+                customer = models.Customer.objects.get(user=self.request.user)
+                return models.CustomerAddress.objects.filter(customer=customer)
+            except models.Customer.DoesNotExist:
+                return models.CustomerAddress.objects.none()
+        return models.CustomerAddress.objects.none()
     
-# ==============================ProductRatingAddressViewSet==========================================
+    def perform_create(self, serializer):
+        # Set the customer from the authenticated user
+        try:
+            customer = models.Customer.objects.get(user=self.request.user)
+            serializer.save(customer=customer)
+        except models.Customer.DoesNotExist:
+            raise serializers.ValidationError("Customer profile not found for this user")
+
+# ==============================ProductRatingViewSet==========================================
 
 class ProductRatingViewset(viewsets.ModelViewSet):
-    serializer_class=serializers.ProductRatingSerializer
-    queryset=models.ProductRating.objects.all()
-
+    serializer_class = serializers.ProductRatingSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return models.ProductRating.objects.all()
+    
+    def perform_create(self, serializer):
+        # Set the customer from the authenticated user
+        try:
+            customer = models.Customer.objects.get(user=self.request.user)
+            serializer.save(customer=customer)
+        except models.Customer.DoesNotExist:
+            raise serializers.ValidationError("Customer profile not found for this user")
 
 # ==============================CategoryView==========================================
 # ==============================VendorView==========================================

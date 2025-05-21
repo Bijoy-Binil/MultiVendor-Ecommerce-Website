@@ -39,6 +39,9 @@ import Reports from "./components/Seller/reports";
 import SellerProfile from "./components/Seller/SellerProfile";
 import SellerChangePassword from "./components/Seller/SellerChangePassword";
 
+// Authentication
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
  
   return (
@@ -60,15 +63,43 @@ function App() {
           <Route path="/customer/login" element={<Login />} />
           <Route path="/customer/logout" element={<CustomerLogout />} />
           <Route path="/customer/register" element={<Register />} />
-          <Route path="/customer/dashboard" element={<Dashboard />} />
-          <Route path="/customer/orders" element={<Orders />} />
+          <Route path="/customer/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/customer/orders" element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          } />
           <Route path="/ordersuccess" element={<OrderSuccess />} />
           <Route path="/orderfailed" element={<OrderFailure />} />
-          <Route path="/customer/wishlist" element={<Wishlist />} />
-          <Route path="/customer/profile" element={<Profile />} />
-          <Route path="/customer/changepassword" element={<ChangePassword />} />
-          <Route path="/customer/addresses" element={<AddressList />} />
-          <Route path="/customer/add-address" element={<AddAddress />} />
+          <Route path="/customer/wishlist" element={
+            <ProtectedRoute>
+              <Wishlist />
+            </ProtectedRoute>
+          } />
+          <Route path="/customer/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/customer/changepassword" element={
+            <ProtectedRoute>
+              <ChangePassword />
+            </ProtectedRoute>
+          } />
+          <Route path="/customer/addresses" element={
+            <ProtectedRoute>
+              <AddressList />
+            </ProtectedRoute>
+          } />
+          <Route path="/customer/add-address" element={
+            <ProtectedRoute>
+              <AddAddress />
+            </ProtectedRoute>
+          } />
 
           {/* Seller Routes */}
           <Route path="/seller/login" element={<SellerLogin />} />

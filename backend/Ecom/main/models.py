@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 # Create your models here.
 
 #Vendor Models
@@ -51,8 +52,9 @@ class Customer(models.Model):
 
 #Order Model  
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE,related_name='customer_orders')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='customer_orders')
     order_time = models.TimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
      return '%s' % (self.order_time)

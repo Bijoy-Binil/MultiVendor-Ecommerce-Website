@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const baseUrl = "http://127.0.0.1:8000/api";
+  const navigate = useNavigate();
   const [registerFormData, setRegisterFormData] = useState({
     firstName: "",
     lastName: "",
@@ -42,6 +44,18 @@ const Register = () => {
         } else {
           setFormError(false);
           setMsg(response.data.msg);
+          
+          // Handle successful registration with JWT tokens
+          if (response.data.tokens) {
+            localStorage.setItem("customer_login", "true");
+            localStorage.setItem("customer_id", response.data.customer);
+            localStorage.setItem("customer_username", registerFormData.userName);
+            localStorage.setItem("access_token", response.data.tokens.access);
+            localStorage.setItem("refresh_token", response.data.tokens.refresh);
+            
+            // Redirect to dashboard after successful registration
+            navigate("/customer/dashboard");
+          }
         }
       })
       .catch((error) => {
