@@ -7,9 +7,9 @@ import { CartContext, UserContext } from "../../src/Context";
 
 const ProductDetail = () => {
   const API = "http://127.0.0.1:8000/api";
-  const {product_id } = useParams();
-  const { cartData, setCartData } = useContext(CartContext) || {};
-  const { user } = useContext(UserContext) || {};
+  const { product_id } = useParams();
+  const { cartData, addToCart, removeFromCart } = useContext(CartContext);
+  const { isLoggedIn, user } = useContext(UserContext);
 
   const [product, setProduct] = useState({});
   const [images, setImages] = useState([]);
@@ -20,55 +20,46 @@ const ProductDetail = () => {
   useEffect(() => {
     loadProduct();
     loadRelated();
-    checkCart();
   }, [product_id]);
 
+  // Check if product is in cart whenever cartData changes
+  useEffect(() => {
+    const exists = cartData.some((item) => item.product?.id === Number(product_id));
+    setInCart(exists);
+  }, [cartData, product_id]);
+
   const loadProduct = async () => {
-    const res = await fetch(`${API}/product/${product_id}`);
-    const data = await res.json();
-    setProduct(data);
-    setImages(data.product_images || []);
-    setTags(data.tag_list || []);
+    try {
+      const res = await fetch(`${API}/product/${product_id}`);
+      const data = await res.json();
+      setProduct(data);
+      setImages(data.product_images || []);
+      setTags(data.tag_list || []);
+    } catch (error) {
+      console.error("Error loading product:", error);
+    }
   };
 
   const loadRelated = async () => {
-    const res = await fetch(`${API}/related-product/${product_id}`);
-    const data = await res.json();
-    setRelated(data.results || []);
+    try {
+      const res = await fetch(`${API}/related-product/${product_id}`);
+      const data = await res.json();
+      setRelated(data.results || []);
+    } catch (error) {
+      console.error("Error loading related products:", error);
+    }
   };
 
-  const checkCart = () => {
-    const savedCart = JSON.parse(localStorage.getItem("cartData")) || [];
-    const exists = savedCart.some((item) => item.product?.id === Number(product_id));
-    setInCart(exists);
+  const handleAddToCart = () => {
+    addToCart(product);
   };
 
-  const updateCart = (newCart) => {
-    localStorage.setItem("cartData", JSON.stringify(newCart));
-    setCartData?.(newCart);
+  const handleRemoveFromCart = () => {
+    removeFromCart(product.id);
   };
 
-  const addToCart = () => {
-    const newItem = {
-      product: {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.image,
-      },
-      user: { id: user?.id || 1 },
-    };
-
-    const newCart = [...(JSON.parse(localStorage.getItem("cartData")) || []), newItem];
-    updateCart(newCart);
-    setInCart(true);
-  };
-
-  const removeFromCart = () => {
-    const currentCart = JSON.parse(localStorage.getItem("cartData")) || [];
-    const updatedCart = currentCart.filter((item) => item.product.id !== product.id);
-    updateCart(updatedCart);
-    setInCart(false);
+  const handleAddRelatedToCart = (relatedProduct) => {
+    addToCart(relatedProduct);
   };
 
   return (
@@ -109,14 +100,14 @@ const ProductDetail = () => {
 
             {!inCart ? (
               <button
-                onClick={addToCart}
+                onClick={handleAddToCart}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-indigo-500"
               >
                 Add to Cart
               </button>
             ) : (
               <button
-                onClick={removeFromCart}
+                onClick={handleRemoveFromCart}
                 className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-red-500"
               >
                 Remove from Cart
@@ -175,7 +166,10 @@ const ProductDetail = () => {
                     <h2 className="text-lg font-semibold">{item.title}</h2>
                     <p className="text-sm text-gray-600 mb-4">Price: ₹{item.price}</p>
                     <div className="flex justify-between">
-                      <button className="px-4 py-2 text-xs bg-blue-500 text-white rounded hover:bg-blue-600">
+                      <button 
+                        onClick={() => handleAddRelatedToCart(item)}
+                        className="px-4 py-2 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                      >
                         Add to Cart
                       </button>
                       <button className="px-4 py-2 text-xs bg-red-500 text-white rounded hover:bg-red-600">

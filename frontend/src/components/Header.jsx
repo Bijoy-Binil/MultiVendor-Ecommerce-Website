@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CartContext, UserContext } from "../../src/Context";
 
@@ -7,10 +7,23 @@ const Header = () => {
   const [isOpenSeller, setIsOpenSeller] = useState(false);
   const [isOpenAccount, setIsOpenAccount] = useState(false);
 
-  const { cartData = [] } = useContext(CartContext) || {};
-  const userContext = useContext(UserContext) || {};
-  const isLoggedIn = userContext.login;
-  let user=localStorage.getItem("customer_username")
+  const { cartData, totalItems } = useContext(CartContext);
+  const { isLoggedIn, user } = useContext(UserContext);
+  const username = user?.username;
+
+  // Listen for cart updates
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      // Force re-render when cart is updated
+      // This is handled by context now, but this ensures any custom events also trigger updates
+      console.log("Cart updated");
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, []);
 
   return (
     <nav className="bg-gray-800 shadow-md">
@@ -59,10 +72,10 @@ const Header = () => {
               }
             />
 
-         <NavLink to="/checkout" label={`My Cart (${cartData ? cartData.length : 0})`} />
+            <NavLink to="/checkout" label={`My Cart (${totalItems || 0})`} />
 
             <NavLink to="/checkout" label="New Orders (5)" />
-            <p className="text-white font-semibold">{user}</p>
+            {username && <p className="text-white font-semibold">{username}</p>}
           </div>
 
           {/* Mobile Menu Button */}
@@ -105,7 +118,7 @@ const Header = () => {
               <MobileLink to="/customer/register" label="Register" />
             </>
           )}
-          <MobileLink to="/checkout" label={`My Cart (${cartData.length})`} />
+          <MobileLink to="/checkout" label={`My Cart (${totalItems || 0})`} />
         </div>
       )}
     </nav>
