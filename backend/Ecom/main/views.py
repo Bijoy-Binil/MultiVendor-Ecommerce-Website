@@ -10,8 +10,11 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from rest_framework.permissions import AllowAny
+from django.views import View
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from django.db import transaction
 from django.contrib.auth import login
@@ -226,6 +229,32 @@ class OrderList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         print(request.POST)
         return super().post(request, *args, **kwargs)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateOrderStatusView(View):
+    def post(self, request, order_id):
+        try:
+            order = models.Order.objects.get(id=order_id)
+            order.order_status = True  # or "Completed" if it's a CharField
+            order.save()
+            return JsonResponse({"bool": True, "message": "Order updated successfully"})
+        except models.Order.DoesNotExist:
+            return JsonResponse({"bool": False, "error": "Order not found"})
+        except Exception as e:
+            return JsonResponse({"bool": False, "error": str(e)})
+
+
+
+class CustomerOrderItemList(generics.ListAPIView):  # Changed to ListAPIView
+    serializer_class = serializers.OrderItemSerializer
+
+    def get_queryset(self):
+        customer_id = self.kwargs['pk']
+        return models.OrderItems.objects.filter(order__customer__id=customer_id)
+
+
+
+
 
 class OrderItemView(generics.CreateAPIView):
     queryset = models.OrderItems.objects.all()

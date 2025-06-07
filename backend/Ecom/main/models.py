@@ -47,7 +47,7 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     mobile_number = models.PositiveBigIntegerField(unique=True)
 
-    def __str__(self):
+    def __str__(self):  
         return self.user.username
 
 #Order Model  
@@ -55,9 +55,8 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='customer_orders')
     order_time = models.TimeField(auto_now_add=True)
     created_at = models.DateTimeField(default=timezone.now)
+    order_status=models.BooleanField(default=False)
 
-    def __str__(self):
-     return '%s' % (self.order_time)
 
 
 

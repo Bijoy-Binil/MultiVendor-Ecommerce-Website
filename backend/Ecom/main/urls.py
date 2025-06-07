@@ -34,6 +34,8 @@ urlpatterns = [
     path('orders/',views.OrderList.as_view()),
     path('order/<int:pk>/',views.OrderDetail.as_view()),
     path('order-items/',views.OrderItemView.as_view()),
+    path('customer/<int:pk>/order-items/',views.CustomerOrderItemList.as_view()),
+    path('update-order-status/<int:order_id>/', views.UpdateOrderStatusView.as_view(), name='update_order_status'),
 
 # ==============================CustomerAddressUrls==========================================
 

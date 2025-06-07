@@ -13,7 +13,7 @@ admin.site.register(Customer,CustomerAdmin)
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['customer', 'order_time'] 
+    list_display = ['id','customer', 'order_time','order_status'] 
     
 admin.site.register(OrderItems)
 admin.site.register(CustomerAddress)

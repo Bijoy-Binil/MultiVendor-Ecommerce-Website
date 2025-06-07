@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import SingleProduct from "./SingleProduct";
-import axios from "axios";
 import { Link } from "react-router-dom";
 
 const AllProducts = () => {

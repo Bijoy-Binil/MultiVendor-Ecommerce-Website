@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import Sidebar from './Sidebar';
 import { Link } from 'react-router-dom';
 
 const Orders = () => {
+    const baseUrl = "http://127.0.0.1:8000/api";
+    const [orderItems,setOrderItems]=useState([])
+    const CustomerId=localStorage.getItem("customer_id")
+    console.log(CustomerId);
+      useEffect(() => {
+        FetchData(baseUrl + "/customer/" + CustomerId + "/order-items/");
+      }, []);
+    
+      const FetchData = (baseUrl) => {
+        fetch(baseUrl)
+          .then((res) => res.json())
+          .then((data) => {
+          console.log(data.results);
+          setOrderItems(data.results)
+          });
+      };
   return (
     <>
       {/* Sidebar */}
@@ -19,7 +35,7 @@ const Orders = () => {
               <table className="min-w-[600px] w-full bg-white text-sm sm:text-base border-separate border-spacing-y-2">
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 uppercase tracking-wide">
-                    <th className="py-3 px-4 border border-gray-200 rounded-l-lg">#</th>
+                    <th className="py-3 px-4 border border-gray-200 rounded-l-lg">Name</th>
                     <th className="py-3 px-4 border border-gray-200">Product</th>
                     <th className="py-3 px-4 border border-gray-200">Price</th>
                     <th className="py-3 px-4 border border-gray-200">Action</th>
@@ -27,19 +43,15 @@ const Orders = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { id: 1, name: 'Django' },
-                    { id: 2, name: 'Drf' },
-                    { id: 3, name: 'Python' },
-                    { id: 4, name: 'Flask' },
-                  ].map((product) => (
+                  {
+                    orderItems.map((product) => (
                     <tr key={product.id} className="bg-white shadow-sm rounded hover:bg-gray-50 transition">
-                      <td className="py-3 px-4 border border-gray-200">{product.id}</td>
+                      <td className="py-3 px-4 border border-gray-200">{product.product.title}</td>
                       <td className="py-3 px-4 border border-gray-200 flex items-center gap-4">
                         <Link to="#">
                           <img
                             className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
-                            src="https://plus.unsplash.com/premium_photo-1742455147775-4f5f6c09011b?q=80&w=1974&auto=format&fit=crop"
+                            src={product.product.image}
                             alt={product.name}
                           />
                         </Link>
@@ -47,7 +59,7 @@ const Orders = () => {
                           <span>{product.name}</span>
                         </Link>
                       </td>
-                      <td className="py-3 px-4 border border-gray-200">Rs 500</td>
+                      <td className="py-3 px-4 border border-gray-200">{product.price}</td>
                       <td className="py-3 px-4 border border-gray-200">
                         <button className="bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm px-3 py-1 rounded-full transition">
                           Download
