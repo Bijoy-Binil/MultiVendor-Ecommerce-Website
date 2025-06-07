@@ -1,6 +1,5 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-
 // Main Site Components
 import Header from "./components/Header";
 import Home from "./components/Home";
@@ -41,12 +40,13 @@ import SellerChangePassword from "./components/Seller/SellerChangePassword";
 
 // Authentication
 import ProtectedRoute from "./components/ProtectedRoute";
+import PayPalCheckout from "./components/PayPalCheckout";
 
 function App() {
  
   return (
 <>
-    
+  
         <Header />
 
         <Routes>
@@ -100,6 +100,11 @@ function App() {
               <AddAddress />
             </ProtectedRoute>
           } />
+          <Route path="/payment" element={
+            <ProtectedRoute>
+              <PayPalCheckout />
+            </ProtectedRoute>
+          } />
 
           {/* Seller Routes */}
           <Route path="/seller/login" element={<SellerLogin />} />
@@ -115,6 +120,7 @@ function App() {
         </Routes>
 
         <Footer />
+       
         </>
   );
 }

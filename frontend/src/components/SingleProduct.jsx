@@ -23,7 +23,7 @@ const SingleProduct = ({ product }) => {
         <div className="flex justify-between">
           <button
             aria-label="Add to Cart"
-            className="px-4 py-2 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+            className="px-2 py-2 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
           >
             <i className="fa-solid fa-cart-plus mr-2"></i>Add to Cart
           </button>
