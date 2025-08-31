@@ -15,6 +15,19 @@ class VendorDetailSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'address']
         # depth = 1
 
+# Category serializers
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductCategory
+        fields = ['id', 'title', 'detail']
+        # depth = 1
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductCategory
+        fields = ['id', 'title', 'detail']
+        # depth = 1
+
 
 # Product serializers
 class ProductSerializer(serializers.ModelSerializer):
