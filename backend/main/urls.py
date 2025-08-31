@@ -1,30 +1,34 @@
 from django.urls import path
 from . import views
+from rest_framework.routers import DefaultRouter 
+
+router=DefaultRouter()
+router.register('address', views.CustomerAddressViewset)
+router.register('product-rating', views.ProductRatingViewset)
+
 urlpatterns = [
  
-# ======================VendorList===================
-    path('vendors/',views.VendorList.as_view() ),
-    path('vendor/<int:pk>',views.VendorDetailList.as_view() ),
-# ======================VendorList===================
+# Vendor endpoints
+path('vendors/', views.VendorList.as_view()),
+path('vendor/<int:pk>/', views.VendorDetail.as_view()),
 
-# ======================ProductList===================
-    path('products/',views.ProductList.as_view() ),
-    path('product/<int:pk>',views.ProductDetailList.as_view() ),
-# ======================ProductList===================
+# Product endpoints
+path('products/', views.ProductList.as_view()),
+path('product/<int:pk>/', views.ProductDetail.as_view()),
 
-# ======================CustomerList===================
-    path('customers/',views.CustomerList.as_view() ),
-    path('customer/<int:pk>',views.CustomerDetailList.as_view() ),
-# ======================CustomerList===================
+# Customer endpoints
+path('customers/', views.CustomerList.as_view()),
+path('customer/<int:pk>/', views.CustomerDetail.as_view()),
 
-# ======================OrderList===================
-    path('orders/',views.OrderList.as_view() ),
-    path('order/<int:pk>',views.OrderDetailList.as_view() ),
-# ======================OrderList===================
+# Order endpoints
+path('orders/', views.OrderList.as_view()),
+path('order/<int:pk>/', views.OrderDetail.as_view()),
 
-# ======================OrderItemsList===================
-    path('order-items/',views.OrderItemsList.as_view() ),
-    path('order-item/<int:pk>',views.OrderItemsDetailList.as_view() ),
-# ======================OrderItemsList===================
+# Order Items endpoints
+path('order-items/', views.OrderItemsList.as_view()),
+path('order-item/<int:pk>/', views.OrderItemsDetail.as_view()),
+
+
 
 ]
+urlpatterns +=router.urls
