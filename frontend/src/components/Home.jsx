@@ -118,7 +118,7 @@ const Home = () => {
 
                   <div className="d-flex justify-content-between align-items-center">
                     <p className="text-secondary  mb-0">Seller Name: </p>
-                    <a c href="">Categories:</a>
+                    <a href="">Categories:</a>
                   </div>
                 </div>
                 <div className="card-footer bg-white border-0 d-grid gap-2">

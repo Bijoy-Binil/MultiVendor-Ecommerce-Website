@@ -12,27 +12,27 @@ const SellerRegister = () => {
     <div className="card-body">
         <form>
   <div className="mb-3">
-    <label for="firstname" className="form-label ">First Name</label>
+    <label htmlFor="firstname" className="form-label ">First Name</label>
     <input type="text" className="form-control" id="firstname"/>
     
   </div>
   <div className="mb-3">
-    <label for="lastname" className="form-label ">Last Name</label>
+    <label htmlFor="lastname" className="form-label ">Last Name</label>
     <input type="text" className="form-control" id="lastname"/>
     
   </div>
   <div className="mb-3">
-    <label for="username" className="form-label ">UserName</label>
+    <label htmlFor="username" className="form-label ">UserName</label>
     <input type="text" className="form-control" id="username"/>
     
   </div>
   <div className="mb-3">
-    <label for="email" className="form-label ">Email address</label>
+    <label htmlFor="email" className="form-label ">Email address</label>
     <input type="email" className="form-control" id="email"/>
     
   </div>
   <div className="mb-3">
-    <label for="password" className="form-label">Password</label>
+    <label htmlFor="password" className="form-label">Password</label>
     <input type="password" className="form-control" id="password"/>
   </div>
 
