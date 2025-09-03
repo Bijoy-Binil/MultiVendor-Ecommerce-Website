@@ -9,7 +9,7 @@ const Categories = () => {
        {/* All Cateories */}
                <div className="container">
                  <div className="d-flex justify-content-between align-items-center mb-4">
-                   <h4 className="fw-bold text-primary ">Popular Cateories</h4>
+                   <h4 className="fw-bold text-primary ">All Categories</h4>
                    <a className="btn btn-outline-primary rounded-pill px-4" href="">
                      View All Products <i className="fas fa-arrow-right ms-2"></i>
                    </a>
@@ -30,7 +30,7 @@ const Categories = () => {
                    
                        </div>
                        <div className="card-body pb-0">
-                         <h5 className="card-title fw-bold"><Link to="/categories">Title !</Link></h5>
+                         <h5 className="card-title fw-bold"><Link to="/category/python/1">Title !</Link></h5>
                    
                          <div className="d-flex justify-content-between align-items-center">
                            <p className="text-secondary  mb-0">Product Downloads: 1234</p>
@@ -46,6 +46,15 @@ const Categories = () => {
                    {/* Additional product cards would go here */}
                  </div>
                </div>
+                     <nav aria-label="Page navigation example">
+  <ul className="pagination flex justif">
+    <li className="page-item"><a class="page-link" href="#">Previous</a></li>
+    <li className="page-item"><a class="page-link" href="#">1</a></li>
+    <li className="page-item"><a class="page-link" href="#">2</a></li>
+    <li className="page-item"><a class="page-link" href="#">3</a></li>
+    <li className="page-item"><a class="page-link" href="#">Next</a></li>
+  </ul>
+</nav>
     </div>
   )
 }

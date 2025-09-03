@@ -37,11 +37,58 @@ const Header = () => {
               </li>{" "}
               <li className="nav-item">
                 {" "}
-                <a className="nav-link active" href="#">
+                <Link className="nav-link active"to="/categories">
                   {" "}
                   Categories{" "}
-                </a>{" "}
+                </Link>{" "}
+                
               </li>{" "}
+              <li className="nav-item">
+                {" "}
+               <Link className="nav-link active" to="/checkout">
+                  {" "}
+                  My Cart (4){" "}
+                </Link>{" "}
+                
+              </li>{" "}
+               <li className="nav-item dropdown">
+  <a
+    className="nav-link dropdown-toggle"
+    href="#"
+    id="accountDropdown"
+    role="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    My Account
+  </a>
+  <ul className="dropdown-menu shadow-lg border-0 rounded-3 p-2" aria-labelledby="accountDropdown">
+  <li>
+    <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/register">
+      <i className="fa fa-user-plus me-2 text-primary"></i> Register
+    </Link>
+  </li>
+  <li>
+    <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/login">
+      <i className="fa fa-sign-in-alt me-2 text-success"></i> Login
+    </Link>
+  </li>
+
+  <li><hr className="dropdown-divider" /></li>
+
+  <li>
+    <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/dashboard">
+      <i className="fa fa-tachometer-alt me-2 text-warning"></i> Dashboard
+    </Link>
+  </li>
+  <li>
+    <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/logout">
+      <i className="fa fa-sign-out-alt me-2 text-danger"></i> Logout
+    </Link>
+  </li>
+</ul>
+
+</li>
             </ul>{" "}
           </div>{" "}
         </div>{" "}
