@@ -10,14 +10,23 @@ import CategoryProducts from "./components/CategoryProducts";
 import AllProducts from "./components/AllProducts";
 import ProductDetail from "./components/ProductDetail";
 import Checkout from "./components/Checkout";
-{/* Customer Panel */}
+{/* Customer Panel */ }
 import Register from "./components/Customer/Register";
 import Login from "./components/Customer/Login";
 import Dashboard from "./components/Customer/Dashboard";
 import Orders from "./components/Customer/Orders";
 import OrderSuccess from "./components/OrderSuccess";
 import OrderFailure from "./components/OrderFailure";
+import Wishlist from "./components/Customer/Wishlist";
+import ChangePassword from "./components/Customer/ChangePassword";
+import Profile from "./components/Customer/Profile";
+import Address from "./components/Customer/Address";
+import AddAddress from "./components/Customer/AddAddress";
+import SellerLogin from "./components/Seller/SellerLogin";
+import SellerRegister from "./components/Seller/SellerRegister";
+import SellerDashboard from "./components/Seller/SellerDashboard";
 
+{/* Seller Panel */ }
 
 function App() {
   return (
@@ -32,15 +41,26 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
 
         {/* Customer */}
-       <Route path="/customer/register" element={<Register />} />
-       <Route path="/customer/login" element={<Login />} />
-       <Route path="/customer/dashboard" element={<Dashboard />} />
-       <Route path="/customer/orders" element={<Orders />} />
-       <Route path="/order/success" element={<OrderSuccess />} />
-       <Route path="/order/failure" element={<OrderFailure />} />
+        <Route path="/customer/register" element={<Register />} />
+        <Route path="/customer/login" element={<Login />} />
+        <Route path="/customer/dashboard" element={<Dashboard />} />
+        <Route path="/customer/orders" element={<Orders />} />
+        <Route path="/customer/wishlist" element={<Wishlist />} />
+        <Route path="/customer/changepassword" element={<ChangePassword />} />
+        <Route path="/customer/profile" element={<Profile />} />
+        <Route path="/customer/address" element={<Address />} />
+        <Route path="/customer/add-address" element={<AddAddress />} />
+        {/* Order status */}
+        <Route path="/order/success" element={<OrderSuccess />} />
+        <Route path="/order/failure" element={<OrderFailure />} />
+        {/* Seller Panel */}
+        <Route path="/seller/login" element={<SellerLogin />} />
+        <Route path="/seller/register" element={<SellerRegister />} />
+        <Route path="/seller/dashboard" element={<SellerDashboard />} />
+
 
       </Routes>
- 
+
       <Footer />
     </>
   );

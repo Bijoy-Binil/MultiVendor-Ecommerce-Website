@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import logo from "../../images/logo.jpg"
 
 const Orders = () => {
-  // Dummy data for now
+
 
 
   return (

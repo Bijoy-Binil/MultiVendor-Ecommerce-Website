@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Register = () => {
+const SellerRegister = () => {
   return (
     
    <div className="container mt-4">
@@ -47,4 +47,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default SellerRegister
