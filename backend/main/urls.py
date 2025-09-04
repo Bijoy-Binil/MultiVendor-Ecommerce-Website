@@ -15,6 +15,8 @@ path('vendor/<int:pk>/', views.VendorDetail.as_view()),
 
 # Product endpoints
 path('products/', views.ProductList.as_view()),
+path('products/<str:tag>', views.TagProductList.as_view()),
+path('related-products/<int:pk>/', views.RelatedProductList.as_view()),
 path('product/<int:pk>/', views.ProductDetail.as_view()),
 
 # Product Categories endpoints

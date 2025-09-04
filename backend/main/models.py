@@ -37,7 +37,7 @@ class Product(models.Model):
     price = models.IntegerField()
     tags=models.TextField(null=True)
     image = models.ImageField(upload_to='product_imgs/',null=True)
-
+    demo_url=models.URLField(null=True,blank=True)
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -47,8 +47,10 @@ class Product(models.Model):
         return self.title
     
     def tag_list(self):
-        tagList=self.tags.split(',')
-        return tagList
+        if self.tags:
+            return [t.strip() for t in self.tags.split(',')]
+        return [] 
+
 
 
 

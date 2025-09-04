@@ -1,7 +1,8 @@
 from . import models
 from . import serializers
 from rest_framework import generics, viewsets
-
+from .models import Product
+from .serializers import ProductSerializer
 # Vendor views
 class VendorList(generics.ListCreateAPIView):
     queryset = models.Vendor.objects.all()
@@ -23,11 +24,39 @@ class ProductList(generics.ListCreateAPIView):
         if category_id:
             queryset = queryset.filter(category__id=category_id)
         return queryset
+    
+
+
+class RelatedProductList(generics.ListAPIView):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        product_id = self.kwargs.get('pk')
+        if product_id:
+            try:
+                product = Product.objects.get(id=product_id)
+                return Product.objects.filter(category=product.category).exclude(id=product_id)
+            except Product.DoesNotExist:
+                return Product.objects.none()
+        return Product.objects.all()
+
+
+    
+class TagProductList(generics.ListCreateAPIView):
+    serializer_class = ProductSerializer  # only the serializer
+
+    def get_queryset(self):
+        tag = self.kwargs.get('tag')
+        if tag:
+            return Product.objects.filter(tags__icontains=tag)
+        return Product.objects.all()
+
+        
 
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductDetailSerializer
-
+    
 
 # Customer views
 class CustomerList(generics.ListCreateAPIView):

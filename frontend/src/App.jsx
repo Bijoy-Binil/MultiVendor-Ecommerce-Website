@@ -33,6 +33,8 @@ import Customers from "./components/Seller/Customers";
 import Reports from "./components/Seller/Reports";
 import SellerChangePassword from "./components/Seller/SellerChangePassword";
 import SellerProfile from "./components/Seller/SellerProfile";
+import TagProducts from "./components/TagProducts";
+
 
 
 function App() {
@@ -44,6 +46,7 @@ function App() {
         <Route path="/products" element={<AllProducts />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/category/:category_slug/:category_id" element={<CategoryProducts />} />
+        <Route path="/products/:tag" element={<TagProducts/>} />
         <Route path="/product/:product_slug/:product_id" element={<ProductDetail />} />
         <Route path="/checkout" element={<Checkout />} />
 

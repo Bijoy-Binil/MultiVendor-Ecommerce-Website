@@ -8,7 +8,7 @@ const SingleProduct = ({ product }) => {
     <div className="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
       <div className="card h-100 shadow-sm border-0">
         {/* Product Image */}
-        <Link to={`/product/${product.title}/${product.id}`}>
+        <Link to={`/product/${product.slug}/${product.id}`}>
         {console.log("slug,id==>",product.title,product.id) }
           <img
             src={product.image}

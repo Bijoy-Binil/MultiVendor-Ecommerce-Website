@@ -30,12 +30,35 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 
 # Product serializers
-class ProductSerializer(serializers.ModelSerializer):
-    product_ratings=serializers.StringRelatedField(many=True,read_only=True)
+
+class RelatedProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
-        fields = ['id', 'category', 'vendor', 'title',"slug","tag_list", 'detail', 'price','product_ratings']
+        fields = ['id', 'title', 'slug', 'price', 'image']  # no related_products here
+
+class ProductSerializer(serializers.ModelSerializer):
+    product_ratings = serializers.StringRelatedField(many=True, read_only=True)
+    related_products = serializers.SerializerMethodField()
+    tag_list = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Product
+        fields = [
+            'id', 'category', 'vendor', 'title', 'slug', 'tags',
+            'tag_list', 'image',"demo_url" ,'related_products', 'detail',
+            'price', 'product_ratings', 'product_imgs'
+        ]
         depth = 1
+
+    def get_tag_list(self, obj):
+        if obj.tags:
+            return [t.strip() for t in obj.tags.split(',')]
+        return []
+
+    def get_related_products(self, obj):
+        related = models.Product.objects.filter(category=obj.category).exclude(id=obj.id)
+        return RelatedProductSerializer(related, many=True).data
+
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,11 +72,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = [
-            'id', 'category', 'vendor', 'title',"slug","tag_list"
-            'detail', 'price', 'product_ratings', 'product_imgs',"tag_list"
-        ]
         depth = 1
+        fields = ['id', 'category', 'vendor', 'title',"slug","tag_list","image","demo_url" ,'detail', 'price','product_ratings',"product_imgs"]
+
+    def get_tag_list(self, obj):
+        return obj.tag_list()  # call your model method safely
 # Customer serializers
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
