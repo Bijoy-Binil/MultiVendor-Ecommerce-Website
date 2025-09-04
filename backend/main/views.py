@@ -17,9 +17,16 @@ class ProductList(generics.ListCreateAPIView):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
 
+    def get_queryset(self):
+        queryset = models.Product.objects.all()
+        category_id = self.request.GET.get("category")  # ✅ safe access
+        if category_id:
+            queryset = queryset.filter(category__id=category_id)
+        return queryset
+
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Product.objects.all()
-    serializer_class = serializers.ProductSerializer
+    serializer_class = serializers.ProductDetailSerializer
 
 
 # Customer views

@@ -5,6 +5,33 @@ import { Link } from 'react-router-dom';
 import SingleProduct from './SingleProduct';
 
 const Home = () => {
+  const sampleProducts = [
+    {
+      id: 1,
+      title: "Python Bot",
+      category: { detail: "Automation Tools" },
+      price: "$49.99",
+    },
+    {
+      id: 2,
+      title: "React Dashboard",
+      category: { detail: "Frontend Templates" },
+      price: "$29.99",
+    },
+    {
+      id: 3,
+      title: "Django Ecommerce",
+      category: { detail: "Backend Projects" },
+      price: "$79.99",
+    },
+    {
+      id: 4,
+      title: "Stock Prediction AI",
+      category: { detail: "Machine Learning" },
+      price: "$99.99",
+    },
+  ]
+
   const news = (
     <span className="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 m-2 rounded-pill small">
       New
@@ -24,10 +51,13 @@ const Home = () => {
           </div>
           <div className="row">
             {/*  Box Products */}
-            <SingleProduct news={news} />
-            <SingleProduct news={news} />
-            <SingleProduct news={news} />
-            <SingleProduct news={news} />
+            <div className="row mb-4">
+              {sampleProducts?.map((p, i) => (
+                <SingleProduct key={i} product={p} news={news} />
+              ))}
+            </div>
+
+
             {/* Additional product cards would go here */}
           </div>
         </div>

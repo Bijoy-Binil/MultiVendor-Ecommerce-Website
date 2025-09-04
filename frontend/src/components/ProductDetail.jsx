@@ -1,9 +1,39 @@
-import React from "react";
-import logo from "./../images/logo.jpg";
-import { Link } from "react-router-dom";
+
+import { Link, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import React, { useEffect, useState } from "react"
+import SingleProduct from "./SingleProduct"
+
+
 const ProductDetail = () => {
+
+  const { product_slug, product_id } = useParams()
+  console.log(product_id, product_slug)
+
+  const baseUrl = `http://127.0.0.1:8000/api/product`
+  const [products, setProducts] = useState("")
+  const [productImgs, setProductImgs] = useState([])
+  
+  useEffect(() => {
+    fetchData(`${baseUrl}/${product_id}`)
+
+  }, [])
+
+  const fetchData = (baseUrl) => {
+    fetch(baseUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setProducts(data)
+        setProductImgs(data.product_imgs)
+
+        console.log("api==> ", baseUrl)
+        console.log("products==> ", products)
+      })
+  }
+
+console.log(productImgs)
+
   const images = [
     "https://plus.unsplash.com/premium_photo-1756578903526-a1d25e01c1f9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "https://plus.unsplash.com/premium_photo-1756578903526-a1d25e01c1f9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -58,11 +88,11 @@ const ProductDetail = () => {
             className="bg-light p-3 rounded shadow-sm d-flex justify-content-center"
             style={{ maxWidth: "300px" }}
           >
-            {images.map((img, i) => (
+            {productImgs.map((img, i) => (
               <SwiperSlide key={i} className="text-center">
                 <img
                   className="img-fluid rounded border"
-                  src={img}
+                  src={img.image}
                   alt={`Product Image ${i + 1}`}
                   style={{
                     objectFit: "cover",
@@ -76,13 +106,11 @@ const ProductDetail = () => {
           </Swiper>
         </div>
         <div className="col-8">
-          <h3>ProductTitle</h3>
+          <h3>{products.title}</h3>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum
-            minus beatae mollitia totam ipsum tempora voluptate inventore
-            impedit, quasi quod.
+           {products.detail}
           </p>
-          <h5 className="text-muted small ">Price: Rs.500</h5>{" "}
+          <h5 className="text-muted small ">Price: {products.price}</h5>{" "}
           <p className="mt-3 ">
             <Link
               title="demo"
