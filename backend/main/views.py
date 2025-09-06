@@ -3,6 +3,14 @@ from . import serializers
 from rest_framework import generics, viewsets
 from .models import Product
 from .serializers import ProductSerializer
+from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.auth import authenticate
+import json
+from django.contrib.auth.models import User
+from django.db import IntegrityError
 # Vendor views
 class VendorList(generics.ListCreateAPIView):
     queryset = models.Vendor.objects.all()
@@ -66,6 +74,74 @@ class CustomerList(generics.ListCreateAPIView):
 class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Customer.objects.all()
     serializer_class = serializers.CustomerSerializer
+
+    
+@csrf_exempt
+def customer_login(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # parse JSON body
+            username = data.get("username")
+            password = data.get("password")
+        except:
+            return JsonResponse({"bool": False, "msg": "Invalid JSON"})
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            return JsonResponse({"customer_login": True, "user": user.username})
+        else:
+            return JsonResponse({"bool": False, "msg": "Invalid credentials"})
+
+    return JsonResponse({"msg": "Only POST method allowed"})
+    
+
+@csrf_exempt
+def customer_register(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            first_name = data.get("first_name")
+            last_name = data.get("last_name")
+            email = data.get("email")
+            username = data.get("username")
+            password = data.get("password")
+            mobile = data.get("mobile")
+        except:
+            return JsonResponse({"bool": False, "msg": "Invalid JSON"})
+
+        # 🔹 Validate inputs before creating user
+        if not username or not password:
+            return JsonResponse({"bool": False, "msg": "Username and password required"})
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"bool": False, "msg": "Username already exists"})
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({"bool": False, "msg": "Email already exists"})
+        if models.Customer.objects.filter(mobile=mobile).exists():
+            return JsonResponse({"bool": False, "msg": "Mobile number already linked"})
+
+        try:
+            # ✅ Create User
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                email=email
+            )
+
+            # ✅ Create related Customer
+            customer = models.Customer.objects.create(
+                user=user,
+                mobile=mobile
+            )
+            return JsonResponse({"msg":"Registration Completed Succesfully", "user_id": user.id, "customer_id": customer.id})
+
+        except IntegrityError:
+            return JsonResponse({"bool": False, "msg": "Database error"})
+
+   
+    return JsonResponse({"msg": "Only POST method allowed"})
+
 
 
 # Order views

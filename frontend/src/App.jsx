@@ -34,12 +34,14 @@ import Reports from "./components/Seller/Reports";
 import SellerChangePassword from "./components/Seller/SellerChangePassword";
 import SellerProfile from "./components/Seller/SellerProfile";
 import TagProducts from "./components/TagProducts";
+import AuthProvider from "./AuthProvider";
 
 
 
 function App() {
   return (
     <>
+    <AuthProvider>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -53,6 +55,7 @@ function App() {
         {/* Customer */}
         <Route path="/customer/register" element={<Register />} />
         <Route path="/customer/login" element={<Login />} />
+    
         <Route path="/customer/dashboard" element={<Dashboard />} />
         <Route path="/customer/orders" element={<Orders />} />
         <Route path="/customer/wishlist" element={<Wishlist />} />
@@ -79,6 +82,7 @@ function App() {
       </Routes>
 
       <Footer />
+      </AuthProvider>
     </>
   );
 }

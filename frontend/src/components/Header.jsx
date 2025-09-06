@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../AuthProvider";
 
 const Header = () => {
+  const { handleLogout, isLoggedIn } = useContext(AuthContext)
+
+
   return (
     <>
+
       <nav className="navbar navbar-expand-lg navbar- bg-info">
         {" "}
         <div className="container">
@@ -43,7 +48,7 @@ const Header = () => {
                 </Link>{" "}
 
               </li>{" "}
-        
+
               <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle"
@@ -55,35 +60,41 @@ const Header = () => {
                 >
                   My Account
                 </a>
-                
+
                 <ul className="dropdown-menu shadow-lg border-0 rounded-3 p-2" aria-labelledby="accountDropdown">
-                  <li>
-                    <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/register">
-                      <i className="fa fa-user-plus me-2 text-primary"></i> Register
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/login">
-                      <i className="fa fa-sign-in-alt me-2 text-success"></i> Login
-                    </Link>
-                  </li>
+                  {isLoggedIn ? <>
+                    <li>
+                      <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/dashboard">
+                        <i className="fa fa-tachometer-alt me-2 text-warning"></i> Dashboard
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" onClick={(e) => handleLogout(e)} to="/customer/login">
+                        <i className="fa fa-sign-out-alt me-2 text-danger"></i> Logout
+                      </Link>
+                    </li>
+                  </> : <>
+                    <li>
+                      <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/register">
+                        <i className="fa fa-user-plus me-2 text-primary"></i> Register
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/login">
+                        <i className="fa fa-sign-in-alt me-2 text-success"></i> Login
+                      </Link>
+                    </li>
 
-                  <li><hr className="dropdown-divider" /></li>
 
-                  <li>
-                    <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/dashboard">
-                      <i className="fa fa-tachometer-alt me-2 text-warning"></i> Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/customer/logout">
-                      <i className="fa fa-sign-out-alt me-2 text-danger"></i> Logout
-                    </Link>
-                  </li>
+
+                  </>}
+
+
+
                 </ul>
 
               </li>
-                    <li className="nav-item">
+              <li className="nav-item">
                 {" "}
                 <Link className="nav-link active" to="/checkout">
                   {" "}
@@ -91,8 +102,8 @@ const Header = () => {
                 </Link>{" "}
 
               </li>{" "}
-                  <li className="nav-item dropdown">
-                <a
+              <li className="nav-item dropdown">
+                {!isLoggedIn && <a
                   className="nav-link dropdown-toggle"
                   href="#"
                   id="accountDropdown"
@@ -101,7 +112,7 @@ const Header = () => {
                   aria-expanded="false"
                 >
                   Seller Panel
-                </a>
+                </a>}
                 <ul className="dropdown-menu shadow-lg border-0 rounded-3 p-2" aria-labelledby="accountDropdown">
                   <li>
                     <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/seller/register">
@@ -129,12 +140,12 @@ const Header = () => {
                 </ul>
 
               </li>
-                     <li className="nav-item">
+              <li className="nav-item">
                 {" "}
-                <Link className="nav-link active" to="/checkout">
+               {!isLoggedIn && <Link className="nav-link active" to="/checkout">
                   {" "}
-                 New Order (4){" "}
-                </Link>{" "}
+                  New Order (4){" "}
+                </Link>}{" "}
 
               </li>{" "}
             </ul>{" "}
