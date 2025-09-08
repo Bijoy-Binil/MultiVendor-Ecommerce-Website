@@ -15,17 +15,17 @@ const Login = () => {
    
     try {
       const response= await axios.post(`${baseUrl}customer/login/`,userData)
-       console.log("Response==> ",response.data)
+      //  console.log("Response==> ",response.data)
        if (response.data.bool==false){
         setFormError(true)
-        console.log("Response:msg==> ",response.data)
+        // console.log("Response:msg==> ",response.data)
         setError(response.data.msg)
        }else{
          setFormError(true)
          localStorage.setItem("Customer_username",response.data.user)
          localStorage.setItem("Customer_login",response.data.customer_login)
-         console.log("Response==> ",response.data)
-         console.log("Login Succesfull")
+        //  console.log("Response==> ",response.data)
+        //  console.log("Login Succesfull")
        }
     } catch (err) {
       console.error(err)

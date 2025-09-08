@@ -13,7 +13,7 @@ const AllProducts = () => {
   .then((data)=>{
     setProducts(data.results)
     setTotal(data.count)
-    console.log("fetchDataBaseUrl==> ",baseUrl)
+    // console.log("fetchDataBaseUrl==> ",baseUrl)
   })
  
     

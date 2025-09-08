@@ -1,33 +1,40 @@
 import React, { createContext, useState } from 'react'
-import { useNavigate } from "react-router-dom" 
+import { useNavigate } from "react-router-dom"
 
 
 export const AuthContext = createContext()
+export const CartContext = createContext()
 
 
-const AuthProvider = ({children}) => {
-const navigate=useNavigate()
+const AuthProvider = ({ children }) => {
+  const navigate = useNavigate()
 
- const [isLoggedIn, setIsLoggedIn] = useState(
+  const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("Customer_login")
- )
-console.log("ProviderLogin==>",isLoggedIn)
+  )
+  console.log("ProviderLogin==>", isLoggedIn)
 
-const handleLogout = (e) => {
-    
+  const handleLogout = (e) => {
+
     localStorage.removeItem("Customer_username")
     localStorage.removeItem("Customer_login")
     navigate("/customer/login")
   }
-const checkCart=localStorage.getItem("cartData")
+  const checkCart = localStorage.getItem("cartData")
   const [cartData, setCartData] = useState(JSON.parse(checkCart))
-  console.log("checkCart Auth==> ",checkCart)
+  console.log("AuthProvider checkCart ==> ", checkCart)
   return (
     <div>
 
-<AuthContext.Provider value={{isLoggedIn,setIsLoggedIn,handleLogout,cartData,setCartData}} >
-{children}
-</AuthContext.Provider>
+      <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, handleLogout }} >
+        <CartContext.Provider value={{ cartData, setCartData }}>
+          {children}
+        </CartContext.Provider>
+      </AuthContext.Provider>
+
+
+
+
 
     </div>
   )

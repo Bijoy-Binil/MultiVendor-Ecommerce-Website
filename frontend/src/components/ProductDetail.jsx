@@ -9,7 +9,7 @@ import React, { useContext, useEffect, useState } from "react"
 const ProductDetail = () => {
 
   const { product_slug, product_id } = useParams()
-  console.log(product_id, product_slug)
+  // console.log(product_id, product_slug)
 
   const baseUrl = `http://127.0.0.1:8000/api/product`
   const relatedBaseUrl = `http://127.0.0.1:8000/api/related-products`
@@ -19,12 +19,27 @@ const ProductDetail = () => {
   const [productTags, setProductTags] = useState([])
   const [cartButtonClick, setCartButtonClick] = useState(false)
 
+useEffect(() => {
+  fetchData(`${baseUrl}/${product_id}`);
+  fetchRelatedData(`${relatedBaseUrl}/${product_id}`);
+  checkProductInCart(product_id);
+}, [product_id]);
 
-  useEffect(() => {
-    fetchData(`${baseUrl}/${product_id}`)
-    fetchRelatedData(`${relatedBaseUrl}/${product_id}`)
+const checkProductInCart = (product_id) => {
+  const prevCart = localStorage.getItem("cartData");
+  if (prevCart) {
+    const cartJson = JSON.parse(prevCart);
 
-  }, [])
+    // ✅ check if any cart item matches the current product_id
+    const alreadyInCart = cartJson.some(
+      (item) => item.product.id === parseInt(product_id)
+    );
+
+    if (alreadyInCart) {
+      setCartButtonClick(true);
+    }
+  }
+};
 
   const fetchData = (baseUrl) => {
     fetch(baseUrl)
@@ -33,8 +48,8 @@ const ProductDetail = () => {
         setProducts(data)
         setProductImgs(data.product_imgs)
         setProductTags(data.tag_list)
-        console.log("Product api==> ", baseUrl)
-        console.log("products==> ", data.demo_url)
+        // console.log("Product api==> ", baseUrl)
+        // console.log("products==> ", data.demo_url)
       })
   }
   const fetchRelatedData = (baseUrl) => {
@@ -42,41 +57,47 @@ const ProductDetail = () => {
       .then((response) => response.json())
       .then((data) => {
         setRelatedProducts(data.results)
-        console.log("RelatedProduct api==> ", baseUrl)
-        console.log("RealtedProducts==> ", data)
+        // console.log("RelatedProduct api==> ", baseUrl)
+        // console.log("RealtedProducts==> ", data)
       })
   }
   const tagslink = []
   for (let i = 0; i < productTags.length; i++) {
     let tag = productTags[i].trim()
     // console.log("tag 2==>",tag)
-    tagslink.push(<Link className="badge bg-secondary text-white me-1" to={`/products/${tag}`}>{tag}</Link>)
+    tagslink.push(<Link key={i} className="badge bg-secondary text-white me-1" to={`/products/${tag}`}>{tag}</Link>)
   }
   const cartDatas = {
     product: {
       id: products.id,
       title: products.title,
+      price: products.price,
+      image: products.image,
+
     },
     user: {
       id: 1
     }
   };
-
+  console.log("Cart Button CLick ==>",cartButtonClick)
+console.log("Products==>",products)
 
   const cartAddButtonHandler = () => {
     let prevCart = localStorage.getItem("cartData");
     let cart = prevCart ? JSON.parse(prevCart) : [];
     cart.push(cartDatas);
     localStorage.setItem("cartData", JSON.stringify(cart));
-    setCartButtonClick(true)
-    console.log("Cart updated:", cart);
+    console.log("Cart add Button CLick ==>",cartButtonClick)
+    setCartButtonClick(!cartButtonClick)
+    // console.log("Cart updated:", cart);
   };
   const cartRemoveButtonHandler = () => {
     let prevCart = localStorage.getItem("cartData");
     let carts = prevCart ? JSON.parse(prevCart) : [];
     let updatedCart = carts.filter(cart => cart.product.id !== products.id);
     localStorage.setItem("cartData", JSON.stringify(updatedCart));
-    setCartButtonClick(false);
+    console.log("Cart remove Button CLick ==>",cartButtonClick)
+    setCartButtonClick(!cartButtonClick);
 
   }
 
@@ -159,9 +180,9 @@ const ProductDetail = () => {
           480: { slidesPerView: 1 },
         }}
       >
-        {relatedProducts.map((item, i) => (
-          <SwiperSlide key={i}>
-            <div className="card shadow-sm h-100">
+        {relatedProducts.map((item, index) => (
+          <SwiperSlide key={index}>
+            <div key={index} className="card shadow-sm h-100">
               <Link to={`/productDetail/${item.title}/${item.id}`}>
                 <img
                   className="card-img-top"

@@ -24,10 +24,10 @@ const Register = () => {
      if(response.data.bool==false){
       setFormError(true)
       setError(response.data.msg)
-      console.log("Response fail==>",response.data)
+      // console.log("Response fail==>",response.data)
      }else{
-      console.log('Registration Successful')
-      console.log("Response Success==>",response.data)
+      // console.log('Registration Successful')
+      // console.log("Response Success==>",response.data)
       setSuccess(response.data.msg)
       setTimeout(()=>[
         navigate('/customer/login')

@@ -8,7 +8,7 @@ const TagProducts = () => {
   const [total, setTotal] = useState(0);
 
   const { tag } = useParams();
-console.log("tag 1==>",tag)
+// console.log("tag 1==>",tag)
   useEffect(() => {
       fetchData(`${baseUrl}/${tag}`)
   
@@ -20,8 +20,8 @@ console.log("tag 1==>",tag)
         .then((data) => {
           setProducts(data.results)
           setTotal(data.count)
-          console.log("api==> ", baseUrl)
-          console.log("products tag==> ", data)
+          // console.log("api==> ", baseUrl)
+          // console.log("products tag==> ", data)
         })
     }
   // pagination buttons
