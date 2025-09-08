@@ -35,6 +35,7 @@ import SellerChangePassword from "./components/Seller/SellerChangePassword";
 import SellerProfile from "./components/Seller/SellerProfile";
 import TagProducts from "./components/TagProducts";
 import AuthProvider from "./AuthProvider";
+import ConfirmOrder from "./components/ConfirmOrder";
 
 
 
@@ -77,6 +78,7 @@ function App() {
         <Route path="/seller/reports" element={<Reports />} />
         <Route path="/seller/change-password" element={<SellerChangePassword />} />
         <Route path="/seller/profile" element={<SellerProfile />} />
+        <Route path="/confirm-order" element={<ConfirmOrder />} />
 
 
       </Routes>

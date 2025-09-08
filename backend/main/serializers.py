@@ -111,7 +111,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 class OrderItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OrderItems
-        fields = ['id', 'order', 'product']
+        fields = ['id', 'order', 'product','qty','price']
         # depth = 1
 
 class OrderItemsDetailSerializer(serializers.ModelSerializer):

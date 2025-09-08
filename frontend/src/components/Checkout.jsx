@@ -1,11 +1,12 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "./../images/logo.jpg";
-import { CartContext } from "../AuthProvider";
+import { AuthContext, CartContext } from "../AuthProvider";
 
 
 const Checkout = () => {
   const { cartData, setCartData } = useContext(CartContext)
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext)
   const [cartButtonClick, setCartButtonClick] = useState(false)
   const [products, setProducts] = useState([])
 
@@ -24,9 +25,9 @@ cartData.map((item,index)=>{
 })
   return (
     <div className="container mt-4">
-      <h3 className="mb-4">All Items {cartData ? cartData.length : 0}</h3>
+      <h3 className="mb-4">All Items {cartData.length}</h3>
       <div className="row">
-        <div className="col-md-8 col-12">
+        <div className=" col-12">
           <div className="table-responsive">
             <table className="table table-bordered">
               <thead>
@@ -77,7 +78,8 @@ cartData.map((item,index)=>{
 
                   </td>) : (<td colSpan="3" align="right" >
                     <Link to="/categories" className="btn btn-secondary mx-2">Contine Shopping</Link>
-                    <Link to="payment" className="btn btn-success">Proceed to payment</Link>
+                   {isLoggedIn? (<Link to="/confirm-order" className="btn btn-success">Proceed to payment</Link>):
+                   (<Link to="/customer/login" className="btn btn-success">Proceed to payment</Link>)}
                   </td>)}
                 </tr>
 

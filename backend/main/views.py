@@ -88,7 +88,9 @@ def customer_login(request):
 
         user = authenticate(username=username, password=password)
         if user is not None:
-            return JsonResponse({"customer_login": True, "user": user.username})
+            customer=models.Customer.objects.get(user=user)
+
+            return JsonResponse({"customer_login": True, "user": customer.user.username,'customer_id':customer.id})
         else:
             return JsonResponse({"bool": False, "msg": "Invalid credentials"})
 

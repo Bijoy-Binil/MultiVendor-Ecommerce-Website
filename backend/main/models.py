@@ -96,7 +96,8 @@ class OrderItems(models.Model):
         related_name="orderItems"
     )
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
+    qty=models.IntegerField(default=1)
+    price=models.DecimalField(max_digits=10,decimal_places=2,default=0)
     def __str__(self):
         return self.product.title
 

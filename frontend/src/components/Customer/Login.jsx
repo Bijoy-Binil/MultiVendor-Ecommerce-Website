@@ -24,7 +24,8 @@ const Login = () => {
          setFormError(true)
          localStorage.setItem("Customer_username",response.data.user)
          localStorage.setItem("Customer_login",response.data.customer_login)
-        //  console.log("Response==> ",response.data)
+         localStorage.setItem("Customer_id",response.data.customer_id)
+         console.log("Response==> ",response.data)
         //  console.log("Login Succesfull")
        }
     } catch (err) {
