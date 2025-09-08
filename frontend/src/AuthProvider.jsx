@@ -19,11 +19,13 @@ const handleLogout = (e) => {
     localStorage.removeItem("Customer_login")
     navigate("/customer/login")
   }
-
+const checkCart=localStorage.getItem("cartData")
+  const [cartData, setCartData] = useState(JSON.parse(checkCart))
+  console.log("checkCart Auth==> ",checkCart)
   return (
     <div>
 
-<AuthContext.Provider value={{isLoggedIn,setIsLoggedIn,handleLogout}} >
+<AuthContext.Provider value={{isLoggedIn,setIsLoggedIn,handleLogout,cartData,setCartData}} >
 {children}
 </AuthContext.Provider>
 

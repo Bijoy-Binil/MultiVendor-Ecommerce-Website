@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../AuthProvider";
 
 const Header = () => {
-  const { handleLogout, isLoggedIn } = useContext(AuthContext)
+  const { handleLogout, isLoggedIn ,cartData,setCartData} = useContext(AuthContext)
 
 
   return (
@@ -98,7 +98,7 @@ const Header = () => {
                 {" "}
                 <Link className="nav-link active" to="/checkout">
                   {" "}
-                  My Cart (4){" "}
+                  My Cart {cartData?cartData.length:0}{" "}
                 </Link>{" "}
 
               </li>{" "}

@@ -2,8 +2,8 @@
 import { Link, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import React, { useEffect, useState } from "react"
-import SingleProduct from "./SingleProduct"
+import React, { useContext, useEffect, useState } from "react"
+
 
 
 const ProductDetail = () => {
@@ -17,6 +17,8 @@ const ProductDetail = () => {
   const [relatedProducts, setRelatedProducts] = useState([])
   const [productImgs, setProductImgs] = useState([])
   const [productTags, setProductTags] = useState([])
+  const [cartButtonClick, setCartButtonClick] = useState(false)
+
 
   useEffect(() => {
     fetchData(`${baseUrl}/${product_id}`)
@@ -44,13 +46,39 @@ const ProductDetail = () => {
         console.log("RealtedProducts==> ", data)
       })
   }
-const tagslink=[]
-for(let i=0; i<productTags.length;i++){
-  let tag=productTags[i].trim()
-  // console.log("tag 2==>",tag)
-  tagslink.push(<Link className="badge bg-secondary text-white me-1" to={`/products/${tag}`}>{tag}</Link>)
-}
-console.log(productTags)
+  const tagslink = []
+  for (let i = 0; i < productTags.length; i++) {
+    let tag = productTags[i].trim()
+    // console.log("tag 2==>",tag)
+    tagslink.push(<Link className="badge bg-secondary text-white me-1" to={`/products/${tag}`}>{tag}</Link>)
+  }
+  const cartDatas = {
+    product: {
+      id: products.id,
+      title: products.title,
+    },
+    user: {
+      id: 1
+    }
+  };
+
+
+  const cartAddButtonHandler = () => {
+    let prevCart = localStorage.getItem("cartData");
+    let cart = prevCart ? JSON.parse(prevCart) : [];
+    cart.push(cartDatas);
+    localStorage.setItem("cartData", JSON.stringify(cart));
+    setCartButtonClick(true)
+    console.log("Cart updated:", cart);
+  };
+  const cartRemoveButtonHandler = () => {
+    let prevCart = localStorage.getItem("cartData");
+    let carts = prevCart ? JSON.parse(prevCart) : [];
+    let updatedCart = carts.filter(cart => cart.product.id !== products.id);
+    localStorage.setItem("cartData", JSON.stringify(updatedCart));
+    setCartButtonClick(false);
+
+  }
 
 
   return (
@@ -82,23 +110,26 @@ console.log(productTags)
         <div className="col-8">
           <h3>{products.title}</h3>
           <p>
-           {products.detail}
+            {products.detail}
           </p>
           <h5 className="text-muted small ">Price: {products.price}</h5>{" "}
           <p className="mt-3 ">
             <Link
               title="demo"
-            target="_blank"
+              target="_blank"
               to={products.demo_url}
               className="btn btn-sm btn-dark rounded-pill shadow-sm "
             >
               <i className="fa-solid fa-cart-shopping me-2"></i>
               Demo
             </Link>
-            <button className="btn btn-sm btn-primary rounded-pill shadow-sm mx-2">
+            {!cartButtonClick ? <button type="button" onClick={cartAddButtonHandler} className="btn btn-sm btn-primary rounded-pill shadow-sm mx-2">
               <i className="fa-solid fa-cart-shopping me-2"></i>
               Add To Cart
-            </button>
+            </button> : <button type="button" onClick={cartRemoveButtonHandler} className="btn btn-sm btn-danger rounded-pill shadow-sm mx-2">
+              <i className="fa-solid fa-cart-shopping me-2"></i>
+              Remove from cart
+            </button>}
             <button className="btn btn-sm btn-info rounded-pill  shadow-sm">
               <i className="fa-solid fa-bag-shopping me-2 "></i>
               Buy Now
@@ -111,8 +142,8 @@ console.log(productTags)
           <div className="producttags mt-4">
             <h5 className="mt-3 ">Tags</h5>
             <p>
-       
-         {tagslink}
+
+              {tagslink}
             </p>
           </div>
         </div>
@@ -120,7 +151,7 @@ console.log(productTags)
 
       {/* Related Products */}
       <h4 className="mt-5 mb-3">Related Products</h4>
-  <Swiper
+      <Swiper
         spaceBetween={20}
         breakpoints={{
           1024: { slidesPerView: 4 },
@@ -144,7 +175,7 @@ console.log(productTags)
                 <p className="card-text text-muted">Price: ₹{item.price}</p>
                 <div className="d-flex justify-content-between">
                   <button
-                   
+
                     className="btn btn-sm btn-primary"
                   >
                     Add to Cart
