@@ -38,6 +38,8 @@ class Product(models.Model):
     tags=models.TextField(null=True)
     image = models.ImageField(upload_to='product_imgs/',null=True)
     demo_url=models.URLField(null=True,blank=True)
+    product_file = models.FileField(upload_to='products/', null=True, blank=True)    
+    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -82,7 +84,8 @@ class CustomerAddress(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order_time = models.DateTimeField(auto_now_add=True)
-
+    order_status=models.BooleanField(default=False)
+    
     def __str__(self):
         return f"Order #{self.id} by {self.customer.user.username}"
 
@@ -98,6 +101,8 @@ class OrderItems(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     qty=models.IntegerField(default=1)
     price=models.DecimalField(max_digits=10,decimal_places=2,default=0)
+
+
     def __str__(self):
         return self.product.title
 

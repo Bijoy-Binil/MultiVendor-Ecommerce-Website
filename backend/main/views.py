@@ -1,7 +1,7 @@
 from . import models
 from . import serializers
 from rest_framework import generics, viewsets
-from .models import Product
+from .models import Product,Order
 from .serializers import ProductSerializer
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
@@ -151,6 +151,21 @@ class OrderList(generics.ListCreateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
 
+# Customer Order views
+class CustomerOrderList(generics.ListCreateAPIView):
+    queryset = models.OrderItems.objects.all()
+    serializer_class = serializers.OrderItemsSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        customer_id = self.kwargs.get("pk")
+        if customer_id:
+            qs = qs.filter(order__customer__id=customer_id)
+        return qs
+
+
+        
+    
 class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
@@ -183,3 +198,25 @@ class CategoryList(generics.ListCreateAPIView):
 class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.ProductCategory.objects.all()
     serializer_class = serializers.CategoryDetailSerializer
+
+
+@csrf_exempt
+def update_order_status(request, order_id):
+    """
+    Update order status after successful payment
+    """
+    if request.method == "POST":
+        updated = models.Order.objects.filter(id=order_id).update(order_status=True)
+        if updated:
+            return JsonResponse({
+                "success": True,
+                "order_id": order_id,
+                "status": "paid"
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": "Order not found"
+            }, status=404)
+
+    return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)

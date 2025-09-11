@@ -1,52 +1,167 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../AuthProvider";
 import axios from "axios";
-
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { useNavigate } from 'react-router-dom';
 const ConfirmOrder = () => {
+    const { customerId } = useContext(AuthContext);
   const baseUrl = "http://127.0.0.1:8000/api/";
-  const { customerId } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [orderId, setOrderId] = useState("");
+  const [payMethod, setPayMethod] = useState("");
 
+  // Create order in Django
   const createOrder = async () => {
     try {
-      // 1. Create order
       const orderRes = await axios.post(`${baseUrl}orders/`, {
         customer: customerId,
       });
-      const orderId = orderRes.data.id;
-      console.log("Order created:", orderId);
 
-      // 2. Get cart from localStorage
+      const newOrderId = orderRes.data.id;
+      setOrderId(newOrderId);
+      console.log("Order created:", newOrderId);
+
+      // Add order items
       let prevCart = localStorage.getItem("cartData");
       let carts = prevCart ? JSON.parse(prevCart) : [];
 
-      // 3. Create order items
       for (const cart of carts) {
-        const itemData = {
-          order: orderId,
+        await axios.post(`${baseUrl}order-items/`, {
+          order: newOrderId,
           product: cart.product.id,
-          qty: 1, // or cart.qty if you store it
+          qty: 1,
           price: cart.product.price,
-        };
-
-        const itemRes = await axios.post(`${baseUrl}order-items/`, itemData);
-        console.log("Order item created:", itemRes.data);
+        });
       }
 
-      // 4. Clear cart after success
       localStorage.removeItem("cartData");
-
+      return newOrderId;
     } catch (err) {
       console.error("Error creating order:", err);
     }
   };
 
-  useEffect(() => {
-    createOrder();
-  }, []);
+  // Update order status in Django
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const res = await axios.post(`${baseUrl}update-order-status/${orderId}/`);
+      console.log("Order status updated:", res.data);
+
+    } catch (err) {
+      console.error("Order status update failed:", err);
+    }
+  };
+
+  // Handle Pay Now button
+  const PayNowButton = async () => {
+    if (!payMethod) {
+      alert("Select Payment Method !!");
+      return;
+    }
+
+    const newOrderId = await createOrder();
+    setOrderId(newOrderId);
+    console.log("Selected payment method:", payMethod);
+  };
 
   return (
-    <div>
-      <h1>Your order has been confirmed!!</h1>
+    <div className="container">
+      <div className="row mt-5">
+        <div className="col-4 offset-4">
+          <div className="card text-center py-3">
+            <h3>
+              <i className="fa fa-check-circle text-success"></i> Your order has
+              been confirmed!!
+            </h3>
+            <h5>ORDER ID: {orderId}</h5>
+          </div>
+
+          <div className="card p-3 mt-4">
+            <form>
+              <label>
+                <input
+                  type="radio"
+                  onChange={() => setPayMethod("paypal")}
+                  name="payMethod"
+                />
+                PayPal
+              </label>
+              <br />
+
+              <label>
+                <input
+                  type="radio"
+                  onChange={() => setPayMethod("stripe")}
+                  name="payMethod"
+                />
+                Stripe
+              </label>
+              <br />
+
+              <label>
+                <input
+                  type="radio"
+                  onChange={() => setPayMethod("razorpay")}
+                  name="payMethod"
+                />
+                RazorPay
+              </label>
+              <br />
+
+              <label>
+                <input
+                  type="radio"
+                  onChange={() => setPayMethod("paytm")}
+                  name="payMethod"
+                />
+                Paytm
+              </label>
+              <br />
+
+              <button
+                type="button"
+                onClick={PayNowButton}
+                className="btn btn-sm btn-success mt-3 mb-3"
+              >
+                Next
+              </button>
+            </form>
+
+            {payMethod === "paypal" && orderId && (
+              <PayPalScriptProvider
+                options={{
+                  "client-id":
+                    "AcR1hoIkPE_TErs-tmGk6v2GKZOb--ZbA6IBNMXd057qK3K1ayLbwRAsPBIB1R8gDhuDC8zvZEzpkz-3",
+                  currency: "USD",
+                  intent: "capture",
+                }}
+              >
+                <PayPalButtons
+                  createOrder={(data, actions) => {
+                    return actions.order.create({
+                      purchase_units: [{ amount: { value: "10.00" } }],
+                    });
+                  }}
+                  onApprove={async (data, actions) => {
+                    try {
+                      const details = await actions.order.capture();
+                      navigate('/customer/orders');
+                      console.log("✅ Payment captured:", details);
+
+                      // Update Django after successful PayPal payment
+                      updateOrderStatus(orderId, "paid");
+                    } catch (error) {
+                      console.error('Payment error:', error);
+                      navigate('/confirm-order');
+                    }
+
+                  }}
+                />
+              </PayPalScriptProvider>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -39,6 +39,9 @@ path('order/<int:pk>/', views.OrderDetail.as_view()),
 path('order-items/', views.OrderItemsList.as_view()),
 path('order-item/<int:pk>/', views.OrderItemsDetail.as_view()),
 
+# Order status 
+ path("update-order-status/<int:order_id>/", views.update_order_status, name="order-status"),
+ path("customer/<int:pk>/order-items", views.CustomerOrderList.as_view()),
 
 
 ]

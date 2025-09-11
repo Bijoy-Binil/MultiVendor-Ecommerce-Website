@@ -8,7 +8,7 @@ const CategoryProducts = () => {
   const [total, setTotal] = useState(0);
 
   const { category_id } = useParams();
-
+console.log("UseParams categoryId==>",category_id)
   // fetch products whenever category changes
   useEffect(() => {
     fetchProducts(`${baseUrl}/?category=${category_id}`);

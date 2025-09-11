@@ -40,13 +40,14 @@ class ProductSerializer(serializers.ModelSerializer):
     product_ratings = serializers.StringRelatedField(many=True, read_only=True)
     related_products = serializers.SerializerMethodField()
     tag_list = serializers.SerializerMethodField()
+    product_file = serializers.FileField(read_only=True, use_url=True)
 
     class Meta:
         model = models.Product
         fields = [
             'id', 'category', 'vendor', 'title', 'slug', 'tags',
             'tag_list', 'image',"demo_url" ,'related_products', 'detail',
-            'price', 'product_ratings', 'product_imgs'
+            'price', 'product_ratings', 'product_imgs',"product_file"
         ]
         depth = 1
 
@@ -97,7 +98,7 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
-        fields = ['id', 'customer']
+        fields = ['id', 'customer','order_status']
         # depth = 1
 
 class OrderDetailSerializer(serializers.ModelSerializer):
@@ -109,6 +110,8 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
 # Order Item serializers
 class OrderItemsSerializer(serializers.ModelSerializer):
+    order=OrderSerializer() 
+    product=ProductDetailSerializer() 
     class Meta:
         model = models.OrderItems
         fields = ['id', 'order', 'product','qty','price']

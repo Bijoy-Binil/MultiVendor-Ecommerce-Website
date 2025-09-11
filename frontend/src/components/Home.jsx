@@ -73,10 +73,7 @@ const Home = () => {
           <div className="row">
             {/* Box Products */}
             <SingleProduct />
-            <SingleProduct />
-            <SingleProduct />
-            <SingleProduct />
-
+ 
             {/* Additional product cards would go here */}
           </div>
         </div>

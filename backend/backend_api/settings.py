@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'main',
     'rest_framework',
     'rest_framework_simplejwt',
-       "corsheaders",
+    "corsheaders",
 
 ]
 
@@ -149,7 +149,7 @@ REST_FRAMEWORK = {
     # ],
 
    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 2
+    'PAGE_SIZE': 4
 
     # 'DEFAULT_AUTHENTICATION_CLASSES': (
        
