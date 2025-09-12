@@ -43,6 +43,8 @@ path('order-item/<int:pk>/', views.OrderItemsDetail.as_view()),
  path("update-order-status/<int:order_id>/", views.update_order_status, name="order-status"),
  path("customer/<int:pk>/order-items", views.CustomerOrderList.as_view()),
 
+ path("update_product_download_count/<int:product_id>/", views.update_product_download_count, name="downloads"),
+
 
 ]
 urlpatterns +=router.urls

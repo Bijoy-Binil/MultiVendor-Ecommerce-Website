@@ -220,3 +220,24 @@ def update_order_status(request, order_id):
             }, status=404)
 
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+
+@csrf_exempt
+def update_product_download_count(request, product_id):
+    if request.method == "POST":
+        try:
+            product = models.Product.objects.get(id=product_id)
+        except models.Product.DoesNotExist:
+            return JsonResponse({"bool": False, "error": "Product not found"}, status=404)
+
+        total_downloads = int(product.downloads)
+        total_downloads += 1
+
+        models.Product.objects.filter(id=product_id).update(downloads=total_downloads)
+
+        return JsonResponse({
+            "bool": True,
+            "product_id": product_id,
+            "status": "added count"
+        })
+
+    return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)

@@ -145,14 +145,14 @@ const ConfirmOrder = () => {
                   onApprove={async (data, actions) => {
                     try {
                       const details = await actions.order.capture();
-                      navigate('/customer/orders');
+                      navigate('/order/success');
                       console.log("✅ Payment captured:", details);
 
                       // Update Django after successful PayPal payment
                       updateOrderStatus(orderId, "paid");
                     } catch (error) {
                       console.error('Payment error:', error);
-                      navigate('/confirm-order');
+                      navigate('/order/failure');
                     }
 
                   }}

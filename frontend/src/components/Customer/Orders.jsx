@@ -1,31 +1,32 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react";
 
 import Sidebar from "./Sidebar";
-import { Link } from "react-router-dom";
-import logo from "../../images/logo.jpg"
+import logo from "../../images/logo.jpg";
 import { AuthContext } from "../../AuthProvider";
+import axios from "axios";
+import OrderRow from "./OrderRow";
 
 const Orders = () => {
+  const baseUrl = "http://127.0.0.1:8000/api";
+  const [orderItems, setOrderItems] = useState([]);
 
-  const baseUrl = "http://127.0.0.1:8000/api"
-  const [orderItems, setOrderItems] = useState([])
   const { customerId } = useContext(AuthContext);
+
   const fetchData = (baseUrl) => {
     fetch(baseUrl)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
-        setOrderItems(data.results)
+        console.log(data);
+        setOrderItems(data.results);
+      });
+  };
 
-      })
-
-
-  }
   useEffect(() => {
-    fetchData(`${baseUrl}/customer/${customerId}/order-items`)
+    fetchData(`${baseUrl}/customer/${customerId}/order-items`);
+  }, []);
 
-  }, [])
-  console.log(orderItems)
+  console.log(orderItems);
+
   return (
     <div className="container my-5">
       <div className="row">
@@ -47,70 +48,26 @@ const Orders = () => {
                 <table className="table table-hover align-middle mb-0">
                   <thead className="table-light text-secondary">
                     <tr>
-                      <th scope="col" className="text-center">#</th>
+                      <th scope="col" className="text-center">
+                        #
+                      </th>
                       <th scope="col">Product</th>
-                      <th scope="col" className="text-end">Price</th>
-                      <th scope="col" className="text-center">Status</th>
-                      <th scope="col" className="text-center">Action</th>
+                      <th scope="col" className="text-end">
+                        Price
+                      </th>
+                      <th scope="col" className="text-center">
+                        Status
+                      </th>
+                      <th scope="col" className="text-center">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {orderItems.map((item, index) => {
-                      return (
-                        <tr key={index}>
-                          <td className="text-center fw-semibold">{index + 1}</td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <Link to={`/product/${item.product_info.slug}/${item.product_info.id}`}>
-                                <img
-                                  src={item.product_info.image}
-                                  className="img-fluid rounded me-3 border"
-                                  style={{ width: "70px", height: "70px", objectFit: "cover" }}
-                                  alt="Product"
-                                />
-                              </Link>
-                              <Link
-                                to={`/product/${item.product_info.slug}/${item.product_info.id}`}
-                                className="text-decoration-none text-dark fw-semibold"
-                              >
-                                {item.product_info.title}
-                              </Link>
-                            </div>
-                          </td>
-                          <td className="text-end fw-bold text-success">
-                            ₹{item.price}
-                          </td>
-                          <td className="text-center">
-                            {item.order_info.order_status ? (
-                              <span className="badge bg-success px-3 py-2">
-                                <i className="fa fa-check-circle me-1"></i> Completed
-                              </span>
-                            ) : (
-                              <span className="badge bg-warning text-dark px-3 py-2">
-                                <i className="fa fa-spinner fa-spin me-1"></i> Pending
-                              </span>
-                            )}
-                          </td>
-                          <td className="text-center">
-                            {item.order_info.order_status ? (
-                              <a
-                                download
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href={`${item.product_info.product_file}`}
-                                className="btn btn-outline-primary btn-sm"
-                              >
-                                <i className="fa fa-download me-1"></i> Download
-                              </a>
-
-                            ) : (
-                              <button className="btn btn-outline-secondary btn-sm" disabled>
-                                <i className="fa fa-clock me-1"></i> Awaiting
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      );
+                      return <OrderRow item={item} keys={index} index={index}/>
+                        
+                    
                     })}
                   </tbody>
                 </table>
@@ -120,7 +77,6 @@ const Orders = () => {
         </div>
       </div>
     </div>
-
   );
 };
 

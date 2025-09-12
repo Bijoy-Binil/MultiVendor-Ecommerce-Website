@@ -39,7 +39,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='product_imgs/',null=True)
     demo_url=models.URLField(null=True,blank=True)
     product_file = models.FileField(upload_to='products/', null=True, blank=True)    
-    
+    downloads=models.IntegerField(default=0)
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
