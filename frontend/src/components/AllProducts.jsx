@@ -7,6 +7,7 @@ const AllProducts = () => {
   const [products, setProducts] = useState([])
   const [total, setTotal] = useState(0)
 
+
   const fetchData =  (baseUrl) => {
   fetch(baseUrl)
   .then((response)=> response.json())

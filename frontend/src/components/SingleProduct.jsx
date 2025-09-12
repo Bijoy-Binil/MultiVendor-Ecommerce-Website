@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { CurrencyContext } from "../AuthProvider";
 
 const SingleProduct = ({ product }) => {
   if (!product) return null;
-
+  const { currencyData, setCurrencyData } = useContext(CurrencyContext);
   return (
     <div className="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
       <div className="card h-100 shadow-sm border-0">
@@ -26,10 +27,12 @@ const SingleProduct = ({ product }) => {
           >
             <h5 className="card-title fw-bold">{product.title}</h5>
           </Link>
-          <p className="card-text text-muted small mb-3">
-            Price: ${product.price}
-          </p>
-
+         {
+            currencyData!= 'usd' &&     <h5 className="text-muted small ">Price: Rs {product.price}</h5>
+          }
+        {
+          currencyData == 'usd' &&  <h5 className="text-muted small ">Price:$ {product.usd_price}</h5>
+        }
           {/* Action Buttons */}
           <div className="d-flex justify-content-between">
             <button

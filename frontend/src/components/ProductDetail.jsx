@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import React, { useContext, useEffect, useState } from "react"
+import { CurrencyContext } from "../AuthProvider";
 
 
 
@@ -10,7 +11,7 @@ const ProductDetail = () => {
 
   const { product_slug, product_id } = useParams()
   // console.log(product_id, product_slug)
-
+  const { currencyData, setCurrencyData } = useContext(CurrencyContext);
   const baseUrl = `http://127.0.0.1:8000/api/product`
   const relatedBaseUrl = `http://127.0.0.1:8000/api/related-products`
   const [products, setProducts] = useState("")
@@ -18,6 +19,9 @@ const ProductDetail = () => {
   const [productImgs, setProductImgs] = useState([])
   const [productTags, setProductTags] = useState([])
   const [cartButtonClick, setCartButtonClick] = useState(false)
+  const [currency, setcurreny] = useState("inr")
+
+const _currency=localStorage.getItem("currency")
 
 useEffect(() => {
   fetchData(`${baseUrl}/${product_id}`);
@@ -133,7 +137,12 @@ console.log("Products==>",products)
           <p>
             {products.detail}
           </p>
-          <h5 className="text-muted small ">Price: {products.price}</h5>{" "}
+          {
+            currencyData!= 'usd' &&     <h5 className="text-muted small ">Price: Rs {products.price}</h5>
+          }
+        {
+          currencyData == 'usd' &&  <h5 className="text-muted small ">Price:$ {products.usd_price}</h5>
+        }
           <p className="mt-3 ">
             <Link
               title="demo"

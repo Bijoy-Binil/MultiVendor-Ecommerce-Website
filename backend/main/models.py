@@ -34,7 +34,8 @@ class Product(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=200)
     detail = models.TextField(null=True)
-    price = models.IntegerField()
+    price = models.DecimalField(max_digits=10,decimal_places=2)
+    usd_price = models.DecimalField(max_digits=10,decimal_places=2, default=80)
     tags=models.TextField(null=True)
     image = models.ImageField(upload_to='product_imgs/',null=True)
     demo_url=models.URLField(null=True,blank=True)
@@ -52,6 +53,7 @@ class Product(models.Model):
         if self.tags:
             return [t.strip() for t in self.tags.split(',')]
         return [] 
+    
 
 
 

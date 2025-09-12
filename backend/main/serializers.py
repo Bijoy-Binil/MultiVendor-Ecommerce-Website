@@ -47,7 +47,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'category', 'vendor', 'title', 'slug', 'tags',
             'tag_list', 'image',"demo_url" ,'related_products', 'detail',
-            'price', 'product_ratings', 'product_imgs',"product_file"
+            'price', 'product_ratings','usd_price', 'product_imgs',"product_file"
         ]
         depth = 1
 
@@ -74,7 +74,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         depth = 1
-        fields = ['id', 'category', 'vendor', 'title',"slug","tag_list","image","demo_url" ,'detail',"downloads", 'price','product_ratings',"product_imgs",'product_file']
+        fields = ['id', 'category', 'vendor', 'title',"slug","tag_list","image","demo_url",'usd_price' ,'detail',"downloads", 'price','product_ratings',"product_imgs",'product_file']
 
     def get_tag_list(self, obj):
         return obj.tag_list()  # call your model method safely
