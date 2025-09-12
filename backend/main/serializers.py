@@ -74,7 +74,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         depth = 1
-        fields = ['id', 'category', 'vendor', 'title',"slug","tag_list","image","demo_url" ,'detail', 'price','product_ratings',"product_imgs"]
+        fields = ['id', 'category', 'vendor', 'title',"slug","tag_list","image","demo_url" ,'detail', 'price','product_ratings',"product_imgs",'product_file']
 
     def get_tag_list(self, obj):
         return obj.tag_list()  # call your model method safely
@@ -110,12 +110,24 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
 # Order Item serializers
 class OrderItemsSerializer(serializers.ModelSerializer):
-    order=OrderSerializer() 
-    product=ProductDetailSerializer() 
+    # Accept IDs on write
+    order = serializers.PrimaryKeyRelatedField(queryset=models.Order.objects.all())
+    product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all())
+
+    # Nested info for read
+    order_info = serializers.SerializerMethodField(read_only=True)
+    product_info = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = models.OrderItems
-        fields = ['id', 'order', 'product','qty','price']
-        # depth = 1
+        fields = ['id', 'order', 'product', 'qty', 'price', 'order_info', 'product_info']
+
+    def get_order_info(self, obj):
+        return OrderSerializer(obj.order, context=self.context).data
+
+    def get_product_info(self, obj):
+        return ProductDetailSerializer(obj.product, context=self.context).data
+
 
 class OrderItemsDetailSerializer(serializers.ModelSerializer):
     class Meta:

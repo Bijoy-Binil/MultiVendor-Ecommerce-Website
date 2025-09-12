@@ -61,19 +61,19 @@ const Orders = () => {
                           <td className="text-center fw-semibold">{index + 1}</td>
                           <td>
                             <div className="d-flex align-items-center">
-                              <Link to={`/product/${item.product.slug}/${item.product.id}`}>
+                              <Link to={`/product/${item.product_info.slug}/${item.product_info.id}`}>
                                 <img
-                                  src={item.product.image}
+                                  src={item.product_info.image}
                                   className="img-fluid rounded me-3 border"
                                   style={{ width: "70px", height: "70px", objectFit: "cover" }}
                                   alt="Product"
                                 />
                               </Link>
                               <Link
-                                to={`/product/${item.product.slug}/${item.product.id}`}
+                                to={`/product/${item.product_info.slug}/${item.product_info.id}`}
                                 className="text-decoration-none text-dark fw-semibold"
                               >
-                                {item.product.title}
+                                {item.product_info.title}
                               </Link>
                             </div>
                           </td>
@@ -81,7 +81,7 @@ const Orders = () => {
                             ₹{item.price}
                           </td>
                           <td className="text-center">
-                            {item.order.order_status ? (
+                            {item.order_info.order_status ? (
                               <span className="badge bg-success px-3 py-2">
                                 <i className="fa fa-check-circle me-1"></i> Completed
                               </span>
@@ -92,12 +92,12 @@ const Orders = () => {
                             )}
                           </td>
                           <td className="text-center">
-                            {item.order.order_status ? (
+                            {item.order_info.order_status ? (
                               <a
                                 download
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                href={`http://127.0.0.1:8000/${item.product.product_file}`}
+                                href={`${item.product_info.product_file}`}
                                 className="btn btn-outline-primary btn-sm"
                               >
                                 <i className="fa fa-download me-1"></i> Download
