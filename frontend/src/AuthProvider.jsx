@@ -34,7 +34,7 @@ const AuthProvider = ({ children }) => {
     const savedCart = localStorage.getItem("cartData");
     return savedCart ? JSON.parse(savedCart) : [];
   });
-
+console.log("CartDataAuth==> ",cartData)
   useEffect(() => {
     localStorage.setItem("cartData", JSON.stringify(cartData));
   }, [cartData]);

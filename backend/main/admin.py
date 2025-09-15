@@ -3,7 +3,6 @@ from . import models
 # Register your models here.
 admin.site.register(models.Vendor)
 admin.site.register(models.ProductCategory)
-admin.site.register(models.OrderItems)
 admin.site.register(models.CustomerAddress)
 admin.site.register(models.ProductRating)
 admin.site.register(models.ProductImage)
@@ -29,5 +28,9 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(models.Product,ProductAdmin)
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display=['id','customer',"order_time","order_status"]
+    list_display=['id','customer',"order_time",'total_amount','total_usd_amount',"order_status"]
 admin.site.register(models.Order,OrderAdmin)
+
+class OrderItemsAdmin(admin.ModelAdmin):
+    list_display=['id','order',"product","qty",'price','usd_price']
+admin.site.register(models.OrderItems,OrderItemsAdmin)

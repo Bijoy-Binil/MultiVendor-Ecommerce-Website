@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import React, { useContext, useEffect, useState } from "react"
 import { CurrencyContext } from "../AuthProvider";
-
+import { AuthContext, CartContext } from "../AuthProvider";
 
 
 const ProductDetail = () => {
@@ -76,15 +76,17 @@ const checkProductInCart = (product_id) => {
       id: products.id,
       title: products.title,
       price: products.price,
+      usd_price: products.usd_price,
       image: products.image,
 
     },
     user: {
       id: 1
-    }
+    },
+    total_amount:20
   };
   console.log("Cart Button CLick ==>",cartButtonClick)
-console.log("Products==>",products)
+console.log("Products==>",products.usd_price)
 
   const cartAddButtonHandler = () => {
     let prevCart = localStorage.getItem("cartData");

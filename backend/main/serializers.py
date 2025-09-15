@@ -98,7 +98,7 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
-        fields = ['id', 'customer','order_status']
+        fields = ['id', 'customer','order_status','total_amount','total_usd_amount']
         # depth = 1
 
 class OrderDetailSerializer(serializers.ModelSerializer):
@@ -120,7 +120,7 @@ class OrderItemsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.OrderItems
-        fields = ['id', 'order', 'product', 'qty', 'price', 'order_info', 'product_info']
+        fields = ['id', 'order', 'product', 'qty', 'price','usd_price', 'order_info', 'product_info']
 
     def get_order_info(self, obj):
         return OrderSerializer(obj.order, context=self.context).data
