@@ -65,8 +65,8 @@ const Orders = () => {
                   </thead>
                   <tbody>
                     {orderItems.map((item, index) => {
-                      return <OrderRow item={item} keys={index} index={index}/>
-                        
+                      return  <OrderRow item={item} key={index} keys={index} index={index}/>
+                      
                     
                     })}
                   </tbody>

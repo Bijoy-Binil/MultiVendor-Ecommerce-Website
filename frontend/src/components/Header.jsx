@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext, CartContext, CurrencyContext } from "../AuthProvider";
-
 const Header = () => {
   const { handleLogout, isLoggedIn } = useContext(AuthContext);
   const { cartData } = useContext(CartContext);

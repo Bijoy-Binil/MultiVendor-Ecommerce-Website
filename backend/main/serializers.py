@@ -148,3 +148,19 @@ class ProductRatingSerializer(serializers.ModelSerializer):
         model = models.ProductRating
         fields = ['id', 'customer', 'product','rating','reviews','add_time']
         depth = 1
+
+ # Wishlist serializers
+class WishlistSerializer(serializers.ModelSerializer):
+    product_info = ProductDetailSerializer(source='product', read_only=True)
+    customer_info = CustomerSerializer(source='customer', read_only=True)
+
+    class Meta:
+        model = models.Wishlist
+        fields = ['id', 'product', 'customer', 'product_info', 'customer_info']
+
+
+    def get_customer_info(self, obj):
+        return CustomerSerializer(obj.customer, context=self.context).data
+
+    def get_product_info(self, obj):
+        return ProductDetailSerializer(obj.product, context=self.context).data   

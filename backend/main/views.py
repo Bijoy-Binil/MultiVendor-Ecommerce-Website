@@ -21,7 +21,6 @@ class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.VendorSerializer
 
 
-# Product views
 class ProductList(generics.ListCreateAPIView):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
@@ -29,10 +28,21 @@ class ProductList(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = models.Product.objects.all()
         category_id = self.request.GET.get("category")  # ✅ safe access
+
         if category_id:
             queryset = queryset.filter(category__id=category_id)
+
+        fetch_limit = self.request.GET.get("fetch_limit")
+        if fetch_limit:
+            try:
+                limit = int(fetch_limit)
+                queryset = queryset.order_by("-id")[:limit]  # ✅ latest first
+            except ValueError:
+                pass
+
+
         return queryset
-    
+
 
 
 class RelatedProductList(generics.ListAPIView):
@@ -241,3 +251,57 @@ def update_product_download_count(request, product_id):
         })
 
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+
+
+
+# Wishlist views
+class WishList(generics.ListCreateAPIView):
+    queryset = models.Wishlist.objects.all()
+    serializer_class = serializers.WishlistSerializer
+
+@csrf_exempt
+def check_in_wishlist(request):
+    msg = {"bool": False}  
+    
+    if request.method == "POST":
+        product_id = request.POST.get("product")
+        customer_id = request.POST.get("customer")
+    else:  # handle GET
+        product_id = request.GET.get("product")
+        customer_id = request.GET.get("customer")
+
+    if product_id and customer_id:
+        exists = models.Wishlist.objects.filter(
+            product_id=product_id,
+            customer_id=customer_id
+        ).exists()
+        msg = {"bool": exists}
+
+    return JsonResponse(msg)
+
+
+# Customer WisthItems views
+class CustomerWishItemList(generics.ListCreateAPIView):
+    queryset = models.Wishlist.objects.all()
+    serializer_class = serializers.WishlistSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        customer_id = self.kwargs.get("pk")
+        if customer_id:
+            qs = qs.filter(customer__id=customer_id)
+        return qs
+@csrf_exempt   
+def remove_from_wishlists(request):
+    msg = {"bool": False}  
+
+    if request.method == "POST":
+        wishlist_id = request.POST.get("wishlist_id")
+
+        if wishlist_id:
+            deleted, _ = models.Wishlist.objects.filter(id=wishlist_id).delete()
+            
+            if deleted:  # deleted > 0 means something was deleted
+                msg = {"bool": True}
+
+    return JsonResponse(msg)

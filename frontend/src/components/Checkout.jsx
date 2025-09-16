@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "./../images/logo.jpg";
 import { AuthContext, CartContext } from "../AuthProvider";
@@ -16,19 +16,27 @@ const Checkout = () => {
     let carts = prevCart ? JSON.parse(prevCart) : [];
     let updatedCart = carts.filter((cart) => cart.product.id !== product_id);
     localStorage.setItem("cartData", JSON.stringify(updatedCart));
-    setCartButtonClick(false);
+    setCartButtonClick(true);
   };
+
+  // ✅ Use useEffect to sync cart after remove button click
+  useEffect(() => {
+    if (cartButtonClick) {
+      let prevCart = localStorage.getItem("cartData");
+      let carts = prevCart ? JSON.parse(prevCart) : [];
+      setCartData(carts);
+      setCartButtonClick(false);
+    }
+  }, [cartButtonClick, setCartData]);
+
   let sum = 0;
-  console.log("CartData==> ",cartData)
   cartData.map((item) => {
-    if (currencyData == "inr" || currencyData==undefined) {
+    if (currencyData === "inr" || currencyData === undefined) {
       sum += parseFloat(item.product.price) * (item.qty || 1);
-    } else if (currencyData == "usd"){
-      console.log("usd_price==> ",item.product.usd_price)
+    } else if (currencyData === "usd") {
       sum += parseFloat(item.product.usd_price) * (item.qty || 1);
     }
   });
-  console.log(currencyData)
   return (
     <div className="container mt-4">
       <h3 className="mb-4">All Items {cartData.length}</h3>

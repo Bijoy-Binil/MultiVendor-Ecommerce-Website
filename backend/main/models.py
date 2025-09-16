@@ -20,6 +20,9 @@ class ProductCategory(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name="Product Category"
+        verbose_name_plural="Product Categories"
 
 
 # Product Model
@@ -107,6 +110,10 @@ class OrderItems(models.Model):
     price=models.DecimalField(max_digits=10,decimal_places=2,default=0)
     usd_price=models.DecimalField(max_digits=10,decimal_places=2,default=0)
 
+    class Meta:
+            verbose_name="Order Item"
+            verbose_name_plural="Order Items"
+
 
     def __str__(self):
         return self.product.title
@@ -135,3 +142,14 @@ class ProductImage(models.Model):
         return self.image.url 
     
     
+#Wishlist Model
+class Wishlist(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name="Wish List"
+        verbose_name_plural="Wish Lists"
+
+    def __str__(self):
+        return f"{self.product.title} - {self.customer.user.first_name}"

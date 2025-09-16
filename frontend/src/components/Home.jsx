@@ -1,10 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 import logo from "./../images/logo.jpg";
-import SwiperReact from './SwiperReact';
-import { Link } from 'react-router-dom';
-import SingleProduct from './SingleProduct';
+import SwiperReact from "./SwiperReact";
+import { Link } from "react-router-dom";
+import SingleProduct from "./SingleProduct";
 
 const Home = () => {
+  const baseUrl = "http://127.0.0.1:8000/api/products/";
+  const [products, setProducts] = useState([])
+
+  const fetchData = (baseUrl) => {
+    fetch(baseUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setProducts(data.results);
+        // console.log("fetchDataBaseUrl==> ",baseUrl)
+      });
+  };
+  useEffect(()=>{
+  fetchData(`${baseUrl}?fetch_limit=4`);
+  },[])
+
+
   const sampleProducts = [
     {
       id: 1,
@@ -30,16 +46,13 @@ const Home = () => {
       category: { detail: "Machine Learning" },
       price: "$99.99",
     },
-  ]
+  ];
 
   const news = (
-    <span className="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 m-2 rounded-pill small">
-      New
-    </span>
+    <span className="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 m-2 rounded-pill small">New</span>
   );
   return (
     <div>
-
       <main className="my-4">
         {/* Latest Products */}
         <div className="container">
@@ -52,11 +65,10 @@ const Home = () => {
           <div className="row">
             {/*  Box Products */}
             <div className="row mb-4">
-              {sampleProducts?.map((p, i) => (
+              {products?.map((p, i) => (
                 <SingleProduct key={i} product={p} news={news} />
               ))}
             </div>
-
 
             {/* Additional product cards would go here */}
           </div>
@@ -70,12 +82,11 @@ const Home = () => {
               View All Categories <i className="fas fa-arrow-right ms-2"></i>
             </Link>
           </div>
-          <div className="row">
-            {/* Box Products */}
-            <SingleProduct />
- 
-            {/* Additional product cards would go here */}
-          </div>
+          <div className="row mb-4">
+              {sampleProducts?.map((p, i) => (
+                <SingleProduct key={i} product={p} news={news} />
+              ))}
+            </div>
         </div>
         {/* Popular Products */}
         <div className="container">
@@ -95,22 +106,18 @@ const Home = () => {
                     className="card-img-top h-100 object-fit-cover"
                     alt="Product"
                     style={{ transition: "transform 0.3s" }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                    onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   />
-
                 </div>
                 <div className="card-body pb-0">
                   <h5 className="card-title fw-bold">Title !</h5>
 
                   <div className="d-flex justify-content-between align-items-center">
                     <p className="text-secondary  mb-0">Product Downloads: 1234</p>
-
                   </div>
                 </div>
-                <div className="card-footer bg-white border-0 d-grid gap-2">
-
-                </div>
+                <div className="card-footer bg-white border-0 d-grid gap-2"></div>
               </div>
             </div>
 
@@ -135,10 +142,9 @@ const Home = () => {
                     className="card-img-top h-100 object-fit-cover"
                     alt="Product"
                     style={{ transition: "transform 0.3s" }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                    onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   />
-
                 </div>
                 <div className="card-body pb-0">
                   <h5 className="card-title fw-bold">Title !</h5>
@@ -148,9 +154,7 @@ const Home = () => {
                     <a href="">Categories:</a>
                   </div>
                 </div>
-                <div className="card-footer bg-white border-0 d-grid gap-2">
-
-                </div>
+                <div className="card-footer bg-white border-0 d-grid gap-2"></div>
               </div>
             </div>
 
@@ -159,9 +163,8 @@ const Home = () => {
           <SwiperReact />
         </div>
       </main>
-
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

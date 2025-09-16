@@ -45,7 +45,11 @@ path('order-item/<int:pk>/', views.OrderItemsDetail.as_view()),
 
  path("update_product_download_count/<int:product_id>/", views.update_product_download_count, name="downloads"),
 
+ path("wishlists/", views.WishList.as_view()),
+ path("check-in-wishlists/", views.check_in_wishlist, name="check_in_wishlists"),
+ path("remove-from-wishlists/", views.remove_from_wishlists, name="remove_from_wishlists"),
 
+ path("customer/<int:pk>/wish-items", views.CustomerWishItemList.as_view()),
 ]
 urlpatterns +=router.urls
 if settings.DEBUG:
