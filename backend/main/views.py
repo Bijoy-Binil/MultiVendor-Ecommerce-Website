@@ -10,6 +10,8 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate
 import json
 from django.contrib.auth.models import User
+
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.db import IntegrityError
 # Vendor views
 class VendorList(generics.ListCreateAPIView):
@@ -81,9 +83,16 @@ class CustomerList(generics.ListCreateAPIView):
     queryset = models.Customer.objects.all()
     serializer_class = serializers.CustomerSerializer
 
+
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserSerializer
+    parser_classes = (JSONParser, MultiPartParser, FormParser)
+
 class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Customer.objects.all()
-    serializer_class = serializers.CustomerSerializer
+    serializer_class = serializers.CustomerDetailSerializer
 
     
 @csrf_exempt

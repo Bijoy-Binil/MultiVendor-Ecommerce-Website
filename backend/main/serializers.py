@@ -78,18 +78,80 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     def get_tag_list(self, obj):
         return obj.tag_list()  # call your model method safely
-# Customer serializers
+    
+
+# User serializers
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ['id', 'first_name', 'last_name', 'username', 'email']
+        depth = 1
+
+
+# Customer serializer (for create/update)  
 class CustomerSerializer(serializers.ModelSerializer):
+    """Used when creating or updating customers (expects user id)"""
     class Meta:
         model = models.Customer
-        fields = ['id', 'user', 'mobile']
+        fields = ['id', 'user', 'mobile', 'profile_img']
+
         # depth = 1
 
+# Customer detail serializer (for reading with nested user info)
+
+# class CustomerDetailSerializer(serializers.ModelSerializer):
+#     user = UserSerializer()
+
+#     class Meta:
+#         model = models.Customer
+#         fields = ['id', 'user', 'mobile', 'profile_img']
+
+#     def update(self, instance, validated_data):
+#         user_data = validated_data.pop('user', None)
+
+#         if user_data:
+#             # update the nested User
+#             user = instance.user
+#             user.first_name = user_data.get('first_name', user.first_name)
+#             user.last_name = user_data.get('last_name', user.last_name)
+#             user.username = user_data.get('username', user.username)
+#             user.email = user_data.get('email', user.email)
+#             user.save()
+
+#         # update Customer fields
+#         instance.mobile = validated_data.get('mobile', instance.mobile)
+#         instance.profile_img = validated_data.get('profile_img', instance.profile_img)
+#         instance.save()
+
+#         return instance
 class CustomerDetailSerializer(serializers.ModelSerializer):
+    # """Used for GET requests to show nested user details"""
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = models.Customer
-        fields = ['id', 'user', ]
-        depth = 1
+        fields = ['id', 'user', 'mobile', 'profile_img']
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        # Nested user
+        response['user'] = UserSerializer(instance.user).data
+
+        # Customer orders (assuming customer_orders is a related_name on Order)
+        # .all() is needed if it's a reverse relation manager
+
+
+        return response
+    
+    # These must be outside Meta
+    # def get_user_info(self, obj):
+    #     return UserSerializer(obj.user, context=self.context).data
+
+    # def get_product_info(self, obj):
+    #     return ProductDetailSerializer(obj.product, context=self.context).data
+
+
+
 
 
 

@@ -26,6 +26,7 @@ path('category/<int:pk>/', views.CategoryDetail.as_view()),
 # Customer endpoints
 path('customers/', views.CustomerList.as_view()),
 path('customer/<int:pk>/', views.CustomerDetail.as_view()),
+path('user/<int:pk>/', views.UserDetail.as_view()),
 path('customer/login/', views.customer_login,name='customer_login'),
 path('customer/register/', views.customer_register,name='customer_register'),
 

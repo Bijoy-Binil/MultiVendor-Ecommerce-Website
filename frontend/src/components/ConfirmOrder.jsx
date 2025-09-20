@@ -38,11 +38,7 @@ const ConfirmOrder = () => {
       }
       setOrderId(newOrderId);
 
-      console.log("Order created:", newOrderId);
-      console.log("Order Amount ==> ", orderAmount);
-      console.log("Order ORDERreS ==> ", orderRes);
-      console.log("Currency  ==> ", currencyData);
-
+   
       // Add order items
       let prevCart = localStorage.getItem("cartData");
       let carts = prevCart ? JSON.parse(prevCart) : [];
