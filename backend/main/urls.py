@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from django.conf.urls.static import static
 router=DefaultRouter()
-router.register('address', views.CustomerAddressViewset)
+router.register('address', views.CustomerAddressViewSet)
 router.register('product-rating', views.ProductRatingViewset)
 
 urlpatterns = [

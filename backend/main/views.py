@@ -200,9 +200,14 @@ class OrderItemsDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrderItemsSerializer
 
 # Customer Address views
-class CustomerAddressViewset(viewsets.ModelViewSet):
-    queryset = models.CustomerAddress.objects.all()
+class CustomerAddressViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CustomerAddressSerializer
+    queryset = models.CustomerAddress.objects.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
 
 # Customer Address views
 class ProductRatingViewset(viewsets.ModelViewSet):

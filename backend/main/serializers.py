@@ -198,12 +198,22 @@ class OrderItemsDetailSerializer(serializers.ModelSerializer):
         depth = 1
 
 # CustomerAddress serializers
+# class CustomerAddressSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.CustomerAddress
+#         fields = ['id', 'customer', 'address','default_address']
+#         depth = 1
 class CustomerAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CustomerAddress
-        fields = ['id', 'customer', 'address','default_address']
-        depth = 1
+        fields = ['id', 'address', 'customer']
 
+    def create(self, validated_data):
+        if 'customer' not in validated_data:
+            validated_data['customer'] = self.context['request'].user.customer
+        return super().create(validated_data)
+    
+    
 # ProductRating serializers
 class ProductRatingSerializer(serializers.ModelSerializer):
     class Meta:
