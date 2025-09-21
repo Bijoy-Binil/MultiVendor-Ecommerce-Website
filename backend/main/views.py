@@ -360,3 +360,21 @@ def mark_as_default_address(request,pk):
                 response = {"success": False, "error": "Address not found"}
 
     return JsonResponse(response)
+
+
+def customer_dashboard(request, pk):
+    try:
+        customer_id = pk  # Use pk from URL
+        total_address = models.CustomerAddress.objects.filter(customer__id=customer_id).count()
+        total_orders = models.Order.objects.filter(customer__id=customer_id).count()
+        total_wishlist = models.Wishlist.objects.filter(customer__id=customer_id).count()
+
+        msg = {
+            "total_address": total_address,
+            "total_orders": total_orders,
+            "total_wishlist": total_wishlist,  # fixed typo
+        }
+
+        return JsonResponse(msg)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)

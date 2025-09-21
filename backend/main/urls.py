@@ -55,6 +55,8 @@ path('order-item/<int:pk>/', views.OrderItemsDetail.as_view()),
  path("customer/<int:pk>/address-list/", views.CustomerAddressList.as_view()),
 
  path("mark-as-default-address/<int:pk>/", views.mark_as_default_address, name="mark-as-default-addres"),
+
+ path("customer/dashboard/<int:pk>/", views.customer_dashboard,name="customer_dashbaord"),
 ]
 urlpatterns +=router.urls
 if settings.DEBUG:
