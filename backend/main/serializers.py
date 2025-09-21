@@ -206,14 +206,14 @@ class OrderItemsDetailSerializer(serializers.ModelSerializer):
 class CustomerAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CustomerAddress
-        fields = ['id', 'address', 'customer']
+        fields = ['id', 'address', 'customer',"default_address"]
 
     def create(self, validated_data):
         if 'customer' not in validated_data:
             validated_data['customer'] = self.context['request'].user.customer
         return super().create(validated_data)
     
-    
+
 # ProductRating serializers
 class ProductRatingSerializer(serializers.ModelSerializer):
     class Meta:

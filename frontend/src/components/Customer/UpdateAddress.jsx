@@ -1,26 +1,36 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import { AuthContext } from "../../AuthProvider";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
-const AddAddress = () => {
+const UpdateAddress = () => {
   const baseUrl = "http://127.0.0.1:8000/api/";
-
   const { customerId } = useContext(AuthContext);
+  const { address_id } = useParams();
 
-  const [addressFormData, setAddressFormData] = useState({
-    address: "",
-    customer: customerId,
-  });
+  const [addressFormData, setAddressFormData] = useState({ address: "" });
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
+  useEffect(() => {
+    if (address_id) fetchData();
+  }, [address_id]);
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}address/${address_id}/`);
+      console.log("Response==>", res.data);
+      setAddressFormData({ address: res.data.address });
+    } catch (err) {
+      console.error(err.response?.data || err);
+      setErrorMsg("Failed to fetch address");
+    }
+  };
+
   const inputHandler = (e) => {
     const { name, value } = e.target;
-    setAddressFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setAddressFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const submitHandler = async (e) => {
@@ -37,35 +47,28 @@ const AddAddress = () => {
     };
 
     try {
-      const res = await axios.post(`${baseUrl}address/`, payload);
+      const res = await axios.patch(`${baseUrl}address/${address_id}/`, payload);
 
-      if (res.status !== 201) {
-        setErrorMsg("Data Not Saved");
-      } else {
-        setErrorMsg("");
-        setSuccessMsg("Data Saved");
-        setAddressFormData({ address: "" });
-      }
+      setErrorMsg("");
+      setSuccessMsg("Address updated successfully!");
     } catch (err) {
       console.error(err.response?.data || err);
-      setErrorMsg("Failed to save address");
+      setErrorMsg("Failed to update address");
     }
   };
 
   return (
     <div className="container mt-4">
       <div className="row">
-        {/* Sidebar */}
         <div className="col-md-3 col-12 mb-2">
           <Sidebar />
         </div>
 
         <div className="col-md-9 col-12">
           <div className="card">
-            <h4 className="card-header">Add address</h4>
+            <h4 className="card-header">Update Address</h4>
             <div className="card-body">
               <form onSubmit={submitHandler}>
-                {" "}
                 <div className="mb-3">
                   <label htmlFor="address" className="form-label">
                     Address
@@ -81,7 +84,7 @@ const AddAddress = () => {
                   />
                 </div>
                 <button type="submit" className="btn btn-primary">
-                  Submit
+                  Update
                 </button>
               </form>
               {errorMsg && (
@@ -103,4 +106,4 @@ const AddAddress = () => {
   );
 };
 
-export default AddAddress;
+export default UpdateAddress;

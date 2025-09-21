@@ -294,6 +294,7 @@ def check_in_wishlist(request):
     return JsonResponse(msg)
 
 
+
 # Customer WisthItems views
 class CustomerWishItemList(generics.ListCreateAPIView):
     queryset = models.Wishlist.objects.all()
@@ -305,6 +306,20 @@ class CustomerWishItemList(generics.ListCreateAPIView):
         if customer_id:
             qs = qs.filter(customer__id=customer_id)
         return qs
+    
+# Customer WisthItems views
+class CustomerAddressList(generics.ListCreateAPIView):
+    queryset = models.CustomerAddress.objects.all()
+    serializer_class = serializers.CustomerAddressSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        customer_id = self.kwargs.get("pk")
+        if customer_id:
+            qs = qs.filter(customer__id=customer_id).order_by('id')
+        return qs
+    
+
 @csrf_exempt   
 def remove_from_wishlists(request):
     msg = {"bool": False}  
@@ -319,3 +334,29 @@ def remove_from_wishlists(request):
                 msg = {"bool": True}
 
     return JsonResponse(msg)
+
+
+@csrf_exempt
+def mark_as_default_address(request,pk):
+    response = {"success": False}
+
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            address_id = data.get("address_id")
+        except (json.JSONDecodeError, KeyError):
+            return JsonResponse({"success": False, "error": "Invalid data"})
+
+        if address_id:
+            try:
+                address = models.CustomerAddress.objects.get(id=address_id)
+                # Unset previous default addresses for this customer
+                models.CustomerAddress.objects.filter(customer=address.customer).update(default_address=False)
+                # Set selected address as default
+                address.default_address = True
+                address.save()
+                response["success"] = True
+            except models.CustomerAddress.DoesNotExist:
+                response = {"success": False, "error": "Address not found"}
+
+    return JsonResponse(response)
