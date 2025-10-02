@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext, CartContext, CurrencyContext } from "../AuthProvider";
 const Header = () => {
-  const { handleLogout, isLoggedIn } = useContext(AuthContext);
+  const { handleLogout, isLoggedIn,handleVendorLogout,isVendorLoggedIn } = useContext(AuthContext);
   const { cartData } = useContext(CartContext);
   const { currencyData, setCurrencyData } = useContext(CurrencyContext);
 
@@ -116,7 +116,7 @@ const Header = () => {
                     className="dropdown-menu shadow-lg border-0 rounded-3 p-2"
                     aria-labelledby="sellerDropdown"
                   >
-                    <li>
+             {    !isVendorLoggedIn &&  <> <li>
                       <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/seller/register">
                         <i className="fa fa-user-plus me-2 text-primary"></i> Register
                       </Link>
@@ -125,18 +125,18 @@ const Header = () => {
                       <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/seller/login">
                         <i className="fa fa-sign-in-alt me-2 text-success"></i> Login
                       </Link>
-                    </li>
-                    <li><hr className="dropdown-divider" /></li>
+                    </li></> }
+                  {isVendorLoggedIn && <> <li><hr className="dropdown-divider" /></li>
                     <li>
                       <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/seller/dashboard">
                         <i className="fa fa-tachometer-alt me-2 text-warning"></i> Dashboard
                       </Link>
                     </li>
                     <li>
-                      <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" to="/seller/logout">
+                      <Link className="dropdown-item d-flex align-items-center rounded-2 py-2" onClick={handleVendorLogout} to="/seller/login">
                         <i className="fa fa-sign-out-alt me-2 text-danger"></i> Logout
                       </Link>
-                    </li>
+                    </li></>  }
                   </ul>
                 </>
               )}

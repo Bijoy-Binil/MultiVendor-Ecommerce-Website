@@ -20,7 +20,7 @@ const SellerRegister = () => {
   const submitHandler= async ()=>{
    
     try {
-     const response=await axios.post(`${baseUrl}vendor/register`,userData)
+     const response=await axios.post(`${baseUrl}vendor/register/`,userData)
      
      if(response.data.bool==false){
       setFormError(true)

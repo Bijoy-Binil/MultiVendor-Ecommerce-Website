@@ -21,6 +21,33 @@ class VendorList(generics.ListCreateAPIView):
 class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Vendor.objects.all()
     serializer_class = serializers.VendorSerializer
+
+@csrf_exempt
+def vendor_login(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # parse JSON body
+            username = data.get("username")
+            password = data.get("password")
+        except:
+            return JsonResponse({"bool": False, "msg": "Invalid JSON"})
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            vendor = models.Vendor.objects.get(user=user)
+
+            return JsonResponse({
+                "bool": True,
+                "vendor_login": True,
+                "user": vendor.user.username,
+                "vendor_id": vendor.id
+            })
+        else:
+            return JsonResponse({"bool": False, "msg": "Invalid credentials"})
+
+    return JsonResponse({"msg": "Only POST method allowed"})
+
+    
 @csrf_exempt
 def vendor_register(request):
     if request.method == "POST":
