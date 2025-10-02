@@ -5,8 +5,10 @@ from django.utils.text import slugify
 # Vendor Model
 class Vendor(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    mobile = models.BigIntegerField(unique=True,null=True)  
     address = models.TextField(null=True)
-    
+    profile_img = models.ImageField(upload_to='vendor_imgs/',null=True)
+
     def __str__(self):
         return self.user.username
 

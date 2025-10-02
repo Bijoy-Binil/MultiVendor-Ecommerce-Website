@@ -21,7 +21,54 @@ class VendorList(generics.ListCreateAPIView):
 class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Vendor.objects.all()
     serializer_class = serializers.VendorSerializer
+@csrf_exempt
+def vendor_register(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            first_name = data.get("first_name")
+            last_name = data.get("last_name")
+            email = data.get("email")
+            address = data.get("address")
+            username = data.get("username")
+            password = data.get("password")
+            mobile = data.get("mobile")
+        except:
+            return JsonResponse({"bool": False, "msg": "Invalid JSON"})
 
+        # 🔹 Validate inputs before creating user
+        if not username or not password:
+            return JsonResponse({"bool": False, "msg": "Username and password required"})
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"bool": False, "msg": "Username already exists"})
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({"bool": False, "msg": "Email already exists"})
+        if models.Vendor.objects.filter(mobile=mobile).exists():
+            return JsonResponse({"bool": False, "msg": "Mobile number already linked"})
+
+        try:
+            # ✅ Create User
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                email=email
+            )
+
+            # ✅ Create related Customer
+            vendor = models.Vendor.objects.create(
+                user=user,
+                address=address,
+                mobile=mobile
+            )
+            return JsonResponse({"msg":"Registration Completed Succesfully", "user_id": user.id, "customer_id": vendor.id})
+
+        except IntegrityError:
+            return JsonResponse({"bool": False, "msg": "Database error"})
+
+   
+    return JsonResponse({"msg": "Only POST method allowed"})
 
 class ProductList(generics.ListCreateAPIView):
     queryset = models.Product.objects.all()
