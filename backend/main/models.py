@@ -46,6 +46,7 @@ class Product(models.Model):
     demo_url=models.URLField(null=True,blank=True)
     product_file = models.FileField(upload_to='products/', null=True, blank=True)    
     downloads=models.IntegerField(default=0)
+    is_published = models.BooleanField(default=False)
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)

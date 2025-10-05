@@ -7,75 +7,73 @@ import { AuthContext, CartContext } from "../AuthProvider";
 import axios from "axios";
 
 const ProductDetail = () => {
-  const { product_slug, product_id } = useParams();
-  // console.log(product_id, product_slug)
-  const { currencyData, setCurrencyData } = useContext(CurrencyContext);
+  const { product_id } = useParams();
+  const { currencyData } = useContext(CurrencyContext);
+  const { cartData, setCartData } = useContext(CartContext);
+  const { isLoggedIn, customerId } = useContext(AuthContext);
+
   const baseUrl = `http://127.0.0.1:8000/api/product`;
-  const baseUrl1 = `http://127.0.0.1:8000/api`;
   const relatedBaseUrl = `http://127.0.0.1:8000/api/related-products`;
-  const [products, setProducts] = useState("");
+  const wishlistUrl = `http://127.0.0.1:8000/api/check-in-wishlists/`;
+
+  const [products, setProducts] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [productImgs, setProductImgs] = useState([]);
   const [productTags, setProductTags] = useState([]);
   const [cartButtonClick, setCartButtonClick] = useState(false);
-  const [currency, setcurreny] = useState("inr");
-  const { cartData, setCartData } = useContext(CartContext);
-  const { isLoggedIn, customerId } = useContext(AuthContext);
-  const _currency = localStorage.getItem("currency");
   const [productInWhishList, setProductInWhishList] = useState(false);
+
   useEffect(() => {
     fetchData(`${baseUrl}/${product_id}`);
     fetchRelatedData(`${relatedBaseUrl}/${product_id}`);
     checkProductInCart(product_id);
-    checkWishListData(`${baseUrl1}/check-in-wishlists/`);
-    
+    checkWishListData(wishlistUrl);
   }, [product_id]);
 
   const checkProductInCart = (product_id) => {
     const prevCart = localStorage.getItem("cartData");
     if (prevCart) {
       const cartJson = JSON.parse(prevCart);
-
-      // ✅ check if any cart item matches the current product_id
       const alreadyInCart = cartJson.some((item) => item.product.id === parseInt(product_id));
-
-      if (alreadyInCart) {
-        setCartButtonClick(true);
-      }
+      if (alreadyInCart) setCartButtonClick(true);
     }
   };
 
-  const fetchData = (baseUrl) => {
-    fetch(baseUrl)
-      .then((response) => response.json())
+  const fetchData = (url) => {
+    fetch(url)
+      .then((res) => res.json())
       .then((data) => {
         setProducts(data);
-        setProductImgs(data.product_imgs);
-        setProductTags(data.tag_list);
-        // console.log("Product api==> ", baseUrl)
-        // console.log("products==> ", data.demo_url)
+        setProductImgs(data.product_imgs || []);
+        setProductTags(data.tag_list || []);
       });
   };
 
-  const fetchRelatedData = (baseUrl) => {
-    fetch(baseUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        setRelatedProducts(data.results);
-        // console.log("RelatedProduct api==> ", baseUrl)
-        // console.log("RealtedProducts==> ", data)
-      });
+  const fetchRelatedData = (url) => {
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => setRelatedProducts(data.results || []));
   };
-  const tagslink = [];
-  for (let i = 0; i < productTags.length; i++) {
-    let tag = productTags[i].trim();
-    // console.log("tag 2==>",tag)
-    tagslink.push(
-      <Link key={i} className="badge bg-secondary text-white me-1" to={`/products/${tag}`}>
-        {tag}
-      </Link>
-    );
-  }
+
+  const SaveInWishList = async () => {
+    const formData = { customer: customerId, product: product_id };
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/api/wishlists/`, formData);
+      if (response.data.id) setProductInWhishList(true);
+    } catch (err) {
+      console.error("Error creating Wishlist:", err);
+    }
+  };
+
+  const checkWishListData = async (url) => {
+    try {
+      const res = await axios.get(url, { params: { customer: customerId, product: product_id } });
+      setProductInWhishList(res.data.bool === true);
+    } catch (err) {
+      console.error("Error checking Wishlist:", err);
+    }
+  };
+
   const cartDatas = {
     product: {
       id: products.id,
@@ -84,213 +82,154 @@ const ProductDetail = () => {
       usd_price: products.usd_price,
       image: products.image,
     },
-    user: {
-      id: 1,
-    },
-    total_amount: 20,
+    user: { id: 1 },
+    total_amount: products.price,
   };
-  console.log("Cart Button CLick ==>", cartButtonClick);
-  console.log("Products==>", products.usd_price);
-  // Add to cart
+
   const cartAddButtonHandler = () => {
     let prevCart = localStorage.getItem("cartData");
     let cart = prevCart ? JSON.parse(prevCart) : [];
-
     cart.push(cartDatas);
-
-    // ✅ update localStorage
     localStorage.setItem("cartData", JSON.stringify(cart));
-
-    // ✅ update context (Header will re-render)
     setCartData(cart);
-
-    console.log("Cart Add =>", cart);
-    setCartButtonClick(!cartButtonClick);
+    setCartButtonClick(true);
   };
 
-
-  // Remove from cart
   const cartRemoveButtonHandler = () => {
     let prevCart = localStorage.getItem("cartData");
     let carts = prevCart ? JSON.parse(prevCart) : [];
-
     let updatedCart = carts.filter((cart) => cart.product.id !== products.id);
-
-    // ✅ update localStorage
     localStorage.setItem("cartData", JSON.stringify(updatedCart));
-
-    // ✅ update context
     setCartData(updatedCart);
-
-    console.log("Cart Remove =>", updatedCart);
-    setCartButtonClick(!cartButtonClick);
+    setCartButtonClick(false);
   };
-
-
-
-
-  const SaveInWishList = async () => {
-     const formData = { customer: customerId, product: product_id };
-
-    console.log("POSTformData==> ", formData);
-    try {
-      const response = await axios.post(`${baseUrl1}/wishlists/`, formData);
-      console.log("PostResponse==> ",response)
-      if(response.data.id){
-        setProductInWhishList(true)
-      }
-    } catch (err) {
-      console.error("Error creating Wishlist:", err);
-    }
-  };
-
-
-  //Check Product Wishlist
-const checkWishListData = async (baseUrl1) => {
-  try {
-    const response = await axios.get(baseUrl1, {
-      params: {
-        customer: customerId,
-        product: product_id,
-      },
-    });
-
-    console.log("GetResponse==> ", response.data);
-
-    setProductInWhishList(response.data.bool === true);
-
-  } catch (err) {
-    console.error("Error checking Wishlist:", err.response?.data || err.message);
-  }
-};
-
 
   return (
-    <section className="container mt-4">
-      <div className="row">
-        <div className="col-4">
-          <Swiper
-            slidesPerView={1}
-            className="bg-light p-3 rounded shadow-sm d-flex justify-content-center"
-            style={{ maxWidth: "300px" }}
-          >
+    <section className="container my-5">
+      <div className="row g-4">
+        {/* Product Images */}
+        <div className="col-lg-5">
+          <Swiper slidesPerView={1} className="rounded shadow-sm bg-white p-3">
             {productImgs.map((img, i) => (
               <SwiperSlide key={i} className="text-center">
                 <img
-                  className="img-fluid rounded border"
+                  className="img-fluid rounded"
                   src={img.image}
-                  alt={`Product Image ${i + 1}`}
-                  style={{
-                    objectFit: "cover",
-                    width: "250px",
-                    height: "250px",
-                    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                  }}
+                  alt={`Product ${i + 1}`}
+                  style={{ maxHeight: "350px", objectFit: "cover" }}
                 />
               </SwiperSlide>
             ))}
           </Swiper>
         </div>
-        <div className="col-8">
-          <h3>{products.title}</h3>
-          <p>{products.detail}</p>
-          {currencyData != "usd" && <h5 className="text-muted small ">Price: Rs {products.price}</h5>}
-          {currencyData == "usd" && <h5 className="text-muted small ">Price:$ {products.usd_price}</h5>}
-          <p className="mt-3 ">
-            <Link
-              title="demo"
-              target="_blank"
-              to={products.demo_url}
-              className="btn btn-sm btn-dark rounded-pill shadow-sm "
-            >
-              <i className="fa-solid fa-cart-shopping me-2"></i>
-              Demo
-            </Link>
-            {!cartButtonClick ? (
-              <button
-                type="button"
-                onClick={cartAddButtonHandler}
-                className="btn btn-sm btn-primary rounded-pill shadow-sm mx-2"
+
+        {/* Product Info */}
+        <div className="col-lg-7">
+          <div className="card border-0 shadow-sm p-4">
+            <h2 className="fw-bold mb-3">{products.title}</h2>
+            <p className="text-muted">{products.detail}</p>
+
+            {/* Price */}
+            <h4 className="text-primary fw-bold">
+              {currencyData === "usd" ? `$ ${products.usd_price}` : `₹ ${products.price}`}
+            </h4>
+
+            {/* Buttons */}
+            <div className="mt-4 d-flex flex-wrap gap-2">
+              <Link
+                to={products.demo_url}
+                target="_blank"
+                className="btn btn-outline-dark rounded-pill px-4"
               >
-                <i className="fa-solid fa-cart-shopping me-2"></i>
-                Add To Cart
+                <i className="fa-solid fa-eye me-2"></i> Demo
+              </Link>
+
+              {!cartButtonClick ? (
+                <button
+                  onClick={cartAddButtonHandler}
+                  className="btn btn-primary rounded-pill px-4"
+                >
+                  <i className="fa-solid fa-cart-shopping me-2"></i> Add to Cart
+                </button>
+              ) : (
+                <button
+                  onClick={cartRemoveButtonHandler}
+                  className="btn btn-danger rounded-pill px-4"
+                >
+                  <i className="fa-solid fa-cart-shopping me-2"></i> Remove
+                </button>
+              )}
+
+              <button className="btn btn-success rounded-pill px-4">
+                <i className="fa-solid fa-bag-shopping me-2"></i> Buy Now
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={cartRemoveButtonHandler}
-                className="btn btn-sm btn-danger rounded-pill shadow-sm mx-2"
-              >
-                <i className="fa-solid fa-cart-shopping me-2"></i>
-                Remove from cart
-              </button>
+
+              {isLoggedIn ? (
+                <button
+                  onClick={SaveInWishList}
+                  className={`btn rounded-pill px-4 ${
+                    productInWhishList ? "btn-secondary" : "btn-outline-danger"
+                  }`}
+                  disabled={productInWhishList}
+                >
+                  <i className="fa-solid fa-heart me-2"></i>
+                  {productInWhishList ? "In Wishlist" : "Wishlist"}
+                </button>
+              ) : (
+                <button disabled className="btn btn-outline-danger rounded-pill px-4">
+                  <i className="fa-solid fa-heart me-2"></i> Wishlist
+                </button>
+              )}
+            </div>
+
+            {/* Tags */}
+            {productTags.length > 0 && (
+              <div className="mt-4">
+                <h6 className="fw-bold">Tags</h6>
+                <div className="d-flex flex-wrap gap-2">
+                  {productTags.map((tag, i) => (
+                    <Link key={i} to={`/products/${tag}`} className="badge bg-secondary text-white">
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
-            <button className="btn btn-sm btn-info rounded-pill  shadow-sm">
-              <i className="fa-solid fa-bag-shopping me-2 "></i>
-              Buy Now
-            </button>
-            {(isLoggedIn && !productInWhishList)&&(
-              <button
-                onClick={ SaveInWishList}
-                className="btn btn-sm btn-danger rounded-pill mx-2 shadow-sm"
-              >
-                <i className="fa-solid fa-heart me-2"></i>
-                Wishlist
-              </button>
-            )}
-            {!isLoggedIn && (
-              <button disabled className="btn btn-sm btn-danger rounded-pill mx-2 shadow-sm">
-                <i className="fa-solid fa-heart me-2"></i>
-                Wishlist
-              </button>
-            )}
-            {(isLoggedIn && productInWhishList)&&(
-              <button disabled className="btn btn-sm btn-danger rounded-pill mx-2 shadow-sm">
-                <i className="fa-solid fa-heart me-2"></i>
-                Wishlist
-              </button>
-            )}
-          </p>
-          <div className="producttags mt-4">
-            <h5 className="mt-3 ">Tags</h5>
-            <p>{tagslink}</p>
           </div>
         </div>
       </div>
 
       {/* Related Products */}
-      <h4 className="mt-5 mb-3">Related Products</h4>
-      <Swiper
-        spaceBetween={20}
-        breakpoints={{
-          1024: { slidesPerView: 4 },
-          768: { slidesPerView: 2 },
-          480: { slidesPerView: 1 },
-        }}
-      >
-        {relatedProducts.map((item, index) => (
-          <SwiperSlide key={index}>
-            <div key={index} className="card shadow-sm h-100">
-              <Link to={`/productDetail/${item.title}/${item.id}`}>
-                <img
-                  className="card-img-top"
-                  src={item.image}
-                  alt={item.title}
-                  style={{ height: "200px", objectFit: "cover" }}
-                />
-              </Link>
-              <div className="card-body">
-                <h5 className="card-title">{item.title}</h5>
-                <p className="card-text text-muted">Price: ₹{item.price}</p>
-                <div className="d-flex justify-content-between">
-                  <button className="btn btn-sm btn-primary">Add to Cart</button>
-                  <button className="btn btn-sm btn-danger">Wishlist</button>
+      <div className="mt-5">
+        <h4 className="fw-bold mb-3">Related Products</h4>
+        <Swiper
+          spaceBetween={20}
+          breakpoints={{ 1024: { slidesPerView: 4 }, 768: { slidesPerView: 2 }, 480: { slidesPerView: 1 } }}
+        >
+          {relatedProducts.map((item, index) => (
+            <SwiperSlide key={index}>
+              <div className="card shadow-sm border-0 h-100">
+                <Link to={`/productDetail/${item.title}/${item.id}`}>
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="card-img-top rounded-top"
+                    style={{ height: "200px", objectFit: "cover" }}
+                  />
+                </Link>
+                <div className="card-body">
+                  <h6 className="fw-bold">{item.title}</h6>
+                  <p className="text-muted small mb-2">₹ {item.price}</p>
+                  <div className="d-flex justify-content-between">
+                    <button className="btn btn-sm btn-primary">Add</button>
+                    <button className="btn btn-sm btn-outline-danger">Wishlist</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
     </section>
   );
 };

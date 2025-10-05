@@ -70,7 +70,7 @@ console.log("CartDataAuth==> ",cartData)
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, setIsLoggedIn,isVendorLoggedIn,handleVendorLogout, handleLogout, customerId, customerName }}
+      value={{ isLoggedIn, setIsLoggedIn,vendorId,isVendorLoggedIn,handleVendorLogout, handleLogout, customerId, customerName }}
     >
       <CartContext.Provider value={{ cartData, setCartData }}>
         <CurrencyContext.Provider value={{ currencyData, setCurrencyData }}>
