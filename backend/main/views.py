@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate
 import json
 from django.contrib.auth.models import User
-
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.db import IntegrityError
 # Vendor views
@@ -100,7 +100,8 @@ def vendor_register(request):
 class ProductList(generics.ListCreateAPIView):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
-
+    parser_classes = [MultiPartParser, FormParser]
+    
     def get_queryset(self):
         queryset = models.Product.objects.all()
         category_id = self.request.GET.get("category")  # ✅ safe access
@@ -117,7 +118,13 @@ class ProductList(generics.ListCreateAPIView):
                 pass
 
 
+
         return queryset
+    
+
+class ProductImgsList(generics.ListCreateAPIView):
+    queryset = models.ProductImage.objects.all()
+    serializer_class = serializers.ProductImageSerializer
 
 
 

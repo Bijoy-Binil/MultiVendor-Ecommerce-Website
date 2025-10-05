@@ -40,7 +40,6 @@ class ProductSerializer(serializers.ModelSerializer):
     product_ratings = serializers.StringRelatedField(many=True, read_only=True)
     related_products = serializers.SerializerMethodField()
     tag_list = serializers.SerializerMethodField()
-    product_file = serializers.FileField(read_only=True, use_url=True)
     
     category = serializers.PrimaryKeyRelatedField(
         queryset=models.ProductCategory.objects.all()
@@ -48,14 +47,15 @@ class ProductSerializer(serializers.ModelSerializer):
     vendor = serializers.PrimaryKeyRelatedField(
         queryset=models.Vendor.objects.all()
     )
+
     class Meta:
         model = models.Product
         fields = [
             'id', 'category', 'vendor', 'title', 'slug', 'tags',
-            'tag_list', 'image',"demo_url" ,'related_products', 'detail',
-            'price',"is_published", 'product_ratings','usd_price', 'product_imgs',"product_file"
+            'tag_list', 'image', 'demo_url', 'related_products',
+            'detail', 'price', 'is_published', 'product_ratings',
+            'usd_price', 'product_imgs', 'product_file'
         ]
-        # depth = 1
 
     def get_tag_list(self, obj):
         if obj.tags:
@@ -65,6 +65,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_related_products(self, obj):
         related = models.Product.objects.filter(category=obj.category).exclude(id=obj.id)
         return RelatedProductSerializer(related, many=True).data
+
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
