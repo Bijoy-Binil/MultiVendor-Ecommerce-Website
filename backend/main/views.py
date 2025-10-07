@@ -101,7 +101,7 @@ class ProductList(generics.ListCreateAPIView):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
     parser_classes = [MultiPartParser, FormParser]
-    
+
     def get_queryset(self):
         queryset = models.Product.objects.all()
         category_id = self.request.GET.get("category")  # ✅ safe access
@@ -121,6 +121,11 @@ class ProductList(generics.ListCreateAPIView):
 
         return queryset
     
+class ProductDetail(generics.RetrieveUpdateAPIView):
+    queryset = models.Product.objects.all()
+    serializer_class = serializers.ProductSerializer
+    parser_classes = [MultiPartParser, FormParser]
+
 
 class ProductImgsList(generics.ListCreateAPIView):
     queryset = models.ProductImage.objects.all()
@@ -154,9 +159,6 @@ class TagProductList(generics.ListCreateAPIView):
 
         
 
-class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Product.objects.all()
-    serializer_class = serializers.ProductDetailSerializer
     
 
 # Customer views

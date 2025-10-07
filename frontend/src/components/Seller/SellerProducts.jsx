@@ -54,18 +54,19 @@ const SellerProducts = () => {
                   return (
                     <tr key={index}>
                       <td>{index + 1}</td>
-                      <td>{data.title}</td>
+                      <td><Link to={`/seller/update-products/${data.id}` }href="" className="mb-2 ">
+                      {data.title}
+                      </Link></td>
                       <td>&#8377; {data.price}</td>
                       <td>&#36; {data.usd_price}</td>
                       <td>{data.is_published ? "Published" : "Not Published"}</td>
 
                       <td>
-                        <a href="" className="btn btn-info ms-1">
-                          View
-                        </a>
-                        <a href="" className="btn btn-primary ms-1">
+                       
+                        <Link to={`/seller/update-products/${data.id}` }href="" className="btn btn-primary mb-2 ">
+    
                           Edit
-                        </a>
+                        </Link>
                         <a href="" className="btn btn-danger ms-1">
                           Delete
                         </a>

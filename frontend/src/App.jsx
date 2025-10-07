@@ -41,6 +41,8 @@ import TagProducts from "./components/TagProducts";
 import AuthProvider from "./AuthProvider";
 import ConfirmOrder from "./components/ConfirmOrder";
 import UpdateAddress from "./components/Customer/UpdateAddress";
+import UpdateProduct from "./components/Seller/UpdateProduct";
+
 
 function App() {
   return (
@@ -76,6 +78,7 @@ function App() {
           <Route path="/seller/register" element={<SellerRegister />} />
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
           <Route path="/seller/products" element={<SellerProducts />} />
+          <Route path="/seller/update-products/:productId" element={<UpdateProduct />} />
           <Route path="/seller/add-products" element={<AddProduct />} />
           <Route path="/seller/orders" element={<VendorOrders />} />
           <Route path="/seller/customers" element={<Customers />} />

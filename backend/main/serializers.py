@@ -40,13 +40,9 @@ class ProductSerializer(serializers.ModelSerializer):
     product_ratings = serializers.StringRelatedField(many=True, read_only=True)
     related_products = serializers.SerializerMethodField()
     tag_list = serializers.SerializerMethodField()
-    
-    category = serializers.PrimaryKeyRelatedField(
-        queryset=models.ProductCategory.objects.all()
-    )
-    vendor = serializers.PrimaryKeyRelatedField(
-        queryset=models.Vendor.objects.all()
-    )
+
+    category = serializers.PrimaryKeyRelatedField(queryset=models.ProductCategory.objects.all())
+    vendor = serializers.PrimaryKeyRelatedField(queryset=models.Vendor.objects.all())
 
     class Meta:
         model = models.Product
@@ -56,6 +52,11 @@ class ProductSerializer(serializers.ModelSerializer):
             'detail', 'price', 'is_published', 'product_ratings',
             'usd_price', 'product_imgs', 'product_file'
         ]
+        extra_kwargs = {
+            'image': {'required': False, 'allow_null': True},
+            'product_file': {'required': False, 'allow_null': True},
+        }
+        depth=1
 
     def get_tag_list(self, obj):
         if obj.tags:
@@ -64,6 +65,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_related_products(self, obj):
         related = models.Product.objects.filter(category=obj.category).exclude(id=obj.id)
+        from .serializers import RelatedProductSerializer
         return RelatedProductSerializer(related, many=True).data
 
 
