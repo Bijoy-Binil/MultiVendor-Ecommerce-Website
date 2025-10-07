@@ -2,20 +2,21 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import SellerSidebar from "./SellerSidebar";
 import { AuthContext } from "../../AuthProvider";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { FaTrashAlt } from "react-icons/fa";
 
 const UpdateProduct = () => {
   const { productId } = useParams();
+  const navigate = useNavigate();
   const baseUrl = "http://127.0.0.1:8000/api/";
   const { vendorId } = useContext(AuthContext);
 
-  // Category list
+  // 📦 States
   const [categoryData, setCategoryData] = useState([]);
   const [existingImage, setExistingImage] = useState(null);
   const [existingProductFile, setExistingProductFile] = useState(null);
   const [existingProductImgs, setExistingProductImgs] = useState([]);
 
-  // Product main form data
   const [product, setProduct] = useState({
     category: "",
     title: "",
@@ -29,15 +30,14 @@ const UpdateProduct = () => {
     demo_url: "",
     product_file: null,
   });
-
   const [productImgs, setProductImgs] = useState([]);
 
-  // Messages
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [imgUploadMsg, setImgUploadMsg] = useState("");
+  const [deleteMsg, setDeleteMsg] = useState("");
 
-  // Fetch categories
+  // 📂 Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -50,7 +50,7 @@ const UpdateProduct = () => {
     fetchCategories();
   }, []);
 
-  // Fetch product data for prefill
+  // 🧾 Fetch product details
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -74,7 +74,6 @@ const UpdateProduct = () => {
         setExistingImage(data.image);
         setExistingProductFile(data.product_file);
         setExistingProductImgs(data.product_imgs || []);
-        setProductImgs([]);
       } catch (err) {
         console.error("Failed to fetch product:", err);
         setErrorMsg("Failed to load product data.");
@@ -83,13 +82,12 @@ const UpdateProduct = () => {
     fetchProduct();
   }, [productId, vendorId]);
 
-  // Input handler
+  // ✏️ Input Handlers
   const inputHandler = (e) => {
     const { name, value } = e.target;
     setProduct({ ...product, [name]: value });
   };
 
-  // Single file handler
   const fileHandler = (e) => {
     const { name, files } = e.target;
     if (files && files[0]) {
@@ -97,12 +95,11 @@ const UpdateProduct = () => {
     }
   };
 
-  // Multiple images handler
   const multipleImageHandler = (e) => {
     setProductImgs([...e.target.files]);
   };
 
-  // Submit handler
+  // 💾 Update Product
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -117,7 +114,6 @@ const UpdateProduct = () => {
         }
       }
 
-      // PATCH request to update product
       const res = await axios.patch(`${baseUrl}product/${productId}/`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -125,7 +121,7 @@ const UpdateProduct = () => {
       if (res.status === 200) {
         setSuccessMsg("✅ Product updated successfully!");
 
-        // Upload additional images if any
+        // Upload additional images
         if (productImgs.length > 0) {
           for (let i = 0; i < productImgs.length; i++) {
             const imgForm = new FormData();
@@ -137,14 +133,41 @@ const UpdateProduct = () => {
           }
           setImgUploadMsg("✅ Additional images uploaded successfully!");
         }
-
-        // Reset new file inputs
-        setProduct({ ...product, image: null, product_file: null });
-        setProductImgs([]);
       }
     } catch (err) {
       console.error("Update product error:", err.response?.data || err);
       setErrorMsg("❌ Something went wrong while updating.");
+    }
+  };
+
+  // 🗑️ Delete a single product image
+  const handleDeleteImage = async (imageId) => {
+    const confirmDelete = window.confirm("Delete this image?");
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${baseUrl}product-imgs/${imageId}/`);
+      setExistingProductImgs(existingProductImgs.filter((img) => img.id !== imageId));
+    } catch (err) {
+      console.error("Failed to delete image:", err);
+      setErrorMsg("❌ Failed to delete image.");
+    }
+  };
+
+  // 🗑️ Delete entire product
+  const handleDeleteProduct = async () => {
+    const confirmDelete = window.confirm(
+      "⚠️ Are you sure you want to delete this product? This action cannot be undone!"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${baseUrl}product/${productId}/`);
+      setDeleteMsg("🗑️ Product deleted successfully.");
+      setTimeout(() => navigate("/seller/products"), 1500);
+    } catch (err) {
+      console.error("Delete error:", err.response?.data || err);
+      setErrorMsg("❌ Failed to delete the product.");
     }
   };
 
@@ -205,7 +228,7 @@ const UpdateProduct = () => {
                   />
                 </div>
 
-                {/* Price */}
+                {/* Prices */}
                 <div className="row">
                   <div className="col-md-6 mb-3">
                     <label className="form-label fw-bold">Price (₹)</label>
@@ -276,7 +299,12 @@ const UpdateProduct = () => {
                       <img
                         src={existingImage}
                         alt="Current Main Product"
-                        style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                        style={{
+                          width: "150px",
+                          height: "150px",
+                          objectFit: "cover",
+                          borderRadius: "8px",
+                        }}
                       />
                     </div>
                   )}
@@ -296,29 +324,50 @@ const UpdateProduct = () => {
                   <input type="file" name="product_file" className="form-control" onChange={fileHandler} />
                 </div>
 
-                {/* Additional Images */}
+                {/* Multiple Images with delete icons */}
                 <div className="mb-3">
                   <label className="form-label fw-bold">Additional Images</label>
-                  <div className="d-flex gap-2 mb-2 flex-wrap">
-                    {existingProductImgs.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img.image} // make sure API returns {image: url}
-                        alt={`Product Img ${idx + 1}`}
-                        style={{ width: "100px", height: "100px", objectFit: "cover" }}
-                      />
+                  <div className="d-flex gap-3 flex-wrap">
+                    {existingProductImgs.map((img) => (
+                      <div key={img.id} className="position-relative" style={{ width: "100px", height: "100px" }}>
+                        <img
+                          src={img.image}
+                          alt="extra"
+                          className="rounded"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            border: "1px solid #ddd",
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm position-absolute top-0 end-0"
+                          style={{ borderRadius: "50%", padding: "4px" }}
+                          onClick={() => handleDeleteImage(img.id)}
+                        >
+                          <FaTrashAlt size={14} />
+                        </button>
+                      </div>
                     ))}
                   </div>
-                  <input type="file" multiple className="form-control" onChange={multipleImageHandler} />
+                  <input type="file" multiple className="form-control mt-2" onChange={multipleImageHandler} />
                 </div>
 
-                <button type="submit" className="btn btn-success w-100 fw-bold shadow-sm">
-                  Update Product
-                </button>
+                <div className="d-flex justify-content-between">
+                  <button type="submit" className="btn btn-success fw-bold px-4">
+                    ✅ Update Product
+                  </button>
+                  <button type="button" className="btn btn-danger fw-bold px-4" onClick={handleDeleteProduct}>
+                    🗑️ Delete Product
+                  </button>
+                </div>
               </form>
 
               {successMsg && <div className="alert alert-success mt-3">{successMsg}</div>}
               {imgUploadMsg && <div className="alert alert-info mt-2">{imgUploadMsg}</div>}
+              {deleteMsg && <div className="alert alert-warning mt-3">{deleteMsg}</div>}
               {errorMsg && <div className="alert alert-danger mt-3">{errorMsg}</div>}
             </div>
           </div>

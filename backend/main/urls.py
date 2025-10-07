@@ -20,6 +20,7 @@ path('products/', views.ProductList.as_view()),
 path('products/<str:tag>', views.TagProductList.as_view()),
 path('related-products/<int:pk>/', views.RelatedProductList.as_view()),
 path('product-imgs/', views.ProductImgsList.as_view()),
+ path('product-imgs/<int:pk>/', views.ProductImageDeleteAPIView.as_view(), name='product-image-delete'),
 path('product/<int:pk>/', views.ProductDetail.as_view()),
 
 # Product Categories endpoints
@@ -46,6 +47,7 @@ path('order-item/<int:pk>/', views.OrderItemsDetail.as_view()),
 # Order status 
  path("update-order-status/<int:order_id>/", views.update_order_status, name="order-status"),
  path("customer/<int:pk>/order-items", views.CustomerOrderList.as_view()),
+ path("vendor/<int:pk>/order-items", views.VendorOrderList.as_view()),
 
  path("update_product_download_count/<int:product_id>/", views.update_product_download_count, name="downloads"),
 

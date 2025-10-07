@@ -13,6 +13,10 @@ from django.contrib.auth.models import User
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.db import IntegrityError
+from rest_framework import generics, status
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from . import models, serializers
 # Vendor views
 class VendorList(generics.ListCreateAPIView):
     queryset = models.Vendor.objects.all()
@@ -117,7 +121,7 @@ class ProductList(generics.ListCreateAPIView):
             except ValueError:
                 pass
 
-
+                
 
         return queryset
     
@@ -126,12 +130,26 @@ class ProductDetail(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.ProductSerializer
     parser_classes = [MultiPartParser, FormParser]
 
-
+    def delete(self, request, *args, **kwargs):
+        product = self.get_object()
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 class ProductImgsList(generics.ListCreateAPIView):
     queryset = models.ProductImage.objects.all()
     serializer_class = serializers.ProductImageSerializer
 
+class ProductImageDeleteAPIView(generics.DestroyAPIView):
+    queryset = models.ProductImage.objects.all()
+    serializer_class = serializers.ProductImageSerializer
 
+    def delete(self, request, pk):
+        try:
+            image_obj = models.ProductImage.objects.get(pk=pk)
+            image_obj.delete()
+            return Response({"message": "Image deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except models.ProductImage.DoesNotExist:
+            return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class RelatedProductList(generics.ListAPIView):
     serializer_class = ProductSerializer
@@ -263,6 +281,19 @@ class CustomerOrderList(generics.ListCreateAPIView):
         customer_id = self.kwargs.get("pk")
         if customer_id:
             qs = qs.filter(order__customer__id=customer_id)
+        return qs
+
+
+# Vendor Order views
+class VendorOrderList(generics.ListCreateAPIView):
+    queryset = models.OrderItems.objects.all()
+    serializer_class = serializers.OrderItemsSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        vendor_id = self.kwargs.get("pk")
+        if vendor_id:
+            qs = qs.filter(product__vendor__id=vendor_id)
         return qs
 
 

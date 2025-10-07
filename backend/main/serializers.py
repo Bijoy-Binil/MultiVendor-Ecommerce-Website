@@ -165,12 +165,19 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 
 
 
-# Order serializers
+# Order serializer with customer name only
 class OrderSerializer(serializers.ModelSerializer):
+    customer_name = serializers.SerializerMethodField()
+
     class Meta:
         model = models.Order
-        fields = ['id', 'customer','order_status','total_amount','total_usd_amount']
-        # depth = 1
+        fields = ['id', 'customer_name', 'order_status', 'total_amount', 'total_usd_amount']
+
+    def get_customer_name(self, obj):
+        # Concatenate first_name and last_name from the related user
+        if obj.customer and obj.customer.user:
+            return f"{obj.customer.user.first_name} {obj.customer.user.last_name}"
+        return "Unknown"
 
 class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -181,20 +188,15 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
 # Order Item serializers
 class OrderItemsSerializer(serializers.ModelSerializer):
-    # Accept IDs on write
-    order = serializers.PrimaryKeyRelatedField(queryset=models.Order.objects.all())
-    product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all())
-
-    # Nested info for read
     order_info = serializers.SerializerMethodField(read_only=True)
     product_info = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.OrderItems
-        fields = ['id', 'order', 'product', 'qty', 'price','usd_price', 'order_info', 'product_info']
+        fields = ['id', 'order', 'product', 'qty', 'price', 'usd_price', 'order_info', 'product_info']
 
     def get_order_info(self, obj):
-        return OrderSerializer(obj.order, context=self.context).data
+        return OrderSerializer(obj.order, context=self.context).data  # Now includes only customer_name
 
     def get_product_info(self, obj):
         return ProductDetailSerializer(obj.product, context=self.context).data
