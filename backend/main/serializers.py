@@ -103,7 +103,15 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Customer
         fields = ['id', 'user', 'mobile', 'profile_img']
-
+    user = serializers.SerializerMethodField()
+    
+    def get_user(self, obj):
+        return {
+            "username": obj.user.username,
+            "email": obj.user.email,
+            "first_name": obj.user.first_name,
+            "last_name": obj.user.last_name,
+        }
         # depth = 1
 
 # Customer detail serializer (for reading with nested user info)

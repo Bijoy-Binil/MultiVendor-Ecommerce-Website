@@ -1,8 +1,33 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SellerSidebar from './SellerSidebar'
+import { AuthContext } from '../../AuthProvider';
+import axios from 'axios';
 
 const Customers = () => {
+    const baseUrl = "http://127.0.0.1:8000/api/";
+  const { vendorId } = useContext(AuthContext);
+  const [customerList, setCustomerList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
+
+useEffect(() => {
+  const fetchCustomerLists = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}vendor/${vendorId}/customers`);
+      // Make sure orderItems is an array
+      const data = Array.isArray(res.data) ? res.data : res.data.results || [];
+      setCustomerList(data);
+    } catch (err) {
+      console.error("Failed to fetch order items:", err);
+      setErrorMsg("Failed to load vendor orders.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  if (vendorId) fetchCustomerLists();
+}, [vendorId]);
+console.log("Product==>",customerList)
     return (
         <div className="container mt-4">
             <div className="row">
@@ -27,37 +52,34 @@ const Customers = () => {
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>john@gmail.com</td>
-                                        <td className="text-secondary">12345665</td>
-                                      <td>
-                                        <button className='btn btn-primary btn-sm '>Orders</button>
-                                        <button className='btn btn-danger btn-sm ms-1'>Remove from list</button>
-                                      </td>
-                                      
-                                    </tr>
-                                  
-                                    <tr>
-                                        <td>2</td>
-                                        <td>
-                                            <p>Psy Kid</p>
-                                        </td>
-                                        <td>kid@gmail.com</td>
-                                        <td className="text-secondary">345656734</td>
-                                      <td>
-                                               <button className='btn btn-primary btn-sm '>Orders</button>
-                                        <button className='btn btn-danger btn-sm ms-1'>Remove from list</button>
-                                      </td>
-                                      
-                                    </tr>
-                                  
-
-                                </tbody>
+                             <tbody>
+  {loading ? (
+    <tr>
+      <td colSpan="5" className="text-center">Loading...</td>
+    </tr>
+  ) : errorMsg ? (
+    <tr>
+      <td colSpan="5" className="text-danger text-center">{errorMsg}</td>
+    </tr>
+  ) : customerList.length === 0 ? (
+    <tr>
+      <td colSpan="5" className="text-center text-muted">No customers found.</td>
+    </tr>
+  ) : (
+    customerList.map((customer, index) => (
+      <tr key={customer.id}>
+        <td>{index + 1}</td>
+        <td>{customer.user?.username || "N/A"}</td>
+        <td>{customer.user?.email || "N/A"}</td>
+        <td className="text-secondary">{customer.mobile || "N/A"}</td>
+        <td>
+          <button className="btn btn-primary btn-sm">Orders</button>
+          <button className="btn btn-danger btn-sm ms-1">Remove</button>
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
                             </table>
                         </div>
 

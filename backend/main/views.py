@@ -295,7 +295,29 @@ class VendorOrderList(generics.ListCreateAPIView):
         if vendor_id:
             qs = qs.filter(product__vendor__id=vendor_id)
         return qs
+    
+# # VendorCustomerList views
+# class VendorCustomerList(generics.ListCreateAPIView):
+#     queryset = models.OrderItems.objects.all()
+#     serializer_class = serializers.OrderItemsSerializer
 
+#     def get_queryset(self):
+#         qs = super().get_queryset()
+#         vendor_id = self.kwargs.get("pk")
+#         if vendor_id:
+#             qs = qs.filter(product__vendor__id=vendor_id)
+#         return qs
+class VendorCustomerList(generics.ListAPIView):
+    serializer_class = serializers.CustomerSerializer
+
+    def get_queryset(self):
+        vendor_id = self.kwargs.get("pk")
+        # Get all unique customers who have ordered from this vendor
+        customer_ids = models.OrderItems.objects.filter(
+            product__vendor__id=vendor_id
+        ).values_list("order__customer", flat=True).distinct()
+
+        return models.Customer.objects.filter(id__in=customer_ids)
 
         
     

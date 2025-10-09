@@ -14,6 +14,7 @@ path('vendors/', views.VendorList.as_view()),
 path('vendor/register/', views.vendor_register,name="vendor-register"),
 path('vendor/login/', views.vendor_login,name="vendor-login"),
 path('vendor/<int:pk>/', views.VendorDetail.as_view()),
+path('vendor/<int:pk>/customers/', views.VendorCustomerList.as_view()),
 
 # Product endpoints
 path('products/', views.ProductList.as_view()),
