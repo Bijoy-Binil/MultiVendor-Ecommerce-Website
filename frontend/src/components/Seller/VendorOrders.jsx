@@ -30,6 +30,23 @@ useEffect(() => {
 }, [vendorId]);
 console.log("Product==>",orderItems)
 
+const changeOrderStatus = async (order_id, status) => {
+  try {
+    const res = await axios.patch(`${baseUrl}order-modify/${order_id}/`, {
+      order_status: status, // ✅ send JSON directly — no need for 'body' wrapper
+    });
+
+    // ✅ Handle updated data
+    const data = Array.isArray(res.data) ? res.data : [res.data];
+    setOrderItems(data);
+  } catch (err) {
+    console.error("Failed to update order status:", err);
+    setErrorMsg("Failed to update order status.");
+  } finally {
+    setLoading(false);
+  }
+};
+
   // 💡 Dummy status change handler
   const handleStatusChange = (orderItemId, newStatus) => {
     alert(`Order item ${orderItemId} status changed to ${newStatus}`);
@@ -107,17 +124,24 @@ console.log("Product==>",orderItems)
     </span>
   </td>
   <td>
-    <select
+    <div className="dropdown">
+      <button className="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Change Status</button>
+      {!item.order_info.order_status && <ul className="dropdown-menu">
+        <li><a href="" onClick={()=>changeOrderStatus(item.order,true)} className="dropdown-item">Completed</a></li>
+      </ul>}
+      {item.order_info.order_status && <ul className="dropdown-menu">
+        <li><a href="" onClick={()=>changeOrderStatus(item.order,false)} className="dropdown-item">Pending</a></li>
+      </ul>}
+    </div>
+  </td>
+    {/* <select
       className="form-select form-select-sm"
       value={item.order_info?.order_status ? "Completed" : "Processing"}
       onChange={(e) => handleStatusChange(item.id, e.target.value)}
     >
-      <option value="Processing">Processing</option>
-      <option value="Approved">Approved</option>
-      <option value="Sent">Sent</option>
       <option value="Completed">Completed</option>
-    </select>
-  </td>
+
+    </select> */}
 </tr>
     );
   })}

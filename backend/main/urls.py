@@ -39,6 +39,7 @@ path('customer/register/', views.customer_register,name='customer_register'),
 # Order endpoints
 path('orders/', views.OrderList.as_view()),
 path('order/<int:pk>/', views.OrderDetail.as_view()),
+path('order-modify/<int:pk>/', views.OrderModify.as_view()),
 
 # Order Items endpoints
 path('order-items/', views.OrderItemsList.as_view()),

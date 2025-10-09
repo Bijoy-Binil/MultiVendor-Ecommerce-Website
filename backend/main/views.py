@@ -303,6 +303,10 @@ class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
 
+class OrderModify(generics.RetrieveUpdateAPIView):
+    queryset = models.Order.objects.all()
+    serializer_class = serializers.OrderSerializer
+
 
 # Order Items views
 class OrderItemsList(generics.ListCreateAPIView):
