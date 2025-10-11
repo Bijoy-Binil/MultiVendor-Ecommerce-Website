@@ -28,6 +28,22 @@ useEffect(() => {
   if (vendorId) fetchCustomerLists();
 }, [vendorId]);
 console.log("Product==>",customerList)
+
+  // Delete Customer Handler
+  const handleDelete = async (customerId) => {
+    const confirmDelete = window.confirm(
+      "⚠️ Are you sure you want to delete this customer? This action cannot be undone!"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${baseUrl}customer/${customerId}/`);
+      setCustomerList(customerList.filter(c => c.id !== customerId));
+    } catch (err) {
+      console.error("Delete error:", err.response?.data || err);
+      setErrorMsg("❌ Failed to delete the customer.");
+    }
+  };
     return (
         <div className="container mt-4">
             <div className="row">
@@ -73,8 +89,8 @@ console.log("Product==>",customerList)
         <td>{customer.user?.email || "N/A"}</td>
         <td className="text-secondary">{customer.mobile || "N/A"}</td>
         <td>
-          <button className="btn btn-primary btn-sm">Orders</button>
-          <button className="btn btn-danger btn-sm ms-1">Remove</button>
+          <Link to={`/seller/${customer.id}/order`} className="btn btn-primary btn-sm">Orders</Link>
+          <Link to="" onClick={()=>handleDelete(customer.id)} className="btn btn-danger btn-sm ms-1">Remove</Link>
         </td>
       </tr>
     ))

@@ -1,23 +1,24 @@
-from . import models
-from . import serializers
-from rest_framework import generics, viewsets
-from .models import Product,Order
-from .serializers import ProductSerializer
-from django.contrib.auth.models import User
-from rest_framework.permissions import AllowAny
+# ============================================
+# IMPORTS
+# ============================================
+import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib.auth import authenticate
-import json
 from django.contrib.auth.models import User
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.db import IntegrityError
-from rest_framework import generics, status
-from rest_framework.parsers import MultiPartParser, FormParser
+
+from rest_framework import generics, viewsets, status
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.response import Response
+
 from . import models, serializers
-# Vendor views
+from .models import Product, Order
+from .serializers import ProductSerializer
+
+# ============================================
+# VENDOR VIEWS
+# ============================================
 class VendorList(generics.ListCreateAPIView):
     queryset = models.Vendor.objects.all()
     serializer_class = serializers.VendorSerializer
@@ -30,7 +31,7 @@ class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
 def vendor_login(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)  # parse JSON body
+            data = json.loads(request.body)
             username = data.get("username")
             password = data.get("password")
         except:
@@ -39,19 +40,16 @@ def vendor_login(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             vendor = models.Vendor.objects.get(user=user)
-
             return JsonResponse({
                 "bool": True,
                 "vendor_login": True,
                 "user": vendor.user.username,
                 "vendor_id": vendor.id
             })
-        else:
-            return JsonResponse({"bool": False, "msg": "Invalid credentials"})
+        return JsonResponse({"bool": False, "msg": "Invalid credentials"})
 
     return JsonResponse({"msg": "Only POST method allowed"})
 
-    
 @csrf_exempt
 def vendor_register(request):
     if request.method == "POST":
@@ -67,7 +65,6 @@ def vendor_register(request):
         except:
             return JsonResponse({"bool": False, "msg": "Invalid JSON"})
 
-        # 🔹 Validate inputs before creating user
         if not username or not password:
             return JsonResponse({"bool": False, "msg": "Username and password required"})
         if User.objects.filter(username=username).exists():
@@ -78,7 +75,6 @@ def vendor_register(request):
             return JsonResponse({"bool": False, "msg": "Mobile number already linked"})
 
         try:
-            # ✅ Create User
             user = User.objects.create_user(
                 username=username,
                 password=password,
@@ -86,21 +82,24 @@ def vendor_register(request):
                 last_name=last_name,
                 email=email
             )
-
-            # ✅ Create related Customer
             vendor = models.Vendor.objects.create(
                 user=user,
                 address=address,
                 mobile=mobile
             )
-            return JsonResponse({"msg":"Registration Completed Succesfully", "user_id": user.id, "customer_id": vendor.id})
-
+            return JsonResponse({
+                "msg": "Registration Completed Succesfully",
+                "user_id": user.id,
+                "customer_id": vendor.id
+            })
         except IntegrityError:
             return JsonResponse({"bool": False, "msg": "Database error"})
 
-   
     return JsonResponse({"msg": "Only POST method allowed"})
 
+# ============================================
+# PRODUCT VIEWS
+# ============================================
 class ProductList(generics.ListCreateAPIView):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
@@ -108,8 +107,7 @@ class ProductList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = models.Product.objects.all()
-        category_id = self.request.GET.get("category")  # ✅ safe access
-
+        category_id = self.request.GET.get("category")
         if category_id:
             queryset = queryset.filter(category__id=category_id)
 
@@ -117,14 +115,11 @@ class ProductList(generics.ListCreateAPIView):
         if fetch_limit:
             try:
                 limit = int(fetch_limit)
-                queryset = queryset.order_by("-id")[:limit]  # ✅ latest first
+                queryset = queryset.order_by("-id")[:limit]
             except ValueError:
                 pass
-
-                
-
         return queryset
-    
+
 class ProductDetail(generics.RetrieveUpdateAPIView):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
@@ -134,7 +129,7 @@ class ProductDetail(generics.RetrieveUpdateAPIView):
         product = self.get_object()
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 class ProductImgsList(generics.ListCreateAPIView):
     queryset = models.ProductImage.objects.all()
     serializer_class = serializers.ProductImageSerializer
@@ -164,10 +159,8 @@ class RelatedProductList(generics.ListAPIView):
                 return Product.objects.none()
         return Product.objects.all()
 
-
-    
 class TagProductList(generics.ListCreateAPIView):
-    serializer_class = ProductSerializer  # only the serializer
+    serializer_class = ProductSerializer
 
     def get_queryset(self):
         tag = self.kwargs.get('tag')
@@ -175,16 +168,12 @@ class TagProductList(generics.ListCreateAPIView):
             return Product.objects.filter(tags__icontains=tag)
         return Product.objects.all()
 
-        
-
-    
-
-# Customer views
+# ============================================
+# CUSTOMER VIEWS
+# ============================================
 class CustomerList(generics.ListCreateAPIView):
     queryset = models.Customer.objects.all()
     serializer_class = serializers.CustomerSerializer
-
-
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.User.objects.all()
@@ -195,12 +184,11 @@ class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Customer.objects.all()
     serializer_class = serializers.CustomerDetailSerializer
 
-    
 @csrf_exempt
 def customer_login(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)  # parse JSON body
+            data = json.loads(request.body)
             username = data.get("username")
             password = data.get("password")
         except:
@@ -208,14 +196,11 @@ def customer_login(request):
 
         user = authenticate(username=username, password=password)
         if user is not None:
-            customer=models.Customer.objects.get(user=user)
-
+            customer = models.Customer.objects.get(user=user)
             return JsonResponse({"customer_login": True, "user": customer.user.username,'customer_id':customer.id})
-        else:
-            return JsonResponse({"bool": False, "msg": "Invalid credentials"})
+        return JsonResponse({"bool": False, "msg": "Invalid credentials"})
 
     return JsonResponse({"msg": "Only POST method allowed"})
-    
 
 @csrf_exempt
 def customer_register(request):
@@ -231,7 +216,6 @@ def customer_register(request):
         except:
             return JsonResponse({"bool": False, "msg": "Invalid JSON"})
 
-        # 🔹 Validate inputs before creating user
         if not username or not password:
             return JsonResponse({"bool": False, "msg": "Username and password required"})
         if User.objects.filter(username=username).exists():
@@ -242,7 +226,6 @@ def customer_register(request):
             return JsonResponse({"bool": False, "msg": "Mobile number already linked"})
 
         try:
-            # ✅ Create User
             user = User.objects.create_user(
                 username=username,
                 password=password,
@@ -250,28 +233,20 @@ def customer_register(request):
                 last_name=last_name,
                 email=email
             )
-
-            # ✅ Create related Customer
-            customer = models.Customer.objects.create(
-                user=user,
-                mobile=mobile
-            )
+            customer = models.Customer.objects.create(user=user, mobile=mobile)
             return JsonResponse({"msg":"Registration Completed Succesfully", "user_id": user.id, "customer_id": customer.id})
-
         except IntegrityError:
             return JsonResponse({"bool": False, "msg": "Database error"})
 
-   
     return JsonResponse({"msg": "Only POST method allowed"})
 
-
-
-# Order views
+# ============================================
+# ORDER VIEWS
+# ============================================
 class OrderList(generics.ListCreateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
 
-# Customer Order views
 class CustomerOrderList(generics.ListCreateAPIView):
     queryset = models.OrderItems.objects.all()
     serializer_class = serializers.OrderItemsSerializer
@@ -283,8 +258,18 @@ class CustomerOrderList(generics.ListCreateAPIView):
             qs = qs.filter(order__customer__id=customer_id)
         return qs
 
+class VendorCustomerOrderList(generics.ListCreateAPIView):
+    queryset = models.OrderItems.objects.all()
+    serializer_class = serializers.OrderItemsSerializer
 
-# Vendor Order views
+    def get_queryset(self):
+        qs = super().get_queryset()
+        customer_id = self.kwargs.get("customer_id")
+        vendor_id = self.kwargs.get("vendor_id")
+        if customer_id:
+            qs = qs.filter(order__customer__id=customer_id, product__vendor__id=vendor_id)
+        return qs
+
 class VendorOrderList(generics.ListCreateAPIView):
     queryset = models.OrderItems.objects.all()
     serializer_class = serializers.OrderItemsSerializer
@@ -295,32 +280,17 @@ class VendorOrderList(generics.ListCreateAPIView):
         if vendor_id:
             qs = qs.filter(product__vendor__id=vendor_id)
         return qs
-    
-# # VendorCustomerList views
-# class VendorCustomerList(generics.ListCreateAPIView):
-#     queryset = models.OrderItems.objects.all()
-#     serializer_class = serializers.OrderItemsSerializer
 
-#     def get_queryset(self):
-#         qs = super().get_queryset()
-#         vendor_id = self.kwargs.get("pk")
-#         if vendor_id:
-#             qs = qs.filter(product__vendor__id=vendor_id)
-#         return qs
 class VendorCustomerList(generics.ListAPIView):
     serializer_class = serializers.CustomerSerializer
 
     def get_queryset(self):
         vendor_id = self.kwargs.get("pk")
-        # Get all unique customers who have ordered from this vendor
         customer_ids = models.OrderItems.objects.filter(
             product__vendor__id=vendor_id
         ).values_list("order__customer", flat=True).distinct()
-
         return models.Customer.objects.filter(id__in=customer_ids)
 
-        
-    
 class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
@@ -329,8 +299,9 @@ class OrderModify(generics.RetrieveUpdateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
 
-
-# Order Items views
+# ============================================
+# ORDER ITEMS VIEWS
+# ============================================
 class OrderItemsList(generics.ListCreateAPIView):
     queryset = models.OrderItems.objects.all()
     serializer_class = serializers.OrderItemsSerializer
@@ -339,7 +310,9 @@ class OrderItemsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.OrderItems.objects.all()
     serializer_class = serializers.OrderItemsSerializer
 
-# Customer Address views
+# ============================================
+# CUSTOMER ADDRESS & WISHLIST VIEWS
+# ============================================
 class CustomerAddressViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CustomerAddressSerializer
     queryset = models.CustomerAddress.objects.all()
@@ -349,12 +322,10 @@ class CustomerAddressViewSet(viewsets.ModelViewSet):
         context.update({"request": self.request})
         return context
 
-# Customer Address views
 class ProductRatingViewset(viewsets.ModelViewSet):
     queryset = models.ProductRating.objects.all()
     serializer_class = serializers.ProductRatingSerializer
 
-    # Category views
 class CategoryList(generics.ListCreateAPIView):
     queryset = models.ProductCategory.objects.all()
     serializer_class = serializers.CategorySerializer
@@ -363,26 +334,16 @@ class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.ProductCategory.objects.all()
     serializer_class = serializers.CategoryDetailSerializer
 
-
+# ============================================
+# MISC FUNCTION-BASED VIEWS
+# ============================================
 @csrf_exempt
 def update_order_status(request, order_id):
-    """
-    Update order status after successful payment
-    """
     if request.method == "POST":
         updated = models.Order.objects.filter(id=order_id).update(order_status=True)
         if updated:
-            return JsonResponse({
-                "success": True,
-                "order_id": order_id,
-                "status": "paid"
-            })
-        else:
-            return JsonResponse({
-                "success": False,
-                "error": "Order not found"
-            }, status=404)
-
+            return JsonResponse({"success": True, "order_id": order_id, "status": "paid"})
+        return JsonResponse({"success": False, "error": "Order not found"}, status=404)
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
 
 @csrf_exempt
@@ -392,50 +353,25 @@ def update_product_download_count(request, product_id):
             product = models.Product.objects.get(id=product_id)
         except models.Product.DoesNotExist:
             return JsonResponse({"bool": False, "error": "Product not found"}, status=404)
-
-        total_downloads = int(product.downloads)
-        total_downloads += 1
-
-        models.Product.objects.filter(id=product_id).update(downloads=total_downloads)
-
-        return JsonResponse({
-            "bool": True,
-            "product_id": product_id,
-            "status": "added count"
-        })
-
+        product.downloads += 1
+        product.save()
+        return JsonResponse({"bool": True, "product_id": product_id, "status": "added count"})
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
 
-
-
-# Wishlist views
 class WishList(generics.ListCreateAPIView):
     queryset = models.Wishlist.objects.all()
     serializer_class = serializers.WishlistSerializer
 
 @csrf_exempt
 def check_in_wishlist(request):
-    msg = {"bool": False}  
-    
-    if request.method == "POST":
-        product_id = request.POST.get("product")
-        customer_id = request.POST.get("customer")
-    else:  # handle GET
-        product_id = request.GET.get("product")
-        customer_id = request.GET.get("customer")
-
+    msg = {"bool": False}
+    product_id = request.POST.get("product") if request.method=="POST" else request.GET.get("product")
+    customer_id = request.POST.get("customer") if request.method=="POST" else request.GET.get("customer")
     if product_id and customer_id:
-        exists = models.Wishlist.objects.filter(
-            product_id=product_id,
-            customer_id=customer_id
-        ).exists()
+        exists = models.Wishlist.objects.filter(product_id=product_id, customer_id=customer_id).exists()
         msg = {"bool": exists}
-
     return JsonResponse(msg)
 
-
-
-# Customer WisthItems views
 class CustomerWishItemList(generics.ListCreateAPIView):
     queryset = models.Wishlist.objects.all()
     serializer_class = serializers.WishlistSerializer
@@ -446,8 +382,7 @@ class CustomerWishItemList(generics.ListCreateAPIView):
         if customer_id:
             qs = qs.filter(customer__id=customer_id)
         return qs
-    
-# Customer WisthItems views
+
 class CustomerAddressList(generics.ListCreateAPIView):
     queryset = models.CustomerAddress.objects.all()
     serializer_class = serializers.CustomerAddressSerializer
@@ -458,28 +393,21 @@ class CustomerAddressList(generics.ListCreateAPIView):
         if customer_id:
             qs = qs.filter(customer__id=customer_id).order_by('id')
         return qs
-    
-
-@csrf_exempt   
-def remove_from_wishlists(request):
-    msg = {"bool": False}  
-
-    if request.method == "POST":
-        wishlist_id = request.POST.get("wishlist_id")
-
-        if wishlist_id:
-            deleted, _ = models.Wishlist.objects.filter(id=wishlist_id).delete()
-            
-            if deleted:  # deleted > 0 means something was deleted
-                msg = {"bool": True}
-
-    return JsonResponse(msg)
-
 
 @csrf_exempt
-def mark_as_default_address(request,pk):
-    response = {"success": False}
+def remove_from_wishlists(request):
+    msg = {"bool": False}
+    if request.method == "POST":
+        wishlist_id = request.POST.get("wishlist_id")
+        if wishlist_id:
+            deleted, _ = models.Wishlist.objects.filter(id=wishlist_id).delete()
+            if deleted:
+                msg = {"bool": True}
+    return JsonResponse(msg)
 
+@csrf_exempt
+def mark_as_default_address(request, pk):
+    response = {"success": False}
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -490,31 +418,46 @@ def mark_as_default_address(request,pk):
         if address_id:
             try:
                 address = models.CustomerAddress.objects.get(id=address_id)
-                # Unset previous default addresses for this customer
                 models.CustomerAddress.objects.filter(customer=address.customer).update(default_address=False)
-                # Set selected address as default
                 address.default_address = True
                 address.save()
                 response["success"] = True
             except models.CustomerAddress.DoesNotExist:
                 response = {"success": False, "error": "Address not found"}
-
     return JsonResponse(response)
-
 
 def customer_dashboard(request, pk):
     try:
-        customer_id = pk  # Use pk from URL
-        total_address = models.CustomerAddress.objects.filter(customer__id=customer_id).count()
-        total_orders = models.Order.objects.filter(customer__id=customer_id).count()
-        total_wishlist = models.Wishlist.objects.filter(customer__id=customer_id).count()
-
-        msg = {
+        total_address = models.CustomerAddress.objects.filter(customer__id=pk).count()
+        total_orders = models.Order.objects.filter(customer__id=pk).count()
+        total_wishlist = models.Wishlist.objects.filter(customer__id=pk).count()
+        return JsonResponse({
             "total_address": total_address,
             "total_orders": total_orders,
-            "total_wishlist": total_wishlist,  # fixed typo
-        }
+            "total_wishlist": total_wishlist
+        })
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    
+def vendor_dashboard(request, pk):
+    """
+    Return total counts for a vendor:
+    - total_products
+    - total_orders
+    - total_customers
+    """
+    try:
+        total_products = models.Product.objects.filter(vendor__id=pk).count()
+        total_orders = models.OrderItems.objects.filter(product__vendor__id=pk).count()
+        # Get unique customers who purchased from this vendor
+        total_customers = models.OrderItems.objects.filter(product__vendor__id=pk).values_list(
+            "order__customer", flat=True
+        ).distinct().count()
 
-        return JsonResponse(msg)
+        return JsonResponse({
+            "total_products": total_products,
+            "total_orders": total_orders,
+            "total_customers": total_customers
+        })
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
