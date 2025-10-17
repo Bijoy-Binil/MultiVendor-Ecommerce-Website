@@ -325,6 +325,38 @@ class ChangePasswordView(generics.GenericAPIView):
 
         return Response({"detail": "Password changed successfully"}, status=status.HTTP_200_OK)
         
+class VendorChangePasswordView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        # pk is the Vendor.id
+        vendor = models.Vendor.objects.filter(pk=pk).select_related("user").first()
+        if not vendor:
+            return Response({"detail": "Vendor not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        user = vendor.user
+
+        if not request.user or request.user.id != user.id:
+            return Response({"detail": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
+
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
+        confirm_password = request.data.get("confirm_password")
+
+        if not current_password or not new_password:
+            return Response({"detail": "Both fields are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if confirm_password is not None and new_password != confirm_password:
+            return Response({"detail": "New password and confirm password do not match"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.check_password(current_password):
+            return Response({"detail": "Incorrect current password"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"detail": "Password changed successfully"}, status=status.HTTP_200_OK)
+
 class VendorDailyreport(generics.GenericAPIView):
     serializer_class = serializers.VendorDailyReportSerializer
 
