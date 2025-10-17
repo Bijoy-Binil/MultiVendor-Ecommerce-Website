@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useNavigate } from "react-router-dom" 
 import axios from 'axios'
+import { AuthContext } from '../../AuthProvider'
 
 const Login = () => {
   const navigate = useNavigate()
+  const { setIsLoggedIn, setCustomerId, setCustomerName } = useContext(AuthContext)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const baseUrl = "http://127.0.0.1:8000/api/"
@@ -39,6 +41,10 @@ const Login = () => {
         localStorage.setItem("Customer_username", response.data.user)
         localStorage.setItem("Customer_login", response.data.customer_login)
         localStorage.setItem("Customer_id", response.data.customer_id)
+        // Update reactive context so navbar updates immediately
+        setIsLoggedIn(true)
+        setCustomerId(String(response.data.customer_id))
+        setCustomerName(response.data.user)
         console.log("Login Success==>", response.data)
 
         // ✅ redirect to dashboard after login

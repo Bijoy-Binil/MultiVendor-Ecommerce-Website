@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useNavigate } from "react-router-dom" 
 import axios from 'axios'
+import { AuthContext } from '../../AuthProvider'
 
 const SellerLogin = () => {
   const navigate = useNavigate()
+  const { setIsVendorLoggedIn, setVendorId, setVendorName } = useContext(AuthContext)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const baseUrl = "http://127.0.0.1:8000/api/"
@@ -39,6 +41,10 @@ try {
         localStorage.setItem("Vendor_username", response.data.user)
         localStorage.setItem("Vendor_login", response.data.vendor_login)
         localStorage.setItem("Vendor_id", response.data.vendor_id)
+        // Update reactive context so navbar updates immediately
+        setIsVendorLoggedIn(true)
+        setVendorId(String(response.data.vendor_id))
+        setVendorName(response.data.user)
         console.log("Login Success==>", response.data)
 
         // ✅ redirect to dashboard after login
