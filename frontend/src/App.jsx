@@ -47,6 +47,9 @@ import SellerProfile from "./components/Seller/SellerProfile";
 
 // 🔐 Auth Context
 import AuthProvider from "./AuthProvider";
+import DailyReport from "./components/Seller/DailyReport";
+import YearlyReport from "./components/Seller/YearlyReport";
+import MonthlyReport from "./components/Seller/MonthlyReport";
 
 function App() {
   return (
@@ -114,6 +117,10 @@ function App() {
             element={<SellerChangePassword />}
           />
           <Route path="/seller/profile" element={<SellerProfile />} />
+        {/* Individual Report Routes */}
+        <Route path="/seller/daily/report" element={<DailyReport />} />
+        <Route path="/seller/monthly/report" element={<MonthlyReport />} />
+        <Route path="/seller/yearly/report" element={<YearlyReport />} />
         </Routes>
         <Footer />
       </AuthProvider>

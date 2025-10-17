@@ -20,6 +20,9 @@ urlpatterns = [
     path('vendor/<int:pk>/', views.VendorDetail.as_view()),
     path('vendor/<int:pk>/customers/', views.VendorCustomerList.as_view()),
     path("vendor/<int:pk>/order-items", views.VendorOrderList.as_view()),
+   path("vendor/<int:pk>/daily-report/", views.VendorDailyreport.as_view()), 
+path('vendor/<int:pk>/monthly-report/', views.VendorMonthlyReport.as_view(), name='vendor-monthly-report'),    path('vendor/<int:pk>/yearly-report/', views.VendorYearlyReport.as_view(), name='vendor-yearly-report'),
+
     path('vendor/dashboard/<int:pk>/', views.vendor_dashboard, name='vendor-dashboard'),
 
     # ============================

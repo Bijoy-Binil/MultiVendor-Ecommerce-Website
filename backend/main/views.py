@@ -15,7 +15,8 @@ from rest_framework.response import Response
 from . import models, serializers
 from .models import Product, Order
 from .serializers import ProductSerializer
-
+from django.db.models import Count, Sum, F
+from django.db.models.functions import TruncDate, TruncMonth, TruncYear
 # ============================================
 # VENDOR VIEWS
 # ============================================
@@ -280,6 +281,77 @@ class VendorOrderList(generics.ListCreateAPIView):
         if vendor_id:
             qs = qs.filter(product__vendor__id=vendor_id)
         return qs
+    
+class VendorDailyreport(generics.GenericAPIView):
+    serializer_class = serializers.VendorDailyReportSerializer
+
+    def get(self, request, pk):
+        vendor_id = pk
+        if vendor_id:
+            # Aggregate orders per day
+            qs = (
+                models.OrderItems.objects.filter(product__vendor__id=vendor_id)
+                .annotate(order_date=TruncDate('order__order_time'))
+                .values('order_date')
+                .annotate(
+                    total_orders=Count('id'),
+                    total_amount=Sum(F('price') * F('qty')),
+                    total_usd_amount=Sum(F('usd_price') * F('qty')),
+                    total_products_sold=Sum('qty')
+                )
+                .order_by('order_date')
+            )
+            serializer = self.get_serializer(qs, many=True)
+            return Response(serializer.data)
+        return Response([])
+    
+# MONTHLY REPORT
+class VendorMonthlyReport(generics.GenericAPIView):
+    serializer_class = serializers.VendorMonthlyReportSerializer
+
+    def get(self, request, pk):
+        vendor_id = pk
+        if vendor_id:
+            qs = (
+                models.OrderItems.objects.filter(product__vendor__id=vendor_id)
+                .annotate(month=TruncMonth('order__order_time'))
+                .values('month')
+                .annotate(
+                    total_orders=Count('id'),
+                    total_amount=Sum(F('price') * F('qty')),
+                    total_usd_amount=Sum(F('usd_price') * F('qty')),
+                    total_products_sold=Sum('qty')
+                )
+                .order_by('month')
+            )
+            serializer = self.get_serializer(qs, many=True)
+            return Response(serializer.data)
+        return Response([])
+# YEARLY REPORT
+class VendorYearlyReport(generics.GenericAPIView):
+    serializer_class = serializers.VendorYearlyReportSerializer
+
+    def get(self, request, pk):
+        vendor_id = pk
+        if vendor_id:
+            qs = (
+                models.OrderItems.objects.filter(product__vendor__id=vendor_id)
+                .annotate(order_year=TruncYear('order__order_time'))
+                .values('order_year')
+                .annotate(
+                    total_orders=Count('id'),
+                    total_amount=Sum(F('price') * F('qty')),
+                    total_usd_amount=Sum(F('usd_price') * F('qty')),
+                    total_products_sold=Sum('qty')
+                )
+                .order_by('order_year')
+            )
+            for q in qs:
+                q["order_year"] = q["order_year"].year
+            serializer = self.get_serializer(qs, many=True)
+            return Response(serializer.data)
+        return Response([])
+    
 
 class VendorCustomerList(generics.ListAPIView):
     serializer_class = serializers.CustomerSerializer

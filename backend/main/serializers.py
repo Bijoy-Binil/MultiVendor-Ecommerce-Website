@@ -1,13 +1,20 @@
 from rest_framework import serializers
 from . import models
-
+from .models import Vendor
+from django.contrib.auth.models import User
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'username', 'email']
 # =========================
 # Vendor serializers
 # =========================
 class VendorSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
-        model = models.Vendor
-        fields = ['id', 'user', 'address']
+        model = Vendor
+        fields = ['id', 'user', 'mobile', 'address', 'profile_img']
         # depth = 1
 
 class VendorDetailSerializer(serializers.ModelSerializer):
@@ -214,3 +221,23 @@ class WishlistSerializer(serializers.ModelSerializer):
     def get_product_info(self, obj):
         return ProductDetailSerializer(obj.product, context=self.context).data
 
+class VendorDailyReportSerializer(serializers.Serializer):
+    order_date = serializers.DateField()
+    total_orders = serializers.IntegerField()
+    total_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_usd_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_products_sold = serializers.IntegerField()
+
+class VendorMonthlyReportSerializer(serializers.Serializer):
+    month = serializers.DateTimeField()  # 👈 changed from DateField
+    total_orders = serializers.IntegerField()
+    total_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_usd_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_products_sold = serializers.IntegerField()
+
+class VendorYearlyReportSerializer(serializers.Serializer):
+    order_year = serializers.IntegerField()
+    total_orders = serializers.IntegerField()
+    total_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_usd_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_products_sold = serializers.IntegerField()
