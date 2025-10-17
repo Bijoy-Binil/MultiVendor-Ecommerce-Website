@@ -157,10 +157,11 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 # =========================
 class OrderSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
+    customer = serializers.PrimaryKeyRelatedField(queryset=models.Customer.objects.all(), write_only=True, required=True)
 
     class Meta:
         model = models.Order
-        fields = ['id', 'customer_name', 'order_status', 'total_amount', 'total_usd_amount']
+        fields = ['id', 'customer', 'customer_name', 'order_status', 'total_amount', 'total_usd_amount']
 
     def get_customer_name(self, obj):
         if obj.customer and obj.customer.user:

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { AuthContext, CurrencyContext } from "../AuthProvider";
 import axios from "axios";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
@@ -12,15 +12,23 @@ const ConfirmOrder = () => {
   const [payMethod, setPayMethod] = useState("");
   const { currencyData } = useContext(CurrencyContext);
 
-  // Total
-  let prevCart = localStorage.getItem("cartData");
-  let carts = prevCart ? JSON.parse(prevCart) : [];
-  var total_amount = 0;
-  var total_usd_amount = 0;
-  carts.map((cart, index) => {
-    total_amount += parseFloat(cart.product.price);
-    total_usd_amount += parseFloat(cart.product.usd_price);
-  });
+  // Totals (memoized and precise)
+  const carts = useMemo(() => {
+    const prevCart = localStorage.getItem("cartData");
+    return prevCart ? JSON.parse(prevCart) : [];
+  }, []);
+
+  const { total_amount, total_usd_amount } = useMemo(() => {
+    const amounts = carts.reduce(
+      (acc, item) => {
+        const price = Number(item?.product?.price) || 0;
+        const usd = Number(item?.product?.usd_price) || 0;
+        return { total_amount: acc.total_amount + price, total_usd_amount: acc.total_usd_amount + usd };
+      },
+      { total_amount: 0, total_usd_amount: 0 }
+    );
+    return amounts;
+  }, [carts]);
   // Create order in Django
   const createOrder = async () => {
     try {
@@ -31,10 +39,10 @@ const ConfirmOrder = () => {
       });
 
       const newOrderId = orderRes.data.id;
-      if (currencyData == "usd") {
-        setOrderAmount(orderRes.data.total_usd_amount);
+      if (currencyData === "usd") {
+        setOrderAmount(Number(orderRes.data.total_usd_amount) || 0);
       } else {
-        setOrderAmount(orderRes.data.total_amount);
+        setOrderAmount(Number(orderRes.data.total_amount) || 0);
       }
       setOrderId(newOrderId);
 
@@ -95,7 +103,7 @@ const ConfirmOrder = () => {
 
           <div className="card p-3 mt-4">
             <form>
-              {currencyData == "usd" && (
+              {currencyData === "usd" && (
                 <>
                   <label>
                     <input type="radio" onChange={() => setPayMethod("paypal")} name="payMethod" />
@@ -111,7 +119,7 @@ const ConfirmOrder = () => {
                 </>
               )}
 
-              {currencyData != "usd" && (
+              {currencyData !== "usd" && (
                 <>
                   {" "}
                   <label>
@@ -137,7 +145,7 @@ const ConfirmOrder = () => {
               </button>
             </form>
 
-            {payMethod === "paypal" && orderId && (
+            {payMethod === "paypal" && orderId && orderAmount > 0 && (
               <PayPalScriptProvider
                 options={{
                   "client-id": "AcR1hoIkPE_TErs-tmGk6v2GKZOb--ZbA6IBNMXd057qK3K1ayLbwRAsPBIB1R8gDhuDC8zvZEzpkz-3",
@@ -147,13 +155,13 @@ const ConfirmOrder = () => {
               >
                 <PayPalButtons
                   createOrder={(data, actions) => {
+                    const amountStr = Number(orderAmount).toFixed(2);
                     return actions.order.create({
                       purchase_units: [
                         {
                           amount: {
                             currency_code: "USD",
-                          value: orderAmount.toString(),
-
+                            value: amountStr,
                           },
                         },
                       ],
@@ -171,6 +179,10 @@ const ConfirmOrder = () => {
                       console.error("Payment error:", error);
                       navigate("/order/failure");
                     }
+                  }}
+                  onError={(err) => {
+                    console.error("PayPal onError:", err);
+                    navigate("/order/failure");
                   }}
                 />
               </PayPalScriptProvider>
