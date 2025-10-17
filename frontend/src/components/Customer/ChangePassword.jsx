@@ -12,8 +12,6 @@ const ChangePassword = () => {
     new_password: "",
     confirm_password: "",
   });
-  console.log("customerId==>", customerId);
-console.log("accessToken==>", accessToken);
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -43,6 +41,11 @@ console.log("accessToken==>", accessToken);
       return;
     }
 
+    if (!accessToken) {
+      setError("Session expired. Please log in again.");
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = {
@@ -51,18 +54,19 @@ console.log("accessToken==>", accessToken);
   confirm_password: formData.confirm_password,
 };
 
-
       await axios.post(`${baseUrl}${customerId}/change-password/`, payload, {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // from AuthContext
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
       });
 
       setMessage("Password changed successfully!");
       setFormData({ current_password: "", new_password: "", confirm_password: "" });
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.detail || "Failed to change password.");
+      const detail = err.response?.data?.detail;
+      const msg = typeof detail === "string" ? detail : "Failed to change password.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
