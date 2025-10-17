@@ -17,16 +17,27 @@ from .models import Product, Order
 from .serializers import ProductSerializer
 from django.db.models import Count, Sum, F
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear
+from rest_framework import generics, status
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated,AllowAny
+from .serializers import ChangePasswordSerializer
+from rest_framework import status, generics
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password
 # ============================================
 # VENDOR VIEWS
 # ============================================
 class VendorList(generics.ListCreateAPIView):
     queryset = models.Vendor.objects.all()
     serializer_class = serializers.VendorSerializer
-
+    permission_classes=[AllowAny]
 class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Vendor.objects.all()
     serializer_class = serializers.VendorSerializer
+    permission_classes=[AllowAny]
 
 @csrf_exempt
 def vendor_login(request):
@@ -281,7 +292,34 @@ class VendorOrderList(generics.ListCreateAPIView):
         if vendor_id:
             qs = qs.filter(product__vendor__id=vendor_id)
         return qs
-    
+class ChangePasswordView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        # Get user or return 404
+        user = User.objects.filter(pk=pk).first()
+        if not user:
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+      
+        # Get data
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
+
+        # Validate inputs
+        if not current_password or not new_password:
+            return Response({"detail": "Both fields are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Verify old password
+        if not user.check_password(current_password):
+            return Response({"detail": "Incorrect current password"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update new password
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"detail": "Password changed successfully"}, status=status.HTTP_200_OK)
+        
 class VendorDailyreport(generics.GenericAPIView):
     serializer_class = serializers.VendorDailyReportSerializer
 

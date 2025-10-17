@@ -14,7 +14,20 @@ const SellerLogin = () => {
     e.preventDefault(); // ✅ prevent reload on submit
 
     const userData = { username, password }
-
+try {
+      const res = await axios.post('http://localhost:8000/api/token/',  userData
+      );
+      console.log(res)
+      const  access  = res.data.access;  // JWT tokens
+      const  refresh  = res.data.refresh;  // JWT tokens
+      localStorage.setItem('accessToken', access);  // Store tokens
+      localStorage.setItem('refreshToken', refresh);
+      // window.location.href = '/protected';  // Redirect to protected page
+    } catch (err) {
+      setError('Login failed. Check credentials.');
+      console.error(err);
+    }
+  
     try {
       const response = await axios.post(`${baseUrl}vendor/login/`, userData)
 

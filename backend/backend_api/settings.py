@@ -141,6 +141,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
 
 # ========================RestFrameWork=============================
 REST_FRAMEWORK = {
@@ -150,13 +151,23 @@ REST_FRAMEWORK = {
     # ],
 
    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
 
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
        
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
-    # )
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
     
 }
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    # Access token lifetime (used for API requests)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # ⏱️ expires in 30 minutes
+
+    # Refresh token lifetime (used to get a new access token)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7)} # 🔁 expires in 7 days
+
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

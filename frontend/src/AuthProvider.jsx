@@ -18,7 +18,8 @@ const AuthProvider = ({ children }) => {
   const [customerName, setCustomerName] = useState(
     localStorage.getItem("Customer_username")
   );
-
+  const accessToken = localStorage.getItem('accessToken')
+  const refreshToken = localStorage.getItem('refreshToken')
   const handleLogout = () => {
     localStorage.removeItem("Customer_username");
     localStorage.removeItem("Customer_login");
@@ -70,7 +71,7 @@ console.log("CartDataAuth==> ",cartData)
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, setIsLoggedIn,vendorId,vendorName,isVendorLoggedIn,handleVendorLogout, handleLogout, customerId, customerName }}
+      value={{ isLoggedIn, setIsLoggedIn,vendorId,vendorName,accessToken,refreshToken,isVendorLoggedIn,handleVendorLogout, handleLogout, customerId, customerName }}
     >
       <CartContext.Provider value={{ cartData, setCartData }}>
         <CurrencyContext.Provider value={{ currencyData, setCurrencyData }}>

@@ -1,35 +1,142 @@
-import React from 'react'
-import Sidebar from './Sidebar'
+import React, { useState, useContext } from "react";
+import Sidebar from "./Sidebar";
+import axios from "axios";
+import { AuthContext } from "../../AuthProvider";
 
 const ChangePassword = () => {
-    return (
-        <div className="container mt-4">
-            <div className="row">
-                {/* Sidebar */}
-                <div className="col-md-3 col-12 mb-2">
-                    <Sidebar />
-                </div>
+  const { customerId, accessToken } = useContext(AuthContext); // Ensure this is set
+  const baseUrl = "http://127.0.0.1:8000/api/";
 
-                <div className="col-md-9 col-12 ">
+  const [formData, setFormData] = useState({
+    current_password: "",
+    new_password: "",
+    confirm_password: "",
+  });
+  console.log("customerId==>", customerId);
+console.log("accessToken==>", accessToken);
 
-                    <h4 className='card-header'>Change Password</h4>
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-                    <form>
-                        <div className="mb-3">
-                            <label htmlFor="password" className="form-label">New Password</label>
-                            <input type="password" className="form-control" id="password" />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="changepassword" className="form-label">Change Password</label>
-                            <input type="password" className="form-control" id="changepassword" />
-                        </div>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-                        <button type="submit" className="btn btn-primary">Submit</button>
-                    </form>
-                </div>
-            </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+
+    if (!formData.new_password || !formData.confirm_password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (formData.new_password !== formData.confirm_password) {
+      setError("New password and confirm password do not match.");
+      return;
+    }
+
+    if (!customerId) {
+      setError("User ID not found. Please log in again.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const payload = {
+  current_password: formData.current_password,
+  new_password: formData.new_password,
+  confirm_password: formData.confirm_password,
+};
+
+
+      await axios.post(`${baseUrl}${customerId}/change-password/`, payload, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // from AuthContext
+        },
+      });
+
+      setMessage("Password changed successfully!");
+      setFormData({ current_password: "", new_password: "", confirm_password: "" });
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.detail || "Failed to change password.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <div className="row">
+        <div className="col-md-3 col-12 mb-2">
+          <Sidebar />
         </div>
-    )
-}
 
-export default ChangePassword
+        <div className="col-md-9 col-12">
+          <div className="card p-4">
+            <h4 className="card-header mb-3">Change Password</h4>
+
+            {message && <p className="text-success">{message}</p>}
+            {error && <p className="text-danger">{error}</p>}
+
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="current_password" className="form-label">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  id="current_password"
+                  name="current_password"
+                  value={formData.current_password}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="new_password" className="form-label">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  id="new_password"
+                  name="new_password"
+                  value={formData.new_password}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="confirm_password" className="form-label">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  id="confirm_password"
+                  name="confirm_password"
+                  value={formData.confirm_password}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? "Updating..." : "Change Password"}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ChangePassword;
