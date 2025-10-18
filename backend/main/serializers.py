@@ -157,11 +157,10 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 # =========================
 class OrderSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
-    customer = serializers.PrimaryKeyRelatedField(queryset=models.Customer.objects.all(), write_only=True, required=True)
 
     class Meta:
         model = models.Order
-        fields = ['id', 'customer', 'customer_name', 'order_status', 'total_amount', 'total_usd_amount']
+        fields = ['id', 'customer_name', 'order_status', 'total_amount', 'total_usd_amount']
 
     def get_customer_name(self, obj):
         if obj.customer and obj.customer.user:
@@ -211,14 +210,20 @@ class CustomerAddressSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 # =========================
-# ProductRating serializers
-# =========================
 class ProductRatingSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all())
+    customer = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = models.ProductRating
         fields = ['id', 'customer', 'product', 'rating', 'reviews', 'add_time']
         depth = 1
 
+    def validate_rating(self, value):
+        if value < 1 or value > 5:
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return value
+        
 # =========================
 # Wishlist serializers
 # =========================

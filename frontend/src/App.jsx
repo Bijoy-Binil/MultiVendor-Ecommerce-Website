@@ -50,6 +50,7 @@ import AuthProvider from "./AuthProvider";
 import DailyReport from "./components/Seller/DailyReport";
 import YearlyReport from "./components/Seller/YearlyReport";
 import MonthlyReport from "./components/Seller/MonthlyReport";
+import AddReview from "./components/Customer/AddReview";
 
 function App() {
   return (
@@ -121,6 +122,7 @@ function App() {
         <Route path="/seller/daily/report" element={<DailyReport />} />
         <Route path="/seller/monthly/report" element={<MonthlyReport />} />
         <Route path="/seller/yearly/report" element={<YearlyReport />} />
+        <Route path="/customer/product-rating/:product_id" element={<AddReview />} />
         </Routes>
         <Footer />
       </AuthProvider>

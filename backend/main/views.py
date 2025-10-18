@@ -470,8 +470,21 @@ class CustomerAddressViewSet(viewsets.ModelViewSet):
         return context
 
 class ProductRatingViewset(viewsets.ModelViewSet):
-    queryset = models.ProductRating.objects.all()
+    queryset = models.ProductRating.objects.all().order_by('-add_time')
     serializer_class = serializers.ProductRatingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # automatically assign logged-in user's customer profile
+        print(f"User: {self.request.user}")
+        print(f"User ID: {self.request.user.id}")
+        try:
+            customer = models.Customer.objects.get(user=self.request.user)
+            print(f"Customer found: {customer}")
+            serializer.save(customer=customer)
+        except models.Customer.DoesNotExist:
+            print("Customer not found")
+            raise serializers.ValidationError("Customer profile not found")
 
 class CategoryList(generics.ListCreateAPIView):
     queryset = models.ProductCategory.objects.all()

@@ -75,10 +75,13 @@ const OrderRow = ({ index, keys, item }) => {
             <span className="badge text-dark bg-white">{totalDownloads}</span>
           </button>
         ) : (
-          <button className="btn btn-outline-secondary btn-sm" disabled>
+          <button className="btn btn-outline-secondary  btn-sm" disabled>
             <i className="fa fa-clock me-1"></i> Awaiting
           </button>
         )}
+        {item.order_info.order_status && <Link to={`/customer/product-rating/${item.product_info.id}`} className="btn mx-2 btn-outline-success btn-sm" >
+            Add Review
+          </Link>}
       </td>
     </tr>
   );
