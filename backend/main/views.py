@@ -542,7 +542,26 @@ class ProductRatingViewset(viewsets.ModelViewSet):
 class CategoryList(generics.ListCreateAPIView):
     queryset = models.ProductCategory.objects.all()
     serializer_class = serializers.CategorySerializer
+    parser_classes = [MultiPartParser, FormParser]
 
+    def get_queryset(self):
+        queryset = models.ProductCategory.objects.all()
+        
+        # Optional: filter by name or any other field (example)
+        name = self.request.GET.get("name")
+        if name:
+            queryset = queryset.filter(title__icontains=name)
+        
+        # Optional: limit the number of results
+        fetch_limit = self.request.GET.get("fetch_limit")
+        if fetch_limit:
+            try:
+                limit = int(fetch_limit)
+                queryset = queryset.order_by("-id")[:limit]
+            except ValueError:
+                pass
+        
+        return queryset
 class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.ProductCategory.objects.all()
     serializer_class = serializers.CategoryDetailSerializer

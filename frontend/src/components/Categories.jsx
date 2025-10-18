@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import logo from "./../images/logo.jpg"
 
 const Categories = () => {
   const baseUrl = "http://127.0.0.1:8000/api/categories/"
@@ -50,18 +49,33 @@ const Categories = () => {
                 className="position-relative overflow-hidden"
                 style={{ height: "200px" }}
               >
-                <img
-                  src={logo}
-                  className="card-img-top h-100 object-fit-cover"
-                  alt={c.title}
-                  style={{ transition: "transform 0.3s" }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.transform = "scale(1.05)")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.transform = "scale(1)")
-                  }
-                />
+                {c.image ? (
+                  <img
+                    src={c.image}
+                    className="card-img-top h-100 object-fit-cover"
+                    alt={c.title}
+                    style={{ transition: "transform 0.3s" }}
+                    onMouseOver={(e) =>
+                      (e.currentTarget.style.transform = "scale(1.05)")
+                    }
+                    onMouseOut={(e) =>
+                      (e.currentTarget.style.transform = "scale(1)")
+                    }
+                  />
+                ) : (
+                  <div 
+                    className="card-img-top h-100 d-flex align-items-center justify-content-center bg-light"
+                    style={{ 
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: 'white'
+                    }}
+                  >
+                    <div className="text-center">
+                      <i className="fas fa-tags" style={{ fontSize: '3rem', marginBottom: '10px' }}></i>
+                      <h5 className="mb-0">{c.title}</h5>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="card-body pb-0">
                 <h5 className="card-title fw-bold">

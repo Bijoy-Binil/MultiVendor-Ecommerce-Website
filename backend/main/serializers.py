@@ -58,13 +58,13 @@ class VendorDetailSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ProductCategory
-        fields = ['id', 'title', 'detail']
+        fields = ['id', 'title', 'detail', 'image']
         # depth = 1
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ProductCategory
-        fields = ['id', 'title', 'detail']
+        fields = ['id', 'title', 'detail', 'image']
         # depth = 1
 
 # =========================
