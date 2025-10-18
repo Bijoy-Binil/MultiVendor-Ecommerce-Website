@@ -19,7 +19,7 @@ const Header = () => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
         <Link className="navbar-brand fw-bold" to="/">
-          <i className="fa fa-store me-2"></i>Optimus Store
+          <i className="fa fa-store me-2"></i>OptimuStore
         </Link>
 
         <button
