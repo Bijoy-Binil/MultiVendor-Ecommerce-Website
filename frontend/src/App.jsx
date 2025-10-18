@@ -51,6 +51,8 @@ import DailyReport from "./components/Seller/DailyReport";
 import YearlyReport from "./components/Seller/YearlyReport";
 import MonthlyReport from "./components/Seller/MonthlyReport";
 import AddReview from "./components/Customer/AddReview";
+import AllVendors from "./components/AllVendors";
+import VendorDetail from "./components/Seller/VendorDetail";
 
 function App() {
   return (
@@ -71,6 +73,7 @@ function App() {
             path="/product/:product_slug/:product_id"
             element={<ProductDetail />}
           />
+          <Route path="/seller/:slug/:id" element={<VendorDetail />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/confirm-order" element={<ConfirmOrder />} />
 
@@ -101,6 +104,7 @@ function App() {
           <Route path="/seller/register" element={<SellerRegister />} />
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
           <Route path="/seller/products" element={<SellerProducts />} />
+          <Route path="/sellers" element={<AllVendors />} />
           <Route
             path="/seller/update-products/:productId"
             element={<UpdateProduct />}

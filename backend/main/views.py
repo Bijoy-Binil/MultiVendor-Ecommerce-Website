@@ -27,18 +27,47 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from .models import Vendor, Product
+from .serializers import ProductSerializer
 # ============================================
 # VENDOR VIEWS
 # ============================================
-class VendorList(generics.ListCreateAPIView):
-    queryset = models.Vendor.objects.all()
-    serializer_class = serializers.VendorSerializer
-    permission_classes=[AllowAny]
-class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Vendor.objects.all()
-    serializer_class = serializers.VendorSerializer
-    permission_classes=[AllowAny]
+# class VendorList(generics.ListCreateAPIView):
+#     queryset = models.Vendor.objects.all()
+#     serializer_class = serializers.VendorSerializer
+#     permission_classes=[AllowAny]
+# class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = models.Vendor.objects.all()
+#     serializer_class = serializers.VendorSerializer
+#     permission_classes=[AllowAny]
+# ✅ List + Create
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def vendor_products(request, pk):
+    """Return all products for a specific vendor"""
+    try:
+        vendor = Vendor.objects.get(pk=pk)
+    except Vendor.DoesNotExist:
+        return Response({"error": "Vendor not found"}, status=404)
+
+    products = Product.objects.filter(vendor=vendor).order_by('-id')
+    serializer = ProductSerializer(products, many=True, context={'request': request})
+    return Response(serializer.data)
+class VendorList(generics.ListCreateAPIView):
+    queryset = models.Vendor.objects.all().select_related('user').order_by('-id')
+    serializer_class = serializers.VendorSerializer
+    permission_classes = [AllowAny]
+
+
+# ✅ Retrieve + Update + Delete
+class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Vendor.objects.all().select_related('user')
+    serializer_class = serializers.VendorSerializer
+    permission_classes = [AllowAny]
 @csrf_exempt
 def vendor_login(request):
     if request.method == "POST":

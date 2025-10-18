@@ -21,16 +21,31 @@ class ChangePasswordSerializer(serializers.Serializer):
         return attrs
 
 # =========================
-# Vendor serializers
-# =========================
+# # Vendor serializers
+# # =========================
+# class VendorSerializer(serializers.ModelSerializer):
+#     user = UserSerializer(read_only=True)
+
+#     class Meta:
+#         model = Vendor
+#         fields = ['id', 'user', 'mobile', 'address', 'profile_img']
+#         # depth = 1
+# Optional nested serializer for user
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
 class VendorSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source='user', write_only=True
+    )
 
     class Meta:
         model = Vendor
-        fields = ['id', 'user', 'mobile', 'address', 'profile_img']
-        # depth = 1
-
+        fields = ['id', 'user', 'user_id', 'mobile', 'address', 'profile_img']
+        
 class VendorDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Vendor
