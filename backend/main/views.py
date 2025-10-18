@@ -148,17 +148,26 @@ class ProductList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = models.Product.objects.all()
+
+        # Filter by category if provided
         category_id = self.request.GET.get("category")
         if category_id:
             queryset = queryset.filter(category__id=category_id)
 
+        # Fetch limit
         fetch_limit = self.request.GET.get("fetch_limit")
         if fetch_limit:
             try:
                 limit = int(fetch_limit)
-                queryset = queryset.order_by("-id")[:limit]
+                # Check if we want latest or first products
+                order = self.request.GET.get("order", "latest")  # default to latest
+                if order == "latest":
+                    queryset = queryset.order_by("-id")[:limit]  # latest products
+                elif order == "first":
+                    queryset = queryset[:limit]  # first products
             except ValueError:
                 pass
+
         return queryset
 
 class ProductDetail(generics.RetrieveUpdateAPIView):
