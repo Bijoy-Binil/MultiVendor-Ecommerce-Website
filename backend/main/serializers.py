@@ -211,19 +211,28 @@ class CustomerAddressSerializer(serializers.ModelSerializer):
 
 # =========================
 class ProductRatingSerializer(serializers.ModelSerializer):
+    product_title = serializers.CharField(source='product.title', read_only=True)
+    customer_name = serializers.CharField(source='customer.user.username', read_only=True)
     product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all())
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = models.ProductRating
-        fields = ['id', 'customer', 'product', 'rating', 'reviews', 'add_time']
-        depth = 1
+        fields = [
+            'id',
+            'customer',
+            'customer_name',
+            'product',
+            'product_title',
+            'rating',
+            'reviews',
+            'add_time',
+        ]
 
     def validate_rating(self, value):
         if value < 1 or value > 5:
             raise serializers.ValidationError("Rating must be between 1 and 5")
         return value
-        
 # =========================
 # Wishlist serializers
 # =========================

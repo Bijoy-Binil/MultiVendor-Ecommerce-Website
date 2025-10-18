@@ -469,22 +469,46 @@ class CustomerAddressViewSet(viewsets.ModelViewSet):
         context.update({"request": self.request})
         return context
 
+# class ProductRatingViewset(viewsets.ModelViewSet):
+#     queryset = models.ProductRating.objects.all().order_by('-add_time')
+#     serializer_class = serializers.ProductRatingSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def perform_create(self, serializer):
+#         # automatically assign logged-in user's customer profile
+#         print(f"User: {self.request.user}")
+#         print(f"User ID: {self.request.user.id}")
+#         try:
+#             customer = models.Customer.objects.get(user=self.request.user)
+#             print(f"Customer found: {customer}")
+#             serializer.save(customer=customer)
+#         except models.Customer.DoesNotExist:
+#             print("Customer not found")
+#             raise serializers.ValidationError("Customer profile not found")
+from rest_framework.decorators import action
 class ProductRatingViewset(viewsets.ModelViewSet):
     queryset = models.ProductRating.objects.all().order_by('-add_time')
     serializer_class = serializers.ProductRatingSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # automatically assign logged-in user's customer profile
-        print(f"User: {self.request.user}")
-        print(f"User ID: {self.request.user.id}")
+        user = self.request.user
+        print(f"Authenticated user: {user}")
+
         try:
-            customer = models.Customer.objects.get(user=self.request.user)
-            print(f"Customer found: {customer}")
+            customer = models.Customer.objects.get(user=user)
             serializer.save(customer=customer)
+            print("Review saved successfully")
         except models.Customer.DoesNotExist:
-            print("Customer not found")
-            raise serializers.ValidationError("Customer profile not found")
+            print("Customer not found for user:", user)
+            raise serializers.ValidationError({"error": "Customer profile not found."})
+
+    # ✅ Custom endpoint for latest 3 reviews
+    @action(detail=False, methods=['get'])
+    def latest(self, request):
+        latest_reviews = models.ProductRating.objects.all().order_by('-add_time')[:3]
+        serializer = self.get_serializer(latest_reviews, many=True)
+        return Response(serializer.data)
 
 class CategoryList(generics.ListCreateAPIView):
     queryset = models.ProductCategory.objects.all()

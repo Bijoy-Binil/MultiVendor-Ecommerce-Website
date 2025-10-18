@@ -3,6 +3,7 @@ import logo from "./../images/logo.jpg";
 import SwiperReact from "./SwiperReact";
 import { Link } from "react-router-dom";
 import SingleProduct from "./SingleProduct";
+import Testimonial from "./Testimonial";
 
 const Home = () => {
   const baseUrl = "http://127.0.0.1:8000/api/products/";
