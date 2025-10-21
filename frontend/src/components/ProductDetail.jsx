@@ -122,12 +122,14 @@ const ProductDetail = () => {
             ))}
           </Swiper>
         </div>
-
-        {/* Product Info */}
+{console.log("products==>",products)
+}        {/* Product Info */}
         <div className="col-lg-7">
           <div className="card border-0 shadow-sm p-4">
             <h2 className="fw-bold mb-3">{products.title}</h2>
             <p className="text-muted">{products.detail}</p>
+            <Link to={`/seller/${products?.vendor?.user?.username}/${products?.vendor?.id}`}>Vendor: {products?.vendor?.user?.username || "Unknown Vendor"}</Link>
+
 
             {/* Price */}
             <h4 className="text-primary fw-bold">
@@ -209,7 +211,7 @@ const ProductDetail = () => {
           {relatedProducts.map((item, index) => (
             <SwiperSlide key={index}>
               <div className="card shadow-sm border-0 h-100">
-                <Link to={`/productDetail/${item.title}/${item.id}`}>
+                <Link to={`/product/${item.title}/${item.id}`}>
                   <img
                     src={item.image}
                     alt={item.title}

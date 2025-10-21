@@ -50,7 +50,7 @@ class VendorDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Vendor
         fields = ['id', 'user', 'address']
-        # depth = 1
+        depth = 1
 
 # =========================
 # Category serializers
@@ -81,8 +81,7 @@ class ProductSerializer(serializers.ModelSerializer):
     tag_list = serializers.SerializerMethodField()
 
     category = serializers.PrimaryKeyRelatedField(queryset=models.ProductCategory.objects.all())
-    vendor = serializers.PrimaryKeyRelatedField(queryset=models.Vendor.objects.all())
-
+    vendor = VendorSerializer(read_only=True)  # ✅ Nested full vendor data
     class Meta:
         model = models.Product
         fields = [
@@ -91,11 +90,11 @@ class ProductSerializer(serializers.ModelSerializer):
             'detail', 'price', 'is_published', 'product_ratings',
             'usd_price', 'product_imgs', 'product_file'
         ]
+        depth = 1
         extra_kwargs = {
             'image': {'required': False, 'allow_null': True},
             'product_file': {'required': False, 'allow_null': True},
         }
-        depth = 1
 
     def get_tag_list(self, obj):
         if obj.tags:
