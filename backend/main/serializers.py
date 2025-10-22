@@ -260,13 +260,23 @@ class ProductRatingSerializer(serializers.ModelSerializer):
 # =========================
 # Wishlist serializers
 # =========================
+
 class WishlistSerializer(serializers.ModelSerializer):
     product_info = ProductDetailSerializer(source='product', read_only=True)
     customer_info = CustomerSerializer(source='customer', read_only=True)
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Wishlist
-        fields = ['id', 'product', 'customer', 'product_info', 'customer_info']
+        fields = ['id', 'product', 'image_url', 'customer', 'product_info', 'customer_info']
+
+    def get_image_url(self, obj):
+        if obj.product and obj.product.image:
+            try:
+                return obj.product.image.url
+            except:
+                return ""
+        return ""
 
     def get_customer_info(self, obj):
         return CustomerSerializer(obj.customer, context=self.context).data
@@ -274,6 +284,33 @@ class WishlistSerializer(serializers.ModelSerializer):
     def get_product_info(self, obj):
         return ProductDetailSerializer(obj.product, context=self.context).data
 
+
+class CustomerWishlistSerializer(serializers.ModelSerializer):
+    product_info = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Wishlist
+        fields = ["id", "product", "product_info"]
+
+    def get_product_info(self, obj):
+        product = obj.product
+        request = self.context.get("request")  # important for full URL
+        image_url = product.image.url if product.image else ""
+        if request and image_url:
+            image_url = request.build_absolute_uri(image_url)  # full URL
+        return {
+            "id": product.id,
+            "title": product.title,
+            "slug": product.slug,
+            "image": image_url,
+            "price": product.price,
+            "usd_price": product.usd_price,
+            "vendor": {
+                "user": {
+                    "username": product.vendor.user.username if product.vendor else ""
+                }
+            },
+        }
 class VendorDailyReportSerializer(serializers.Serializer):
     order_date = serializers.DateField()
     total_orders = serializers.IntegerField()

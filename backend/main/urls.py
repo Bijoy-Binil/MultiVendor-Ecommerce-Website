@@ -56,7 +56,7 @@ name='vendor-yearly-report'),
     path('customer/register/', views.customer_register, name='customer_register'),
     path('user/<int:pk>/', views.UserDetail.as_view()),
     path("customer/<int:pk>/order-items", views.CustomerOrderList.as_view()),
-    path("customer/<int:pk>/wish-items", views.CustomerWishItemList.as_view()),
+
     path("customer/<int:pk>/address-list/", views.CustomerAddressList.as_view()),
     path("customer/dashboard/<int:pk>/", views.customer_dashboard, name="customer_dashbaord"),
     path("vendor/<int:vendor_id>/customer/<int:customer_id>/order-items/", views.VendorCustomerOrderList.as_view()),
@@ -81,6 +81,7 @@ name='vendor-yearly-report'),
     # ============================
     path("wishlists/", views.WishList.as_view()),
     path("check-in-wishlists/", views.check_in_wishlist, name="check_in_wishlists"),
+   path("customer/wish-items/", views.CustomerWishItemList.as_view(), name="customer-wish-items"),
     path("toggle-wishlist/", views.toggle_wishlist, name="toggle_wishlist"),
     path("remove-from-wishlists/", views.remove_from_wishlists, name="remove_from_wishlists"),
 

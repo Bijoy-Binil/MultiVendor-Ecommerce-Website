@@ -703,17 +703,25 @@ def check_in_wishlist(request):
         msg = {"bool": exists}
     return JsonResponse(msg)
 
-class CustomerWishItemList(generics.ListCreateAPIView):
-    queryset = models.Wishlist.objects.all()
-    serializer_class = serializers.WishlistSerializer
+class CustomerWishItemList(generics.ListAPIView):
+    serializer_class = serializers.CustomerWishlistSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        customer_id = self.kwargs.get("pk")
-        if customer_id:
-            qs = qs.filter(customer__id=customer_id)
-        return qs
-    
+        user = self.request.user
+        if not user.is_authenticated:
+            return models.Wishlist.objects.none()
+
+        customer = user.customer_set.first()
+        if not customer:
+            return models.Wishlist.objects.none()
+
+        return models.Wishlist.objects.filter(customer=customer).select_related("product").order_by("-id")
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request  # important for absolute image URL
+        return context
 # Toggle wishlist (add/remove)
 @csrf_exempt
 def toggle_wishlist(request):

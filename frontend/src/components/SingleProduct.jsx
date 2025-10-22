@@ -1,65 +1,45 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { AuthContext, CartContext, CurrencyContext } from "../AuthProvider";
+import React, { useContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { CurrencyContext, AuthContext, CartContext } from "../AuthProvider";
 import axios from "axios";
+import { toast } from "react-toastify";
 
-const SingleProduct = () => {
-  const { id } = useParams();
+const SingleProduct = ({ product }) => {
   const { currencyData } = useContext(CurrencyContext);
-  const { cartData, setCartData } = useContext(CartContext);
   const { isLoggedIn, customerId } = useContext(AuthContext);
+  const { cartData, setCartData } = useContext(CartContext);
 
-  const [product, setProduct] = useState(null);
-  const [cartButtonClick, setCartButtonClick] = useState(false);
-  const [productInWishlist, setProductInWishlist] = useState(false);
+  const [inCart, setInCart] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
 
-  const baseUrl = "http://127.0.0.1:8000/api/products/";
-  const wishlistCheckUrl = "http://127.0.0.1:8000/api/check-in-wishlists/";
-  const toggleWishlistUrl = "http://127.0.0.1:8000/api/toggle-wishlist/";
+  const wishlistUrl = "http://127.0.0.1:8000/api/wishlists/";
+  const checkWishlistUrl = "http://127.0.0.1:8000/api/check-in-wishlists/";
 
-  // Auth header
-  const getAuthConfig = () => {
-    const token = localStorage.getItem("access") || localStorage.getItem("access_token");
-    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-  };
-
-  // Fetch product details
+  // -------------------------
+  // ✅ Check Cart and Wishlist on Load
+  // -------------------------
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const res = await axios.get(`${baseUrl}${id}/`);
-        setProduct(res.data);
-      } catch (err) {
-        console.error("Error fetching product:", err);
-      }
-    };
-    fetchProduct();
-    checkCart();
-    if (isLoggedIn) checkWishlist();
-  }, [id, isLoggedIn]);
+    const cart = JSON.parse(localStorage.getItem("cartData")) || [];
+    const exists = cart.some((item) => item.product.id === product.id);
+    setInCart(exists);
 
-  // Check if product is in cart
-  const checkCart = () => {
-    const prevCart = JSON.parse(localStorage.getItem("cartData") || "[]");
-    const inCart = prevCart.some(item => item.product.id === parseInt(id));
-    setCartButtonClick(inCart);
-  };
-
-  // Check wishlist status
-  const checkWishlist = async () => {
-    try {
-      const res = await axios.get(wishlistCheckUrl, {
-        params: { customer: customerId, product: id },
-      });
-      setProductInWishlist(res.data.bool);
-    } catch (err) {
-      console.error("Error checking wishlist:", err);
+    if (isLoggedIn && customerId) {
+      checkWishListData();
     }
-  };
+  }, [product.id, isLoggedIn, customerId]);
 
-  // Add to cart
-  const addToCart = () => {
-    if (!product) return;
+  // -------------------------
+  // ✅ Add to Cart
+  // -------------------------
+  const handleAddToCart = () => {
+    let prevCart = JSON.parse(localStorage.getItem("cartData")) || [];
+
+    // Prevent duplicate cart items
+    if (prevCart.some((item) => item.product.id === product.id)) {
+      toast.info(`${product.title} is already in cart`);
+      return;
+    }
+
     const cartItem = {
       product: {
         id: product.id,
@@ -68,86 +48,143 @@ const SingleProduct = () => {
         usd_price: product.usd_price,
         image: product.image,
       },
-      user: { id: customerId || 1 },
       total_amount: product.price,
     };
-    const prevCart = JSON.parse(localStorage.getItem("cartData") || "[]");
+
     prevCart.push(cartItem);
     localStorage.setItem("cartData", JSON.stringify(prevCart));
     setCartData(prevCart);
-    setCartButtonClick(true);
+    setInCart(true);
+    toast.success(`${product.title} added to cart`);
   };
 
-  const removeFromCart = () => {
-    const prevCart = JSON.parse(localStorage.getItem("cartData") || "[]");
-    const updatedCart = prevCart.filter(c => c.product.id !== product.id);
-    localStorage.setItem("cartData", JSON.stringify(updatedCart));
-    setCartData(updatedCart);
-    setCartButtonClick(false);
+  // -------------------------
+  // ✅ Remove from Cart
+  // -------------------------
+  const handleRemoveFromCart = () => {
+    let prevCart = JSON.parse(localStorage.getItem("cartData")) || [];
+    const updated = prevCart.filter((item) => item.product.id !== product.id);
+    localStorage.setItem("cartData", JSON.stringify(updated));
+    setCartData(updated);
+    setInCart(false);
+    toast.error(`${product.title} removed from cart`);
   };
 
-  // Toggle wishlist
-  const toggleWishList = async () => {
-    if (!isLoggedIn) return alert("Please log in to manage wishlist");
+  // -------------------------
+  // ✅ Add to Wishlist
+  // -------------------------
+  const handleAddToWishlist = async () => {
+    if (!isLoggedIn) {
+      toast.warning("Please login to add to wishlist");
+      return;
+    }
+
     try {
-      const formData = new FormData();
-      formData.append("customer", customerId);
-      formData.append("product", id);
-
-      const res = await axios.post(toggleWishlistUrl, formData, getAuthConfig());
-      setProductInWishlist(res.data.bool);
+      const res = await axios.post(wishlistUrl, {
+        customer: customerId,
+        product: product.id,
+      });
+      if (res.data.id) {
+        setInWishlist(true);
+        toast.success(`${product.title} added to wishlist`);
+      }
     } catch (err) {
-      console.error("Error toggling wishlist:", err);
+      console.error("Wishlist Error:", err);
+      toast.error("Error adding to wishlist");
     }
   };
 
-  if (!product) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "60vh" }}>
-        <div className="spinner-border text-primary" role="status"></div>
-      </div>
-    );
-  }
+  // -------------------------
+  // ✅ Check if in Wishlist
+  // -------------------------
+  const checkWishListData = async () => {
+    try {
+      const res = await axios.get(checkWishlistUrl, {
+        params: { customer: customerId, product: product.id },
+      });
+      setInWishlist(res.data.bool === true);
+    } catch (err) {
+      console.error("Wishlist check failed:", err);
+    }
+  };
 
+  // -------------------------
+  // ✅ JSX UI
+  // -------------------------
   return (
-    <div className="container my-5">
-      <div className="row g-4">
-        <div className="col-md-5">
+    <div className="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+      <div
+        className="card h-100 shadow-sm border-0"
+        style={{
+          transition: "transform 0.2s ease, box-shadow 0.2s ease",
+          cursor: "pointer",
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = "translateY(-5px)";
+          e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.15)";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,0.1)";
+        }}
+      >
+        {/* Product Image */}
+        <Link to={`/product/${product.slug}/${product.id}`}>
           <img
             src={product.image}
             alt={product.title}
-            className="img-fluid rounded shadow-sm"
-            style={{ objectFit: "cover", height: "400px", width: "100%" }}
+            className="card-img-top"
+            style={{ height: "220px", objectFit: "cover" }}
           />
-        </div>
-        <div className="col-md-7">
-          <h2 className="fw-bold">{product.title}</h2>
-          <p className="text-muted mb-3">{product.description}</p>
-          <h4 className="text-primary fw-bold mb-4">
-            {currencyData === "usd" ? `$ ${product.usd_price}` : `₹ ${product.price}`}
-          </h4>
+        </Link>
 
-          <div className="d-flex gap-3">
-            {!cartButtonClick ? (
-              <button onClick={addToCart} className="btn btn-primary px-4">
-                Add to Cart
+        {/* Product Body */}
+        <div className="card-body">
+          <Link
+            to={`/product/${product.slug}/${product.id}`}
+            className="text-decoration-none text-dark"
+          >
+            <h6 className="fw-bold">{product.title}</h6>
+          </Link>
+
+          {/* Price */}
+          {currencyData === "usd" ? (
+            <h6 className="text-muted mb-3">Price: ${product.usd_price}</h6>
+          ) : (
+            <h6 className="text-muted mb-3">Price: ₹{product.price}</h6>
+          )}
+
+          {/* Buttons */}
+          <div className="d-flex justify-content-between">
+            {!inCart ? (
+              <button
+                className="btn btn-sm btn-primary rounded-pill shadow-sm"
+                onClick={handleAddToCart}
+              >
+                <i className="fa-solid fa-cart-plus me-2"></i>Add
               </button>
             ) : (
-              <button onClick={removeFromCart} className="btn btn-danger px-4">
-                Remove from Cart
+              <button
+                className="btn btn-sm btn-danger rounded-pill shadow-sm"
+                onClick={handleRemoveFromCart}
+              >
+                <i className="fa-solid fa-trash me-2"></i>Remove
               </button>
             )}
 
-            {isLoggedIn ? (
+            {inWishlist ? (
               <button
-                onClick={toggleWishList}
-                className={`btn px-4 ${productInWishlist ? "btn-danger" : "btn-outline-danger"}`}
+                className="btn btn-sm btn-secondary rounded-pill shadow-sm"
+                disabled
               >
-                {productInWishlist ? "Remove Wishlist ❤️" : "Add to Wishlist 🤍"}
+                <i className="fa-solid fa-heart me-2"></i>In Wishlist
               </button>
             ) : (
-              <button disabled className="btn btn-outline-secondary px-4">
-                Login to Wishlist
+              <button
+                className="btn btn-sm btn-outline-danger rounded-pill shadow-sm"
+                onClick={handleAddToWishlist}
+              >
+                <i className="fa-solid fa-heart me-2"></i>Wishlist
               </button>
             )}
           </div>

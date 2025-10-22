@@ -1,95 +1,87 @@
 import React, { useContext, useEffect, useState } from "react";
+import { AuthContext, CurrencyContext } from "../../AuthProvider";
+import axios from "axios";
 import Sidebar from "./Sidebar";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { AuthContext, CurrencyContext } from "../../AuthProvider";
 
 const Wishlist = () => {
-  const [WishItems, setWishItems] = useState([]);
-  const baseUrl = `http://127.0.0.1:8000/api`;
-  const { customerId } = useContext(AuthContext);
   const { currencyData } = useContext(CurrencyContext);
-
+  const { customerId } = useContext(AuthContext);
+  const [wishItems, setWishItems] = useState([]);
+  const baseUrl = "http://127.0.0.1:8000/api";
+console.log("wishItems==",wishItems)
   useEffect(() => {
-    fetchWishList();
-  }, []);
+    if (customerId) fetchWishlist();
+  }, [customerId]);
 
-  const fetchWishList = async () => {
+const fetchWishlist = async () => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      console.warn("No token found. User is not logged in.");
+      setWishItems([]); // empty list if not logged in
+      return;
+    }
+
+    const response = await axios.get(`${baseUrl}/customer/wish-items/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setWishItems(response.data.results);
+    console.log("Wishlist Data:", response.data.results);
+  } catch (err) {
+    console.error("Error fetching wishlist:", err);
+  }
+};
+
+  const removeFromWishlist = async (wishlistId) => {
     try {
-      const response = await axios.get(`${baseUrl}/customer/${customerId}/wish-items`);
-      setWishItems(response.data.results);
-      console.log("wishListData==>", response.data.results);
-    } catch (error) {
-      console.error("Something Went Wrong", error);
+      await axios.post(`${baseUrl}/toggle-wishlist/`, { product: wishItems.find(i => i.id === wishlistId)?.product });
+      setWishItems(prev => prev.filter(item => item.id !== wishlistId));
+    } catch (err) {
+      console.error("Error removing wishlist item:", err);
     }
   };
-  const RemoveFromWishlist = async (wishlist_id) => {
-    try {
-      const formData = new FormData();
-      formData.append("wishlist_id", wishlist_id);
 
-      const response = await axios.post(
-        `${baseUrl}/remove-from-wishlists/`,
-        formData
-      );
-
-      if (response.data.bool) {
-        // remove from UI without reloading
-        setWishItems((prev) =>
-          prev.filter((item) => item.id !== wishlist_id)
-        );
-      }
-    } catch (error) {
-      console.error("Something Went Wrong", error);
-    }
-  };
   return (
     <div className="container mt-4">
       <div className="row">
-        {/* Sidebar */}
-        <div className="col-md-3 col-12 mb-2">
-          <Sidebar />
-        </div>
-
-        {/* Wishlist Table */}
+        <div className="col-md-3 col-12 mb-2"><Sidebar /></div>
         <div className="col-md-9 col-12 mb-2">
           <div className="card shadow-sm border-0">
             <div className="table-responsive">
-              <table className="table table-bordered ">
+              <table className="table table-bordered">
                 <thead>
                   <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">product_info</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Action</th>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {WishItems.length > 0 ? (
-                    WishItems.map((item, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
+                  {wishItems.length > 0 ? (
+                    wishItems.map((item, idx) => (
+                      <tr key={item.id}>
+                        <td>{idx + 1}</td>
                         <td>
-                          <Link>
-                            <img src={item.product_info.image} className="img-thumbnail" width="90" alt="product_info" />
-                            <p>{item.product_info.title}</p>
+                          <Link to={`/product/${item.product_info.slug}/${item.product_info.id}`} className="d-flex align-items-center text-dark text-decoration-none">
+                            <img src={item.product_info.image} className="img-thumbnail me-3" width="90" alt={item.product_info.title} />
+                            <div>
+                              <p className="mb-0">{item.product_info.title}</p>
+                              <small className="text-muted">{item.product_info.vendor.user.username}</small>
+                            </div>
                           </Link>
                         </td>
-                        {currencyData == "inr" && <td>Rs.{item.product_info.price}</td>}
-                        {currencyData == "usd" && <td>${item.product_info.usd_price}</td>}
-
+                        <td>{currencyData === "usd" ? `$${item.product_info.usd_price}` : `Rs.${item.product_info.price}`}</td>
                         <td>
-                          <button onClick={() => RemoveFromWishlist(item.id)} className="btn btn-danger">
-                            Remove
-                          </button>
+                          <button className="btn btn-danger" onClick={() => removeFromWishlist(item.id)}>Remove</button>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" className="text-center">
-                        No items in wishlist
-                      </td>
+                      <td colSpan="4" className="text-center py-4">No items in wishlist</td>
                     </tr>
                   )}
                 </tbody>
