@@ -1,0 +1,287 @@
+[33mcommit ab81d40b6047a2458da0cb879416a837cdc9419d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;32mbackup-main[m[33m)[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Wed Oct 22 11:36:19 2025 +0530
+
+    Removed Stripe secret, using .env && Wishlist fixing
+
+[33mcommit fdd9c38707ebd415398cc8ceaebc9616b52c4b74[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Tue Oct 21 23:58:41 2025 +0530
+
+    Paypal && Stripe payment created
+
+[33mcommit b7480c141990a88e2a37f2a3e027e6137c1e47af[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Tue Oct 21 20:39:14 2025 +0530
+
+    Product Detail Vendor
+
+[33mcommit 0f6f29fb645e50b2c5402f85cbc74322631266a2[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Oct 18 22:16:22 2025 +0530
+
+    HomePage arranged
+
+[33mcommit 9b16bf76de429b9169037d0cefdcab0721e1b2a1[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Oct 18 13:28:52 2025 +0530
+
+    Popular Products on HomePage
+
+[33mcommit 03e623f3308896f739cdd878404f4872ffa48f0e[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Oct 18 13:22:32 2025 +0530
+
+    Latest Categories on HomePage
+
+[33mcommit d01f7421ea9da3fc8c55508009b40de8eeaade14[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Oct 18 12:38:26 2025 +0530
+
+    Show popular Vendors on Homepage
+
+[33mcommit 7132f92e80bd91f961b5c79bc88bbdda4e1e250d[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Oct 18 12:03:58 2025 +0530
+
+    Fetch all Vendors && Their Products
+
+[33mcommit 4bc4831b4631b86396579bdb9359b985ae6e204d[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Oct 18 11:20:25 2025 +0530
+
+    Review on Homepage
+
+[33mcommit 64cc0ed2f00e649ed950b83a1e7a3020a5f8858e[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Oct 18 11:03:58 2025 +0530
+
+    Adding Review to Products
+
+[33mcommit 473802ca61f21baa18eac8de048eafb9eda03812[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Oct 17 23:18:27 2025 +0530
+
+    Paypal Payment Fixed !!
+
+[33mcommit 544fdd7876738458a12430bdcc3baf0bab9a8bf2[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Oct 17 23:08:05 2025 +0530
+
+    States  && Header fixed
+
+[33mcommit 534a7b0dae07400f84f4d401cfeec475348e7a7f[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Oct 17 23:00:04 2025 +0530
+
+    Vendor change password created
+
+[33mcommit 6d57010f49c4c6ac1441539eb516ade91b171dc3[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Oct 17 22:52:47 2025 +0530
+
+    Customer Change Password Fixed
+
+[33mcommit 6584593bc0581e897efff29b02c4d366e9d45eb5[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Oct 17 22:44:55 2025 +0530
+
+    Working on change password of Customer
+
+[33mcommit bb7f755181aa5acdc545a53654d630fd094d2cec[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Oct 17 12:00:37 2025 +0530
+
+    Can see VendorReports && created  Vendor UpdateProfile
+
+[33mcommit 2c5e55395f6e333097855bf0ad7db34770ccda59[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Oct 11 12:17:05 2025 +0530
+
+    fetch and delete customer orders
+
+[33mcommit f493b9a742552d8a258576563a249cce5b43b211[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Thu Oct 9 15:01:16 2025 +0530
+
+    Fetched Customer
+
+[33mcommit 4df9207fbe12dc3ace15f130fe13018a1ae97225[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Thu Oct 9 14:38:49 2025 +0530
+
+    Modify Order status
+
+[33mcommit 5d17acdb988f394e2455da3b4b06022a3612f8b9[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Tue Oct 7 12:06:48 2025 +0530
+
+    Deleting Vendor Products with image
+
+[33mcommit 099e98e2c1fed1a8b8c13d6b241a91b6b294f09d[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Tue Oct 7 10:58:19 2025 +0530
+
+    Seller Product can be edited
+
+[33mcommit d714747ca922cf825b4d273ce28e6fc5200da515[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sun Oct 5 10:25:50 2025 +0530
+
+    Seller Product multiple-image fixed
+
+[33mcommit 05ae1752bd04c4cdd00e2ccaf76fd6e0ebf149a3[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sun Oct 5 09:55:47 2025 +0530
+
+    Display Vendor Products
+
+[33mcommit b4a22678be8137e1223db13defd494f74371abe0[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Thu Oct 2 11:31:24 2025 +0530
+
+    Vendor login/logout completed
+
+[33mcommit 03d31a5bcc7413b43ed347d413508d48974a06ae[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Thu Oct 2 10:59:16 2025 +0530
+
+    Vendor Regsitration successful!
+
+[33mcommit 4e975f7b9f6a1623b8f0f52f42181f8a435719d2[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sun Sep 21 12:47:04 2025 +0530
+
+    Customer dashboard almost done
+
+[33mcommit 5d6853c8b8b886af3194bb8c60f272ae2c485217[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sun Sep 21 12:24:18 2025 +0530
+
+    Customer Address almost done
+
+[33mcommit b60bd2c5cd54e1f722b85231ddb0a18e33395a20[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sun Sep 21 10:48:07 2025 +0530
+
+    Add Address fetched !
+
+[33mcommit ac5450153b7b7a3362b0b99603f06edead8aa99c[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Sep 20 14:52:27 2025 +0530
+
+    Customer Profile Updation Function Created
+
+[33mcommit dcf2f7f4634feefb3814aac65b80e37d97139497[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Tue Sep 16 12:50:59 2025 +0530
+
+    Customer Wishlist logic completed
+
+[33mcommit 5807346d9376ae9880baf2283a8e499a3f3ce11d[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Mon Sep 15 09:31:29 2025 +0530
+
+    Currency payment created
+
+[33mcommit 1b4e2b63280c5b52765285630a37d6200e0bd093[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Sep 12 19:08:36 2025 +0530
+
+    Currency Switcher created
+
+[33mcommit 36df4693eb737de8e9243930cb0bec305055a534[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Sep 12 17:29:16 2025 +0530
+
+    OrderRow created
+
+[33mcommit ef08d637e7c8b569f5a22ba41dfd2e04c82884d5[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Fri Sep 12 11:48:27 2025 +0530
+
+    fixed download order
+
+[33mcommit 659c3e6fd1621146ed745773ca26fd0f78447e15[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Thu Sep 11 22:15:29 2025 +0530
+
+    Orders and payment fixing
+
+[33mcommit a962f43f43b780122ffb5f2047ea8645159fc4fe[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Mon Sep 8 18:13:36 2025 +0530
+
+    confirmOrder logic succesfull
+
+[33mcommit b6901a68c083e1841306572d536c770334aded18[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Mon Sep 8 15:44:09 2025 +0530
+
+    Cart function issue fixed
+
+[33mcommit 70022218467f86bee979c3cfd04b73879423e44a[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Mon Sep 8 12:08:54 2025 +0530
+
+    Cart function Created!
+
+[33mcommit 056c7996bee1b1fe3c90973ddbb10f4bc2452faf[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sat Sep 6 11:30:16 2025 +0530
+
+    AuthProvider created, Login and Registration successfully created
+
+[33mcommit 042f4f38b17350ba86d2fb191a53bd669e4b2ac5[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Thu Sep 4 17:37:14 2025 +0530
+
+    Tags,Rltd products,productDetails api's succesfully fetched
+
+[33mcommit 86a28e8601645ab8b66d5b0f3ae63236c243b64e[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Thu Sep 4 13:28:51 2025 +0530
+
+    Fetching datas from backend
+
+[33mcommit 2b0f27713b3278f2dcb35af153dfbfc8d231f3eb[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Wed Sep 3 19:01:51 2025 +0530
+
+    Seller Design almost done /frontend
+
+[33mcommit 4ede2ee44068abfe72301e378dd487fceec7ab17[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Wed Sep 3 17:55:45 2025 +0530
+
+    Seller panel started /frontend
+
+[33mcommit 90a010094f37465f83a3693bbee2ffc1e02abe14[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Wed Sep 3 12:12:17 2025 +0530
+
+    Adding Customer UI /frontend
+
+[33mcommit 5ddcaa1b08c61ee49fd7ef376e4338c8e9f25cc6[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Mon Sep 1 02:33:08 2025 +0530
+
+    Header,Footer && Category /frontend
+
+[33mcommit e2e1cb788c871800c8dd292a3d9c0c4ceb2f37a3[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sun Aug 31 23:08:02 2025 +0530
+
+    React Initialized  /frontend
+
+[33mcommit 7454849e8c006a25e32342d18b64aa2ac4e79131[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Sun Aug 31 23:01:44 2025 +0530
+
+    Product Rating Model Created  /backend
+
+[33mcommit ada66998e63643c2b4b3c90dcf5435a59bf715e8[m
+Author: Bijoy <bijocode@gmail.com>
+Date:   Wed Aug 27 16:48:57 2025 +0530
+
+    Main models created /backend

@@ -84,6 +84,8 @@ name='vendor-yearly-report'),
     path("toggle-wishlist/", views.toggle_wishlist, name="toggle_wishlist"),
     path("remove-from-wishlists/", views.remove_from_wishlists, name="remove_from_wishlists"),
 
+ path('stripe/create-payment-intent/', views.create_stripe_payment_intent, name="stripe-create-payment"),
+    path('stripe/confirm-order/', views.confirm_order_after_payment, name="stripe-confirm-order"),
     # ============================
     # 🏠 Address Management
     # ============================

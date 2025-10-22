@@ -32,17 +32,18 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from .models import Vendor, Product
 from .serializers import ProductSerializer
-import os
+
 import stripe
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Order, Customer, Product, OrderItems
+from .models import Order, Customer
 from rest_framework.exceptions import ValidationError
+from .models import Customer, Order, Product, OrderItems
 
-stripe.api_key = settings.STRIPE_SECRET_KEY  # This comes from .env now
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -72,6 +73,7 @@ def create_stripe_payment_intent(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 @api_view(['POST'])
@@ -109,7 +111,6 @@ def confirm_order_after_payment(request):
         return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 # ============================================
 # VENDOR VIEWS
 # ============================================
@@ -367,13 +368,24 @@ def customer_register(request):
             return JsonResponse({"bool": False, "msg": "Database error"})
 
     return JsonResponse({"msg": "Only POST method allowed"})
-
+from rest_framework.exceptions import ValidationError
 # ============================================
 # ORDER VIEWS
 # ============================================
 class OrderList(generics.ListCreateAPIView):
-    queryset = models.Order.objects.all()
+    queryset = models.Order.objects.all().order_by('-id')
     serializer_class = serializers.OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        try:
+            customer = models.Customer.objects.get(user=self.request.user)
+        except models.Customer.DoesNotExist:
+            raise ValidationError("Customer profile not found for the logged-in user.")
+
+        serializer.save(customer=customer)
+
+
 
 class CustomerOrderList(generics.ListCreateAPIView):
     queryset = models.OrderItems.objects.all()

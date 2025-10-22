@@ -188,7 +188,6 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         depth = 1
 
 # =========================
-# OrderItems serializers
 # =========================
 class OrderItemsSerializer(serializers.ModelSerializer):
     order_info = serializers.SerializerMethodField(read_only=True)
@@ -196,13 +195,24 @@ class OrderItemsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.OrderItems
-        fields = ['id', 'order', 'product', 'qty', 'price', 'usd_price', 'order_info', 'product_info']
+        fields = [
+            'id',
+            'order',
+            'product',
+            'qty',
+            'price',
+            'usd_price',
+            'order_info',
+            'product_info'
+        ]
 
     def get_order_info(self, obj):
+        # Pass context to nested serializer for consistency
         return OrderSerializer(obj.order, context=self.context).data
 
     def get_product_info(self, obj):
         return ProductDetailSerializer(obj.product, context=self.context).data
+
 
 class OrderItemsDetailSerializer(serializers.ModelSerializer):
     class Meta:
