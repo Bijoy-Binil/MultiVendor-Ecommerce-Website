@@ -26,9 +26,8 @@ const Home = () => {
   // helper: build axios config with auth if token present
   const getAuthConfig = () => {
     const token =
-      localStorage.getItem("access") ||
-      localStorage.getItem("access_token") ||
-      localStorage.getItem("token") ||
+      localStorage.getItem("accessToken") ||
+
       null;
     if (token) {
       return { headers: { Authorization: `Bearer ${token}` } };

@@ -6,38 +6,48 @@ import { Link } from "react-router-dom";
 
 const Wishlist = () => {
   const { currencyData } = useContext(CurrencyContext);
-  const { customerId } = useContext(AuthContext);
+  const { customerId, isLoggedIn } = useContext(AuthContext);
   const [wishItems, setWishItems] = useState([]);
   const baseUrl = "http://127.0.0.1:8000/api";
-console.log("wishItems==",wishItems)
+
   useEffect(() => {
-    if (customerId) fetchWishlist();
-  }, [customerId]);
+    if (isLoggedIn && customerId) fetchWishlist();
+  }, [isLoggedIn, customerId]);
 
-const fetchWishlist = async () => {
-  try {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      console.warn("No token found. User is not logged in.");
-      setWishItems([]); // empty list if not logged in
-      return;
+  const fetchWishlist = async () => {
+    try {
+      const token = localStorage.getItem("accessToken") ;
+      if (!token) return;
+
+      const response = await axios.get(`${baseUrl}/customer/wish-items/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setWishItems(response.data.results || []);
+    } catch (err) {
+      console.error("Error fetching wishlist:", err);
     }
-
-    const response = await axios.get(`${baseUrl}/customer/wish-items/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    setWishItems(response.data.results);
-    console.log("Wishlist Data:", response.data.results);
-  } catch (err) {
-    console.error("Error fetching wishlist:", err);
-  }
-};
+  };
 
   const removeFromWishlist = async (wishlistId) => {
     try {
-      await axios.post(`${baseUrl}/toggle-wishlist/`, { product: wishItems.find(i => i.id === wishlistId)?.product });
-      setWishItems(prev => prev.filter(item => item.id !== wishlistId));
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const productId = wishItems.find((i) => i.id === wishlistId)?.product;
+
+      const formData = new FormData();
+      formData.append("product", productId);
+      formData.append("customer", customerId);
+
+      const res = await axios.post(`${baseUrl}/toggle-wishlist/`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.data.bool) {
+        // removed successfully
+        setWishItems((prev) => prev.filter((item) => item.id !== wishlistId));
+      }
     } catch (err) {
       console.error("Error removing wishlist item:", err);
     }

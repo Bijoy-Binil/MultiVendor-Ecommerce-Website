@@ -79,12 +79,17 @@ name='vendor-yearly-report'),
     # ============================
     # 💖 Wishlist Endpoints
     # ============================
+ # Wishlist endpoints
     path("wishlists/", views.WishList.as_view()),
     path("check-in-wishlists/", views.check_in_wishlist, name="check_in_wishlists"),
-   path("customer/wish-items/", views.CustomerWishItemList.as_view(), name="customer-wish-items"),
-    path("toggle-wishlist/", views.toggle_wishlist, name="toggle_wishlist"),
-    path("remove-from-wishlists/", views.remove_from_wishlists, name="remove_from_wishlists"),
 
+    # Customer wishlist
+    path("customer/wish-items/", views.CustomerWishItemList.as_view(), name="customer-wish-items"),
+    path("toggle-wishlist/", views.ToggleWishlistView.as_view(), name="toggle_wishlist"),
+    path("remove-from-wishlists/", views.RemoveFromWishlistView.as_view(), name="remove_from_wishlists"),
+
+    
+    
  path('stripe/create-payment-intent/', views.create_stripe_payment_intent, name="stripe-create-payment"),
     path('stripe/confirm-order/', views.confirm_order_after_payment, name="stripe-confirm-order"),
     # ============================

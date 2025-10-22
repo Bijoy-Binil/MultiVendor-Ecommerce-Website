@@ -692,64 +692,106 @@ def update_product_download_count(request, product_id):
 class WishList(generics.ListCreateAPIView):
     queryset = models.Wishlist.objects.all()
     serializer_class = serializers.WishlistSerializer
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from . import models, serializers
 
-@csrf_exempt
+# ==========================
+# Check if product is in wishlist
+# ==========================
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from . import models
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def check_in_wishlist(request):
-    msg = {"bool": False}
-    product_id = request.POST.get("product") if request.method=="POST" else request.GET.get("product")
-    customer_id = request.POST.get("customer") if request.method=="POST" else request.GET.get("customer")
-    if product_id and customer_id:
-        exists = models.Wishlist.objects.filter(product_id=product_id, customer_id=customer_id).exists()
-        msg = {"bool": exists}
-    return JsonResponse(msg)
+    """
+    Check if a product is in the logged-in user's wishlist.
+    Works with token authentication.
+    """
+    # Get product ID from POST or GET
+    product_id = request.data.get("product") if request.method == "POST" else request.query_params.get("product")
+    if not product_id:
+        return Response({"bool": False})
 
+    # Get customer's profile from user
+    try:
+        customer = Customer.objects.get(user=request.user)  # or request.user.customer_set.first()
+    except AttributeError:
+        return Response({"bool": False})
+
+    exists = models.Wishlist.objects.filter(product_id=product_id, customer=customer).exists()
+    return Response({"bool": exists})
+# ==========================
+# Customer Wishlist List
+# ==========================
 class CustomerWishItemList(generics.ListAPIView):
     serializer_class = serializers.CustomerWishlistSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        if not user.is_authenticated:
-            return models.Wishlist.objects.none()
-
         customer = user.customer_set.first()
         if not customer:
             return models.Wishlist.objects.none()
-
         return models.Wishlist.objects.filter(customer=customer).select_related("product").order_by("-id")
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['request'] = self.request  # important for absolute image URL
+        context['request'] = self.request  # for absolute image URLs
         return context
-# Toggle wishlist (add/remove)
+
+# ==========================
+# Toggle Wishlist (Add/Remove)
+# ==========================
 @csrf_exempt
 def toggle_wishlist(request):
-    if request.method == "POST":
-        product_id = request.POST.get("product")
-        customer_id = request.POST.get("customer")
-        if not product_id or not customer_id:
-            return JsonResponse({"error": "Missing product or customer"}, status=400)
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
 
-        wishlist_obj = models.Wishlist.objects.filter(product_id=product_id, customer_id=customer_id).first()
-        if wishlist_obj:
-            wishlist_obj.delete()
-            return JsonResponse({"bool": False, "msg": "Removed from wishlist"})
-        else:
-            models.Wishlist.objects.create(product_id=product_id, customer_id=customer_id)
-            return JsonResponse({"bool": True, "msg": "Added to wishlist"})
-    return JsonResponse({"error": "Invalid method"}, status=405)
+    user = request.user
+    if not user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized"}, status=401)
 
+    product_id = request.POST.get("product")
+    if not product_id:
+        return JsonResponse({"error": "Missing product"}, status=400)
+
+    customer = user.customer_set.first()
+    if not customer:
+        return JsonResponse({"error": "Customer not found"}, status=404)
+
+    wishlist_obj = models.Wishlist.objects.filter(product_id=product_id, customer=customer).first()
+    if wishlist_obj:
+        wishlist_obj.delete()
+        return JsonResponse({"bool": False, "msg": "Removed from wishlist"})
+    else:
+        models.Wishlist.objects.create(product_id=product_id, customer=customer)
+        return JsonResponse({"bool": True, "msg": "Added to wishlist"})
+
+# ==========================
+# Remove from Wishlist
+# ==========================
 @csrf_exempt
 def remove_from_wishlists(request):
-    msg = {"bool": False}
-    if request.method == "POST":
-        wishlist_id = request.POST.get("wishlist_id")
-        if wishlist_id:
-            deleted, _ = models.Wishlist.objects.filter(id=wishlist_id).delete()
-            if deleted:
-                msg = {"bool": True}
-    return JsonResponse(msg)
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    user = request.user
+    if not user.is_authenticated:
+        return JsonResponse({"bool": False, "error": "Unauthorized"}, status=401)
+
+    wishlist_id = request.POST.get("wishlist_id")
+    if not wishlist_id:
+        return JsonResponse({"bool": False, "error": "Missing wishlist_id"}, status=400)
+
+    customer = user.customer_set.first()
+    deleted, _ = models.Wishlist.objects.filter(id=wishlist_id, customer=customer).delete()
+    return JsonResponse({"bool": bool(deleted)})
 
 class CustomerAddressList(generics.ListCreateAPIView):
     queryset = models.CustomerAddress.objects.all()
@@ -761,6 +803,69 @@ class CustomerAddressList(generics.ListCreateAPIView):
         if customer_id:
             qs = qs.filter(customer__id=customer_id).order_by('id')
         return qs
+    
+# views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, status
+from . import models, serializers
+
+# Customer Wishlist List
+class CustomerWishItemList(generics.ListAPIView):
+    serializer_class = serializers.CustomerWishlistSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        customer = user.customer_set.first()
+        if not customer:
+            return models.Wishlist.objects.none()
+        return models.Wishlist.objects.filter(customer=customer).select_related("product").order_by("-id")
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request  # for absolute image URLs
+        return context
+
+
+# Toggle Wishlist (Add/Remove)
+class ToggleWishlistView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        product_id = request.data.get("product")
+        if not product_id:
+            return Response({"error": "Missing product"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        customer = user.customer_set.first()
+        if not customer:
+            return Response({"error": "Customer not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        wishlist_obj = models.Wishlist.objects.filter(product_id=product_id, customer=customer).first()
+        if wishlist_obj:
+            wishlist_obj.delete()
+            return Response({"bool": False, "msg": "Removed from wishlist"})
+        else:
+            models.Wishlist.objects.create(product_id=product_id, customer=customer)
+            return Response({"bool": True, "msg": "Added to wishlist"})
+
+
+# Remove from Wishlist
+class RemoveFromWishlistView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        wishlist_id = request.data.get("wishlist_id")
+        if not wishlist_id:
+            return Response({"bool": False, "error": "Missing wishlist_id"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        customer = user.customer_set.first()
+        deleted, _ = models.Wishlist.objects.filter(id=wishlist_id, customer=customer).delete()
+        return Response({"bool": bool(deleted)})
+
 @csrf_exempt
 def mark_as_default_address(request, pk):
     response = {"success": False}
