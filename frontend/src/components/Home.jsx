@@ -457,9 +457,7 @@ const Home = () => {
                 <h2 className="fw-bold text-dark mb-2">Popular Products</h2>
                 <p className="text-muted">Trending now among our customers</p>
               </div>
-              <Link className="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold" to="/products">
-                View All <i className="fas fa-arrow-right ms-2"></i>
-              </Link>
+     
             </div>
             <div className="row g-4">
               {popularProducts?.length > 0 ? (
@@ -526,7 +524,7 @@ const Home = () => {
                 <h2 className="fw-bold text-dark mb-2">Top Sellers</h2>
                 <p className="text-muted">Shop from our trusted vendors</p>
               </div>
-              <Link to="/vendors" className="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold">
+              <Link to="/sellers" className="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold">
                 View All <i className="fas fa-arrow-right ms-2"></i>
               </Link>
             </div>

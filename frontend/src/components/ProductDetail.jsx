@@ -2,8 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import React, { useContext, useEffect, useState } from "react";
-import { CurrencyContext } from "../AuthProvider";
-import { AuthContext, CartContext } from "../AuthProvider";
+import { CurrencyContext, AuthContext, CartContext } from "../AuthProvider";
 import axios from "axios";
 
 const ProductDetail = () => {
@@ -14,30 +13,33 @@ const ProductDetail = () => {
 
   const baseUrl = `http://127.0.0.1:8000/api/product`;
   const relatedBaseUrl = `http://127.0.0.1:8000/api/related-products`;
-  const wishlistUrl = `http://127.0.0.1:8000/api/check-in-wishlists/`;
+  const wishlistUrl = `http://127.0.0.1:8000/api/wishlists/`;
+  const wishlistCheckUrl = `http://127.0.0.1:8000/api/check-in-wishlists/`;
 
   const [products, setProducts] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [productImgs, setProductImgs] = useState([]);
   const [productTags, setProductTags] = useState([]);
   const [cartButtonClick, setCartButtonClick] = useState(false);
-  const [productInWhishList, setProductInWhishList] = useState(false);
+const [productInWishlist, setProductInWishlist] = useState(false); // ✅ Correct spelling
+const [relatedWishlists, setRelatedWishlists] = useState({}); // for related productsstatus for related products
 
+  // Auth header
+  const getAuthConfig = () => {
+    const token =
+      localStorage.getItem("access") ||
+      localStorage.getItem("access_token") ||
+      localStorage.getItem("token");
+    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  };
+
+  // Fetch product & related
   useEffect(() => {
     fetchData(`${baseUrl}/${product_id}`);
     fetchRelatedData(`${relatedBaseUrl}/${product_id}`);
     checkProductInCart(product_id);
-    checkWishListData(wishlistUrl);
-  }, [product_id]);
-
-  const checkProductInCart = (product_id) => {
-    const prevCart = localStorage.getItem("cartData");
-    if (prevCart) {
-      const cartJson = JSON.parse(prevCart);
-      const alreadyInCart = cartJson.some((item) => item.product.id === parseInt(product_id));
-      if (alreadyInCart) setCartButtonClick(true);
-    }
-  };
+    if (isLoggedIn) checkWishListData();
+  }, [product_id, isLoggedIn]);
 
   const fetchData = (url) => {
     fetch(url)
@@ -52,28 +54,57 @@ const ProductDetail = () => {
   const fetchRelatedData = (url) => {
     fetch(url)
       .then((res) => res.json())
-      .then((data) => setRelatedProducts(data.results || []));
+      .then(async (data) => {
+        setRelatedProducts(data.results || []);
+        if (isLoggedIn) {
+          // Check wishlist for each related product
+          const wishlistStatuses = {};
+          await Promise.all(
+            (data.results || []).map(async (item) => {
+              const res = await axios.get(wishlistCheckUrl, {
+                params: { customer: customerId, product: item.id },
+              });
+              wishlistStatuses[item.id] = res.data.bool === true;
+            })
+          );
+          setRelatedWishlists(wishlistStatuses);
+        }
+      });
   };
 
-  const SaveInWishList = async () => {
-    const formData = { customer: customerId, product: product_id };
-    try {
-      const response = await axios.post(`http://127.0.0.1:8000/api/wishlists/`, formData);
-      if (response.data.id) setProductInWhishList(true);
-    } catch (err) {
-      console.error("Error creating Wishlist:", err);
+  const checkProductInCart = (product_id) => {
+    const prevCart = localStorage.getItem("cartData");
+    if (prevCart) {
+      const cartJson = JSON.parse(prevCart);
+      const alreadyInCart = cartJson.some(
+        (item) => item.product.id === parseInt(product_id)
+      );
+      if (alreadyInCart) setCartButtonClick(true);
     }
   };
 
-  const checkWishListData = async (url) => {
-    try {
-      const res = await axios.get(url, { params: { customer: customerId, product: product_id } });
-      setProductInWhishList(res.data.bool === true);
-    } catch (err) {
-      console.error("Error checking Wishlist:", err);
-    }
-  };
+  // ✅ Toggle Wishlist for main product
+const toggleWishList = async (id, isRelated = false) => {
+  if (!isLoggedIn || !customerId) return alert("Please log in to manage wishlist");
 
+  try {
+    const formData = new FormData();
+    formData.append("customer", customerId);
+    formData.append("product", id);
+
+    const res = await axios.post("http://127.0.0.1:8000/api/toggle-wishlist/", formData);
+    
+    if (isRelated) {
+      setRelatedWishlists(prev => ({ ...prev, [id]: res.data.bool }));
+    } else {
+      setProductInWishlist(res.data.bool); // ✅ Corrected
+    }
+  } catch (err) {
+    console.error("Error toggling wishlist:", err);
+  }
+};
+
+  // Cart
   const cartDatas = {
     product: {
       id: products.id,
@@ -82,7 +113,7 @@ const ProductDetail = () => {
       usd_price: products.usd_price,
       image: products.image,
     },
-    user: { id: 1 },
+    user: { id: customerId || 1 },
     total_amount: products.price,
   };
 
@@ -104,10 +135,27 @@ const ProductDetail = () => {
     setCartButtonClick(false);
   };
 
+  const isInCart = (id) => {
+    const prevCart = localStorage.getItem("cartData");
+    if (prevCart) {
+      return JSON.parse(prevCart).some((item) => item.product.id === parseInt(id));
+    }
+    return false;
+  };
+
+  // Check main product wishlist
+  const checkWishListData = async () => {
+    try {
+      const res = await axios.get(wishlistCheckUrl, { params: { customer: customerId, product: product_id } });
+      setProductInWishlist(res.data.bool === true);
+    } catch (err) {
+      console.error("Error checking Wishlist:", err);
+    }
+  };
+
   return (
     <section className="container my-5">
       <div className="row g-4">
-        {/* Product Images */}
         <div className="col-lg-5">
           <Swiper slidesPerView={1} className="rounded shadow-sm bg-white p-3">
             {productImgs.map((img, i) => (
@@ -122,21 +170,19 @@ const ProductDetail = () => {
             ))}
           </Swiper>
         </div>
-{console.log("products==>",products)
-}        {/* Product Info */}
+
         <div className="col-lg-7">
           <div className="card border-0 shadow-sm p-4">
             <h2 className="fw-bold mb-3">{products.title}</h2>
             <p className="text-muted">{products.detail}</p>
-            <Link to={`/seller/${products?.vendor?.user?.username}/${products?.vendor?.id}`}>Vendor: {products?.vendor?.user?.username || "Unknown Vendor"}</Link>
+            <Link to={`/seller/${products?.vendor?.user?.username}/${products?.vendor?.id}`}>
+              Vendor: {products?.vendor?.user?.username || "Unknown Vendor"}
+            </Link>
 
-
-            {/* Price */}
-            <h4 className="text-primary fw-bold">
+            <h4 className="text-primary fw-bold mt-3">
               {currencyData === "usd" ? `$ ${products.usd_price}` : `₹ ${products.price}`}
             </h4>
 
-            {/* Buttons */}
             <div className="mt-4 d-flex flex-wrap gap-2">
               <Link
                 to={products.demo_url}
@@ -147,17 +193,11 @@ const ProductDetail = () => {
               </Link>
 
               {!cartButtonClick ? (
-                <button
-                  onClick={cartAddButtonHandler}
-                  className="btn btn-primary rounded-pill px-4"
-                >
+                <button onClick={cartAddButtonHandler} className="btn btn-primary rounded-pill px-4">
                   <i className="fa-solid fa-cart-shopping me-2"></i> Add to Cart
                 </button>
               ) : (
-                <button
-                  onClick={cartRemoveButtonHandler}
-                  className="btn btn-danger rounded-pill px-4"
-                >
+                <button onClick={cartRemoveButtonHandler} className="btn btn-danger rounded-pill px-4">
                   <i className="fa-solid fa-cart-shopping me-2"></i> Remove
                 </button>
               )}
@@ -167,21 +207,22 @@ const ProductDetail = () => {
               </button>
 
               {isLoggedIn ? (
-                <button
-                  onClick={SaveInWishList}
-                  className={`btn rounded-pill px-4 ${
-                    productInWhishList ? "btn-secondary" : "btn-outline-danger"
-                  }`}
-                  disabled={productInWhishList}
-                >
-                  <i className="fa-solid fa-heart me-2"></i>
-                  {productInWhishList ? "In Wishlist" : "Wishlist"}
-                </button>
-              ) : (
-                <button disabled className="btn btn-outline-danger rounded-pill px-4">
-                  <i className="fa-solid fa-heart me-2"></i> Wishlist
-                </button>
-              )}
+  <button
+    onClick={() => toggleWishList(products.id)}
+    className={`btn rounded-pill px-4 ${
+      productInWishlist ? "btn-danger" : "btn-outline-danger"
+    }`}
+  >
+    <i className="fa-solid fa-heart me-2"></i>
+    {productInWishlist ? "Remove Wishlist" : "Add to Wishlist"}
+  </button>
+) : (
+  <button disabled className="btn btn-outline-secondary px-4">
+    <i className="fa-solid fa-heart me-2"></i>Login to Wishlist
+  </button>
+)}
+
+
             </div>
 
             {/* Tags */}
@@ -208,8 +249,8 @@ const ProductDetail = () => {
           spaceBetween={20}
           breakpoints={{ 1024: { slidesPerView: 4 }, 768: { slidesPerView: 2 }, 480: { slidesPerView: 1 } }}
         >
-          {relatedProducts.map((item, index) => (
-            <SwiperSlide key={index}>
+          {relatedProducts.map((item) => (
+            <SwiperSlide key={item.id}>
               <div className="card shadow-sm border-0 h-100">
                 <Link to={`/product/${item.title}/${item.id}`}>
                   <img
@@ -224,7 +265,18 @@ const ProductDetail = () => {
                   <p className="text-muted small mb-2">₹ {item.price}</p>
                   <div className="d-flex justify-content-between">
                     <button className="btn btn-sm btn-primary">Add</button>
-                    <button className="btn btn-sm btn-outline-danger">Wishlist</button>
+                    {isLoggedIn ? (
+                      <button
+                        className={`btn btn-sm ${relatedWishlists[item.id] ? "btn-danger" : "btn-outline-danger"}`}
+                        onClick={() => toggleWishList(item.id, true)}
+                      >
+                        {relatedWishlists[item.id] ? "❤️" : "🤍"}
+                      </button>
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary" disabled>
+                        🤍
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

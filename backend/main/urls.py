@@ -81,6 +81,7 @@ name='vendor-yearly-report'),
     # ============================
     path("wishlists/", views.WishList.as_view()),
     path("check-in-wishlists/", views.check_in_wishlist, name="check_in_wishlists"),
+    path("toggle-wishlist/", views.toggle_wishlist, name="toggle_wishlist"),
     path("remove-from-wishlists/", views.remove_from_wishlists, name="remove_from_wishlists"),
 
     # ============================

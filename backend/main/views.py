@@ -32,6 +32,84 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from .models import Vendor, Product
 from .serializers import ProductSerializer
+import os
+import stripe
+from django.conf import settings
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Order, Customer, Product, OrderItems
+from rest_framework.exceptions import ValidationError
+
+stripe.api_key = settings.STRIPE_SECRET_KEY  # This comes from .env now
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_stripe_payment_intent(request):
+    """
+    Create a Stripe PaymentIntent for the frontend
+    """
+    try:
+        data = request.data
+        amount = data.get("amount")
+
+        if amount is None:
+            return Response({"error": "Amount is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Stripe expects amount in cents
+        if isinstance(amount, float) or isinstance(amount, str):
+            amount = float(amount)
+        stripe_amount = int(amount * 100)  # Convert to cents
+
+        intent = stripe.PaymentIntent.create(
+            amount=stripe_amount,
+            currency="usd",
+            payment_method_types=["card"],
+        )
+
+        return Response({"client_secret": intent.client_secret})
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def confirm_order_after_payment(request):
+    """
+    Confirm order after successful Stripe payment
+    """
+    try:
+        customer = Customer.objects.get(user=request.user)
+    except Customer.DoesNotExist:
+        raise ValidationError("Customer profile not found.")
+
+    data = request.data
+    stripe_payment_intent_id = data.get("payment_intent_id")
+    order_id = data.get("order_id")  # <-- pass order_id from frontend
+
+    if not stripe_payment_intent_id or not order_id:
+        return Response({"error": "PaymentIntent ID and order_id required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # Retrieve Stripe PaymentIntent
+        intent = stripe.PaymentIntent.retrieve(stripe_payment_intent_id)
+        if intent.status != "succeeded":
+            return Response({"error": "Payment not successful"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Mark the existing order as paid
+        order = Order.objects.get(id=order_id, customer=customer)
+        order.order_status = True
+        order.save()
+
+        return Response({"success": True, "order_id": order.id})
+
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 # ============================================
 # VENDOR VIEWS
 # ============================================
@@ -623,17 +701,24 @@ class CustomerWishItemList(generics.ListCreateAPIView):
         if customer_id:
             qs = qs.filter(customer__id=customer_id)
         return qs
+    
+# Toggle wishlist (add/remove)
+@csrf_exempt
+def toggle_wishlist(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product")
+        customer_id = request.POST.get("customer")
+        if not product_id or not customer_id:
+            return JsonResponse({"error": "Missing product or customer"}, status=400)
 
-class CustomerAddressList(generics.ListCreateAPIView):
-    queryset = models.CustomerAddress.objects.all()
-    serializer_class = serializers.CustomerAddressSerializer
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        customer_id = self.kwargs.get("pk")
-        if customer_id:
-            qs = qs.filter(customer__id=customer_id).order_by('id')
-        return qs
+        wishlist_obj = models.Wishlist.objects.filter(product_id=product_id, customer_id=customer_id).first()
+        if wishlist_obj:
+            wishlist_obj.delete()
+            return JsonResponse({"bool": False, "msg": "Removed from wishlist"})
+        else:
+            models.Wishlist.objects.create(product_id=product_id, customer_id=customer_id)
+            return JsonResponse({"bool": True, "msg": "Added to wishlist"})
+    return JsonResponse({"error": "Invalid method"}, status=405)
 
 @csrf_exempt
 def remove_from_wishlists(request):
@@ -646,6 +731,16 @@ def remove_from_wishlists(request):
                 msg = {"bool": True}
     return JsonResponse(msg)
 
+class CustomerAddressList(generics.ListCreateAPIView):
+    queryset = models.CustomerAddress.objects.all()
+    serializer_class = serializers.CustomerAddressSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        customer_id = self.kwargs.get("pk")
+        if customer_id:
+            qs = qs.filter(customer__id=customer_id).order_by('id')
+        return qs
 @csrf_exempt
 def mark_as_default_address(request, pk):
     response = {"success": False}
